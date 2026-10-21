@@ -20,168 +20,251 @@
 <style>
 :root{
   --cafe:#5a4d3e; --crema:#f8f6f3; --arena:#efeae3; --borde:#e2ddd6; --sub:#9a8e7f; --cero:#c4bdb1;
+  --linea:#ECE4DF; --enc:#D9D7CE; --alt:#faf9f7;
   --verde-f:#C6E7D0; --verde:#38761D; --naranja:#b06630; --rojo:#b04040; --rojo-f:#fce8e8;
+  --ok-f:#eaf5e8; --ok:#4a8c42; --rev-f:#fef6e4; --rev:#a0872e;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--crema);color:var(--cafe);font-family:Alexandria,system-ui,sans-serif}
 body{min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overflow-x:hidden}
 button,input,select{font-family:inherit;font-size:16px;color:var(--cafe)}
+button{cursor:pointer}
 .oculto{display:none!important}
-.wrap{max-width:480px;margin:0 auto}
-
-/* ---- Entrar ---- */
-#entrar .in{padding:40px 22px 28px}
-#formPin{margin-top:16px}
-.logo svg{width:56px;height:56px;display:block}
 h1{font-size:22px;margin:12px 0 2px;font-weight:700}
+h2{font-size:22px;margin:0 0 4px;font-weight:700}
 .sub{font-size:13px;color:var(--sub)}
-.tabs{display:flex;background:var(--arena);border-radius:12px;padding:4px;margin:22px 0 6px}
-.tabs button{flex:1;border:0;background:none;padding:11px;font-size:14px;color:var(--sub);border-radius:9px;min-height:44px;cursor:pointer}
-.tabs button.on{background:#fff;color:var(--cafe);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-label{display:block;font-size:12px;color:var(--sub);margin:14px 0 6px}
-.f{width:100%;height:48px;border:1px solid var(--borde);background:#fff;border-radius:10px;padding:0 14px;outline:none;-webkit-appearance:none;appearance:none}
+label,.lbl{display:block;font-size:12px;color:var(--sub);margin:12px 0 5px}
+.f{width:100%;height:44px;border:1px solid var(--borde);background:#fff;border-radius:10px;padding:0 12px;outline:none;-webkit-appearance:none;appearance:none}
 .f:focus{border-color:var(--cafe)}
-.sel{position:relative}.sel:after{content:'▾';position:absolute;right:14px;top:13px;pointer-events:none;color:var(--cafe)}
+select.f{background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a4d3e'/%3E%3C/svg%3E") no-repeat right 12px center;padding-right:30px}
 .pin{display:flex;gap:8px}
 .pin input{flex:1;min-width:0;height:52px;border:1px solid var(--borde);background:#fff;border-radius:10px;text-align:center;font-size:22px;outline:none;padding:0}
 .pin input:focus{border-color:var(--cafe)}
-.btn{width:100%;margin-top:22px;height:50px;border:0;background:var(--cafe);color:#fff;border-radius:12px;font-weight:600;cursor:pointer}
+.btn{height:44px;border:0;background:var(--cafe);color:#fff;border-radius:10px;font-weight:600;padding:0 18px;font-size:15px;white-space:nowrap}
 .btn:disabled{opacity:.45}
-.btn.sec{background:none;color:var(--sub);margin-top:8px;font-weight:400;font-size:14px}
+.btn.l{background:#fff;color:var(--cafe);border:1px solid var(--borde);font-weight:400}
+.btn.ancho{width:100%;margin-top:20px;height:50px;border-radius:12px;font-size:16px}
 .msg{font-size:13px;margin-top:14px;padding:10px 12px;border-radius:10px;background:var(--rojo-f);color:var(--rojo);line-height:1.45}
-.msg.ok{background:#eaf5e8;color:#4a8c42}
+.msg.ok{background:var(--ok-f);color:var(--ok)}
 .note{font-size:11px;color:var(--sub);text-align:center;margin-top:16px;line-height:1.6}
 .ver{text-align:center;font-size:10px;color:var(--cero);padding:18px 0 10px}
+.carga{padding:80px 20px;text-align:center;color:var(--sub);font-size:13px}
+.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap}
+.c-ok{background:var(--ok-f);color:var(--ok)}.c-rev{background:var(--rev-f);color:var(--rev)}.c-blk{background:var(--rojo-f);color:var(--rojo)}.c-no{color:var(--cero);font-weight:400}
+.a1{background:#e8eef5;color:#4a6484}.a2{background:#ece9f3;color:#635a7e}.a3{background:#e4efee;color:#40706a}.a4{background:#f0eae0;color:#7d6a4d}.a5{background:#f2eaee;color:#7d5a68}.a6{background:#efeae3;color:#5a4d3e}
 
-/* ---- Inicio ---- */
-.top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--borde);background:var(--crema)}
-.top svg{width:30px;height:30px}.top b{font-size:15px;flex:1}
-.av{width:40px;height:40px;border-radius:50%;border:0;background:var(--arena);font-size:12px;font-weight:700;cursor:pointer}
-.menu{position:absolute;right:16px;top:58px;background:#fff;border:1px solid var(--borde);border-radius:12px;box-shadow:0 6px 20px rgba(90,77,62,.15);padding:6px;min-width:220px}
+/* ---- Pantallas sueltas (entrar / cambiar PIN) ---- */
+.suelta .in{padding:40px 22px 28px;max-width:480px;margin:0 auto}
+.logo svg{width:56px;height:56px;display:block}
+
+/* ---- App ---- */
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--borde);background:var(--crema)}
+.top .marca{display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;font-size:15px;font-weight:700}
+.top svg{width:30px;height:30px}
+.crumb{flex:1;font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vcomo{font-size:11px;background:var(--rev-f);color:var(--rev);border-radius:10px;padding:3px 9px;white-space:nowrap}
+.av{width:40px;height:40px;border-radius:50%;border:0;background:var(--arena);font-size:12px;font-weight:700;flex:none}
+.menu{position:fixed;right:16px;top:60px;z-index:20;background:#fff;border:1px solid var(--borde);border-radius:12px;box-shadow:0 6px 20px rgba(90,77,62,.15);padding:6px;width:250px}
 .menu .quien{padding:10px 12px;font-size:12px;color:var(--sub);border-bottom:1px solid var(--borde);line-height:1.5}
 .menu .quien b{display:block;color:var(--cafe);font-size:13px}
-.menu button{width:100%;text-align:left;border:0;background:none;padding:12px;border-radius:8px;font-size:14px;cursor:pointer;min-height:44px}
-.hola{padding:20px 20px 4px}.hola h1{font-size:24px;margin:0}.hola .sub{margin-top:4px}
-.secc{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:20px 20px 8px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
-.card{position:relative;background:#fff;border:1px solid var(--borde);border-radius:10px;padding:14px;min-height:96px;text-align:left;font-size:13px}
+.menu button{width:100%;text-align:left;border:0;background:none;padding:11px 12px;border-radius:8px;font-size:14px;min-height:44px}
+.menu button:hover{background:var(--arena)}
+.menu .comos{padding:8px 12px 6px;border-bottom:1px solid var(--borde)}
+.menu .comos span{font-size:11px;color:var(--sub)}
+.menu .comos div{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.menu .comos button{width:auto;min-height:32px;padding:5px 10px;font-size:12px;border:1px solid var(--borde);border-radius:16px}
+.menu .comos button.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.cuerpo{padding:0 20px 20px}
+.hola{padding:20px 0 4px}.hola h1{font-size:24px;margin:0}.hola .sub{margin-top:4px}
+.secc{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{position:relative;background:#fff;border:1px solid var(--borde);border-radius:10px;padding:14px;min-height:96px;text-align:left;font-size:13px;color:var(--cafe)}
 .card .e{font-size:22px;line-height:1}.card b{display:block;margin-top:8px;font-size:13px}.card span{font-size:11px;color:var(--sub)}
 .card.hi{background:var(--verde-f);border-color:#a9d6b6}.card.hi b{color:var(--verde)}
-.card.pronto{opacity:.55}
+.card.pronto{opacity:.55;cursor:default}
+.card.va{cursor:pointer}.card.va:hover{box-shadow:0 4px 14px rgba(90,77,62,.12)}
 .badge{position:absolute;top:10px;right:10px;background:var(--naranja);color:#fff;font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px}
-.carga{padding:80px 20px;text-align:center;color:var(--sub);font-size:13px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:50;background:var(--cafe);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.2);max-width:90vw}
+.toast.mal{background:var(--rojo)}
+
+/* ---- Tablas estilo Sheets ---- */
+.titulo{padding:20px 0 0}
+.avisos{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.aviso{background:var(--rev-f);border:1px solid #f0dfb0;color:#8a6d1e;border-radius:10px;padding:9px 12px;font-size:12px;line-height:1.45;text-align:left}
+.aviso b{display:block}
+.aviso.on{outline:2px solid var(--rev)}
+.barra{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 12px}
+.barra .f{width:auto;height:40px}
+.barra .buscar{flex:1 1 220px;max-width:300px}
+.barra .esp{flex:1}
+.tabla-w{border:1px solid var(--linea);border-radius:8px;overflow:hidden;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:11px}
+th{background:var(--enc);text-align:left;font-weight:700;padding:0 10px;height:34px;border-bottom:1px solid var(--linea);border-right:1px solid var(--linea);white-space:nowrap}
+td{height:42px;padding:0 10px;border-bottom:1px solid var(--linea);border-right:1px solid var(--linea)}
+tbody tr:nth-child(even) td{background:var(--alt)}
+tbody tr.clic{cursor:pointer}tbody tr.clic:hover td{background:#f3f1ec}
+tbody tr.sel td{background:#eef6f0!important}
+td.inact{color:var(--cero)}
+.warn{color:var(--rev);font-weight:700}
+td input.f,td select.f{height:36px;font-size:16px}
+.vacio{padding:24px;text-align:center;color:var(--sub);font-size:13px}
+
+/* ---- Panel lateral ---- */
+.panel{position:fixed;top:0;right:0;bottom:0;width:100%;z-index:10;background:#fff;overflow-y:auto;padding:16px 18px 28px;padding-top:calc(16px + env(safe-area-inset-top))}
+.panel .cab{display:flex;align-items:flex-start;gap:10px}
+.panel .cab div{flex:1}
+.panel h3{margin:0;font-size:18px}
+.x{border:0;background:var(--arena);border-radius:50%;width:40px;height:40px;font-size:18px;flex:none}
+.dos{display:flex;gap:10px}.dos>div{flex:1;min-width:0}
+.bloque{margin-top:16px;padding-top:12px;border-top:1px solid var(--arena)}
+.bloque>.t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hor{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.hor label{margin:0 0 3px;text-align:center;font-size:11px}
+.hor input{padding:0 4px;text-align:center;font-size:16px}
+.ayuda{font-size:11px;color:var(--sub);margin-top:6px;line-height:1.5}
+.alerta{font-size:12px;margin-top:6px;padding:8px 10px;border-radius:8px;background:var(--rev-f);color:#8a6d1e;line-height:1.45}
+.alerta button{border:0;background:none;color:var(--cafe);text-decoration:underline;font-size:12px;padding:0 0 0 4px}
+.roles{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.roles label{margin:0;display:flex;align-items:center;gap:6px;border:1px solid var(--borde);border-radius:18px;padding:6px 10px;font-size:13px;color:var(--cafe);cursor:pointer}
+.roles input{width:18px;height:18px;margin:0}
+.fila{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.acciones{display:flex;gap:10px;margin-top:20px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--cafe);margin:10px 0 0}
+.check input{width:20px;height:20px;margin:0}
+
+/* columnas que se esconden en celular */
+@media (max-width:759px){ .opt{display:none} }
 
 /* ---- Computadora (pantalla principal) ---- */
 @media (min-width:760px){
   body{background:var(--arena)}
-  .wrap{max-width:none}
-  #entrar{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px}
-  #entrar .in{width:420px;background:var(--crema);border:1px solid var(--borde);border-radius:18px;padding:36px 36px 30px;box-shadow:0 10px 40px rgba(90,77,62,.12)}
-  #inicio{min-height:100dvh;background:var(--crema)}
-  .top{padding:14px 32px}
-  .menu{right:28px}
-  .cuerpo{max-width:1100px;margin:0 auto;padding:12px 32px 24px}
+  .suelta{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px}
+  .suelta .in{width:420px;background:var(--crema);border:1px solid var(--borde);border-radius:18px;padding:36px 36px 30px;box-shadow:0 10px 40px rgba(90,77,62,.12)}
+  #app{min-height:100dvh;background:var(--crema)}
+  .top{padding:12px 28px}
+  .cuerpo{max-width:1180px;margin:0 auto;padding:4px 28px 24px}
+  .cuerpo.con-panel{max-width:none;margin-right:460px}
   .hola{padding:24px 0 4px}.hola h1{font-size:28px}
   .secc{margin:26px 0 10px}
-  .grid{grid-template-columns:repeat(4,1fr);gap:14px;padding:0}
-  .card{min-height:118px;padding:18px;transition:box-shadow .15s}
-  .card:not(.pronto):hover{box-shadow:0 4px 14px rgba(90,77,62,.12);cursor:pointer}
+  .grid{grid-template-columns:repeat(4,1fr);gap:14px}
+  .card{min-height:118px;padding:18px}
+  .panel{top:61px;width:440px;border-left:1px solid var(--borde);box-shadow:-8px 0 24px rgba(90,77,62,.10);padding-top:18px}
+  .menu{right:28px}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div id="cargando" class="carga">Cargando…</div>
+<div id="cargando" class="carga">Cargando…</div>
 
-  <!-- ============ ENTRAR ============ -->
-  <section id="entrar" class="oculto"><div class="in">
-    <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <h1>Permisos UT</h1>
-    <div class="sub">Solicitudes de permiso · Uniterra</div>
-
-
-    <form id="formPin" autocomplete="off">
-      <label for="selArea">Tu área</label>
-      <div class="sel"><select id="selArea" class="f"></select></div>
-      <label for="selNombre">Tu nombre</label>
-      <div class="sel"><select id="selNombre" class="f"></select></div>
-      <label>PIN (6 dígitos)</label>
-      <div class="pin" id="pinCajas"></div>
-      <button class="btn" id="btnPin" type="submit">Entrar</button>
-      <div class="msg oculto" id="msgPin"></div>
-    </form>
-
-
-    <div class="note">¿Olvidaste tu PIN o se bloqueó? Pídeselo a Gaby o a Valen.</div>
-  </div>
-  <div class="ver" id="verEntrar"></div>
-  </section>
-
-  <!-- ============ INICIO ============ -->
-  <section id="inicio" class="oculto">
-    <div class="top"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Permisos UT</b><button class="av" id="btnAv" type="button" aria-label="Mi cuenta"></button></div>
-    <div class="menu oculto" id="menu">
-      <div class="quien" id="menuQuien"></div>
-      <button id="btnSalir" type="button">Salir</button>
-    </div>
-    <div class="cuerpo">
-      <div class="hola"><h1 id="saludo"></h1><div class="sub" id="detalle"></div></div>
-      <div id="tarjetas"></div>
-      <div class="ver" id="verInicio"></div>
-    </div>
-  </section>
-
+<!-- ============ ENTRAR ============ -->
+<section id="entrar" class="suelta oculto"><div class="in">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
+  <h1>Permisos UT</h1>
+  <div class="sub">Solicitudes de permiso · Uniterra</div>
+  <form id="formPin" autocomplete="off" style="margin-top:16px">
+    <label for="selArea">Tu área</label>
+    <select id="selArea" class="f"></select>
+    <label for="selNombre">Tu nombre</label>
+    <select id="selNombre" class="f"></select>
+    <label>PIN (6 dígitos)</label>
+    <div class="pin" id="pinEntrar"></div>
+    <button class="btn ancho" id="btnPin" type="submit">Entrar</button>
+    <div class="msg oculto" id="msgPin"></div>
+  </form>
+  <div class="note">¿Olvidaste tu PIN o se bloqueó? Pídeselo a Gaby o a Valen.</div>
+  <div class="ver" id="verEntrar"></div>
+</div></section>
+
+<!-- ============ CAMBIAR PIN ============ -->
+<section id="cambiar" class="suelta oculto"><div class="in">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+  <h1 id="cambiarTit">Elige tu PIN</h1>
+  <div class="sub" id="cambiarSub">Tu PIN es temporal. Elige uno nuevo de 6 números que solo tú sepas.</div>
+  <form id="formCambiar" autocomplete="off" style="margin-top:8px">
+    <div id="filaActual"><label>PIN actual</label><div class="pin" id="pinActual"></div></div>
+    <label>PIN nuevo</label><div class="pin" id="pinNuevo"></div>
+    <label>Repite el PIN nuevo</label><div class="pin" id="pinRepite"></div>
+    <button class="btn ancho" id="btnCambiar" type="submit">Guardar mi PIN</button>
+    <button class="btn ancho l" id="btnCancelarCambio" type="button" style="margin-top:8px">Cancelar</button>
+    <div class="msg oculto" id="msgCambiar"></div>
+  </form>
+</div></section>
+
+<!-- ============ APP ============ -->
+<section id="app" class="oculto">
+  <div class="top">
+    <button class="marca" id="btnCasa" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span>Permisos UT</span></button>
+    <span class="crumb" id="crumb"></span>
+    <span class="vcomo oculto" id="vcomo"></span>
+    <button class="av" id="btnAv" type="button" aria-label="Mi cuenta"></button>
+  </div>
+  <div class="menu oculto" id="menu"></div>
+  <main class="cuerpo" id="vista"></main>
+  <aside class="panel oculto" id="panel"></aside>
+</section>
+
+<div class="toast oculto" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
-const VERSION = 'v0.1.1';
+const VERSION = 'v0.2.0';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
-const ver = VERSION + ' · Fase 0';
-$('verEntrar').textContent = ver;
+$('verEntrar').textContent = VERSION + ' · Fase 1';
 
-// Recordar la ultima seleccion (comodidad; si falla no pasa nada)
+/* ================= Utilidades ================= */
 const recordar = {
   get(k){ try { return localStorage.getItem('ut_' + k); } catch(e){ return null; } },
   set(k, v){ try { localStorage.setItem('ut_' + k, v); } catch(e){} }
 };
-
-function mostrar(id){
-  ['cargando','entrar','inicio'].forEach(s => $(s).classList.toggle('oculto', s !== id));
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function mostrar(id){ ['cargando','entrar','cambiar','app'].forEach(s => $(s).classList.toggle('oculto', s !== id)); }
+function aviso(el, texto, ok){ el.textContent = texto; el.classList.toggle('ok', !!ok); el.classList.toggle('oculto', !texto); }
+let tToast;
+function toast(texto, mal){
+  const t = $('toast'); t.textContent = texto; t.classList.toggle('mal', !!mal); t.classList.remove('oculto');
+  clearTimeout(tToast); tToast = setTimeout(() => t.classList.add('oculto'), mal ? 6000 : 2600);
 }
-function aviso(el, texto, ok){
-  el.textContent = texto; el.classList.toggle('ok', !!ok); el.classList.toggle('oculto', !texto);
+const sinAcentos = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const hoyISO = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+const fechaMX = iso => iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) + '/' + iso.slice(0, 4) : '';
+
+// Cajas de PIN reutilizables
+function cajasPin(cont, alCompletar){
+  const cajas = [];
+  for (let i = 0; i < 6; i++){
+    const c = document.createElement('input');
+    c.type = 'password'; c.inputMode = 'numeric'; c.maxLength = 1; c.pattern = '[0-9]*';
+    c.autocomplete = 'off'; c.setAttribute('aria-label', 'Dígito ' + (i + 1));
+    c.addEventListener('input', () => {
+      c.value = c.value.replace(/\D/g, '').slice(-1);
+      if (c.value && i < 5) cajas[i + 1].focus();
+      if (valor().length === 6 && alCompletar) alCompletar();
+    });
+    c.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !c.value && i > 0){ cajas[i - 1].focus(); cajas[i - 1].value = ''; }
+    });
+    c.addEventListener('paste', e => {
+      const d = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+      if (!d) return; e.preventDefault();
+      cajas.forEach((k, j) => k.value = d[j] || '');
+      cajas[Math.min(d.length, 5)].focus();
+      if (d.length === 6 && alCompletar) alCompletar();
+    });
+    cajas.push(c); cont.appendChild(c);
+  }
+  const valor = () => cajas.map(c => c.value).join('');
+  return { valor, limpiar(){ cajas.forEach(c => c.value = ''); }, foco(){ cajas[0].focus(); } };
 }
 
-/* ---------------- Entrar con PIN ---------------- */
+/* ================= Entrar ================= */
 let lista = [];
-const cajas = [];
-for (let i = 0; i < 6; i++){
-  const c = document.createElement('input');
-  c.type = 'password'; c.inputMode = 'numeric'; c.maxLength = 1; c.pattern = '[0-9]*';
-  c.autocomplete = 'off'; c.setAttribute('aria-label', 'Dígito ' + (i + 1));
-  c.addEventListener('input', () => {
-    c.value = c.value.replace(/\D/g, '').slice(-1);
-    if (c.value && i < 5) cajas[i + 1].focus();
-    if (pinActual().length === 6) $('formPin').requestSubmit();
-  });
-  c.addEventListener('keydown', e => {
-    if (e.key === 'Backspace' && !c.value && i > 0){ cajas[i - 1].focus(); cajas[i - 1].value = ''; }
-  });
-  c.addEventListener('paste', e => {
-    const d = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
-    if (!d) return; e.preventDefault();
-    cajas.forEach((k, j) => k.value = d[j] || '');
-    cajas[Math.min(d.length, 5)].focus();
-    if (d.length === 6) $('formPin').requestSubmit();
-  });
-  cajas.push(c); $('pinCajas').appendChild(c);
-}
-const pinActual = () => cajas.map(c => c.value).join('');
-const limpiarPin = () => { cajas.forEach(c => c.value = ''); };
+const pinEntrar = cajasPin($('pinEntrar'), () => $('formPin').requestSubmit());
 
 async function cargarLista(){
   const { data, error } = await sb.rpc('login_lista');
@@ -204,7 +287,7 @@ $('selNombre').addEventListener('change', () => recordar.set('persona', $('selNo
 
 $('formPin').addEventListener('submit', async e => {
   e.preventDefault();
-  const empleado = $('selNombre').value, pin = pinActual();
+  const empleado = $('selNombre').value, pin = pinEntrar.valor();
   if (!empleado) return aviso($('msgPin'), 'Elige tu nombre.');
   if (pin.length !== 6) return aviso($('msgPin'), 'El PIN tiene 6 números.');
   $('btnPin').disabled = true; aviso($('msgPin'), '');
@@ -212,7 +295,7 @@ $('formPin').addEventListener('submit', async e => {
     const { data, error } = await sb.rpc('login_pin', { p_empleado: empleado, p_pin: pin });
     if (error) throw error;
     if (!data.ok){
-      limpiarPin(); cajas[0].focus();
+      pinEntrar.limpiar(); pinEntrar.foco();
       const t = {
         pin_incorrecto: 'PIN incorrecto. Te quedan ' + data.quedan + ' intento' + (data.quedan === 1 ? '' : 's') + '.',
         bloqueado: 'Tu PIN quedó bloqueado por seguridad. Pídele a Gaby o a Valen que lo desbloquee.',
@@ -223,72 +306,496 @@ $('formPin').addEventListener('submit', async e => {
     recordar.set('persona', empleado);
     const r = await sb.auth.signInWithPassword({ email: data.email, password: data.secreto });
     if (r.error) throw r.error;
-    limpiarPin();
-    await entrar();
+    pinEntrar.limpiar();
+    await arrancar();
   } catch (err){
     aviso($('msgPin'), 'Algo falló al entrar: ' + (err.message || err));
   } finally { $('btnPin').disabled = false; }
 });
 
-/* ---------------- Inicio ---------------- */
-const TARJETAS = {
-  todos: [
-    ['📝', 'Nueva solicitud', 'diario'],
-    ['⏱️', 'Mi banco de horas', 'saldo y movimientos'],
-    ['📂', 'Mis solicitudes', 'estado y PDFs'],
-    ['📘', 'Guía', 'cómo se usa']
-  ],
-  valida: [
-    ['✅', 'Mi bandeja', 'pendientes de decidir', 'hi'],
-    ['📊', 'Panel general', 'todas, en vivo']
-  ],
-  admin: [
-    ['👥', 'Personas y PINs', 'altas y desbloqueos'],
-    ['🗂️', 'Catálogos', 'áreas, horarios, proyectos']
-  ]
-};
-function bloque(titulo, items){
-  return '<div class="secc">' + titulo + '</div><div class="grid">' + items.map(([e, t, s, cls]) =>
-    '<div class="card pronto ' + (cls || '') + '"><div class="e">' + e + '</div><b>' + t + '</b><span>' + s + ' · pronto</span></div>'
-  ).join('') + '</div>';
-}
+/* ================= Cambiar PIN ================= */
+const pinActual = cajasPin($('pinActual'));
+const pinNuevo  = cajasPin($('pinNuevo'));
+const pinRepite = cajasPin($('pinRepite'), () => $('formCambiar').requestSubmit());
+let cambioObligatorio = false;
 
-async function entrar(){
-  const { data, error } = await sb.rpc('mi_perfil');
-  if (error || !data){
-    await sb.auth.signOut();
-    mostrar('entrar');
-    return aviso($('msgPin'), 'Entraste, pero tu cuenta no está ligada a ninguna persona. Avísale a Valen.');
+function abrirCambio(obligatorio){
+  cambioObligatorio = obligatorio;
+  [pinActual, pinNuevo, pinRepite].forEach(p => p.limpiar());
+  $('filaActual').classList.toggle('oculto', obligatorio);
+  $('btnCancelarCambio').classList.toggle('oculto', obligatorio);
+  $('cambiarTit').textContent = obligatorio ? 'Elige tu PIN' : 'Cambiar mi PIN';
+  $('cambiarSub').textContent = obligatorio
+    ? 'Tu PIN es temporal. Elige uno nuevo de 6 números que solo tú sepas.'
+    : 'Escribe tu PIN actual y el nuevo.';
+  aviso($('msgCambiar'), '');
+  mostrar('cambiar');
+  (obligatorio ? pinNuevo : pinActual).foco();
+}
+$('btnCancelarCambio').onclick = () => { mostrar('app'); };
+
+$('formCambiar').addEventListener('submit', async e => {
+  e.preventDefault();
+  const nuevo = pinNuevo.valor(), rep = pinRepite.valor();
+  if (!cambioObligatorio && pinActual.valor().length !== 6) return aviso($('msgCambiar'), 'Escribe tu PIN actual.');
+  if (nuevo.length !== 6) return aviso($('msgCambiar'), 'El PIN nuevo tiene 6 números.');
+  if (nuevo !== rep){ pinRepite.limpiar(); pinRepite.foco(); return aviso($('msgCambiar'), 'Los dos PIN nuevos no coinciden.'); }
+  $('btnCambiar').disabled = true;
+  const { data, error } = await sb.rpc('cambiar_mi_pin', { p_nuevo: nuevo, p_actual: cambioObligatorio ? null : pinActual.valor() });
+  $('btnCambiar').disabled = false;
+  if (error) return aviso($('msgCambiar'), 'No se pudo guardar: ' + error.message);
+  if (!data.ok){
+    const t = { facil: 'Ese PIN es muy fácil de adivinar. Elige otro.', igual: 'El PIN nuevo no puede ser igual al anterior.',
+                actual: 'Tu PIN actual no es correcto.', formato: 'El PIN tiene 6 números.' };
+    return aviso($('msgCambiar'), t[data.error] || 'No se pudo guardar.');
   }
-  const p = data, roles = p.roles || [];
-  const corto = p.nombre_corto || p.nombre.split(' ')[0];
-  $('saludo').textContent = 'Hola, ' + corto;
-  $('detalle').textContent = p.area + ' · ' + (p.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo');
-  $('btnAv').textContent = p.iniciales;
-  $('menuQuien').innerHTML = '<b>' + esc(p.nombre) + '</b>' + esc(p.puesto || '') + '<br>' + esc(p.area);
-  let html = bloque('Para todos', TARJETAS.todos);
-  if (roles.some(r => ['jefe','filtro','final','admin'].includes(r))) html += bloque('Para quien valida', TARJETAS.valida);
-  if (roles.some(r => ['admin','altas'].includes(r))) html += bloque('Administración', TARJETAS.admin);
-  $('tarjetas').innerHTML = html;
-  $('verInicio').textContent = ver + ' · las tarjetas se encienden por fase';
-  mostrar('inicio');
+  toast('Listo, tu PIN quedó guardado.');
+  if (yo) yo.debe_cambiar = false;
+  mostrar('app'); ir();
+});
+
+/* ================= Datos ================= */
+let yo = null;
+const D = { areas: [], empleados: [], horarios: [], proyectos: [], jefes: [], accesos: {} };
+const empPorId = id => D.empleados.find(e => e.id === id);
+const areaPorId = id => D.areas.find(a => a.id === id);
+const nombreCorto = e => e ? (e.nombre_corto || e.nombre_oficial.split(' ')[0]) : '';
+const areaClase = id => 'a' + Math.min(6, (areaPorId(id)?.orden || 6));
+const puedoEditar = () => (yo?.roles || []).some(r => r === 'admin' || r === 'altas');
+const soyAdmin = () => (yo?.roles || []).includes('admin');
+
+async function cargarCatalogos(){
+  const [a, e, h, p, j] = await Promise.all([
+    sb.from('areas').select('*').order('orden'),
+    sb.from('empleados').select('*').order('nombre_oficial'),
+    sb.from('horarios').select('*, horario_dias(*)').order('vigente_desde', { ascending: false }),
+    sb.from('proyectos').select('*').order('nombre_corto'),
+    sb.from('jefes_area').select('*')
+  ]);
+  const err = [a, e, h, p, j].find(r => r.error);
+  if (err) throw err.error;
+  D.areas = a.data; D.empleados = e.data; D.horarios = h.data; D.proyectos = p.data; D.jefes = j.data;
+  if (puedoEditar()){
+    const r = await sb.rpc('admin_accesos');
+    D.accesos = {}; (r.data || []).forEach(x => D.accesos[x.empleado_id] = x.estado);
+  }
 }
 
+// Horario vigente hoy (o el mas reciente si todos son a futuro)
+function horarioDe(empId){
+  const hs = D.horarios.filter(h => h.empleado_id === empId);
+  return hs.find(h => h.vigente_desde <= hoyISO()) || hs[0] || null;
+}
+const hhmm = t => t ? t.slice(0, 5).replace(/^0(\d)/, '$1') : '';
+function textoDia(h, dia){
+  const d = h?.horario_dias?.find(x => x.dia === dia);
+  return !d || !d.entrada ? '-' : hhmm(d.entrada) + '-' + hhmm(d.salida);
+}
+
+// Nombres que suelen llevar acento (solo para AVISAR; nunca se corrige solo)
+const ACENTOS = {gomez:'Gómez',nunez:'Núñez',martinez:'Martínez',gonzalez:'González',hernandez:'Hernández',perez:'Pérez',rodriguez:'Rodríguez',
+  sanchez:'Sánchez',lopez:'López',garcia:'García',ramirez:'Ramírez',diaz:'Díaz',chavez:'Chávez',jimenez:'Jiménez',vazquez:'Vázquez',
+  gutierrez:'Gutiérrez',alvarez:'Álvarez',mendez:'Méndez',dominguez:'Domínguez',fernandez:'Fernández',juarez:'Juárez',estevez:'Estévez',
+  ibanez:'Ibáñez',pena:'Peña',munoz:'Muñoz',nino:'Niño',maria:'María',jose:'José',jesus:'Jesús',raul:'Raúl',ruben:'Rubén',andres:'Andrés',
+  adrian:'Adrián',julian:'Julián',sebastian:'Sebastián',martin:'Martín',angel:'Ángel',hector:'Héctor',oscar:'Óscar',cesar:'César',
+  victor:'Víctor',ivan:'Iván',monica:'Mónica',veronica:'Verónica',josue:'Josué',tellez:'Téllez',pavel:'Pável',guzman:'Guzmán',
+  penaloza:'Peñaloza',murguia:'Murguía',solis:'Solís',ramon:'Ramón',german:'Germán',benitez:'Benítez',velazquez:'Velázquez',
+  marquez:'Márquez',suarez:'Suárez',ordonez:'Ordóñez',avila:'Ávila',beltran:'Beltrán',leon:'León',rios:'Ríos',nunes:'Nunes'};
+function avisoNombre(nombre){
+  const malas = nombre.split(/\s+/).filter(w => { const k = sinAcentos(w); return ACENTOS[k] && ACENTOS[k] !== w && k !== 'nunes'; });
+  return malas.map(w => '“' + w + '” → ¿' + ACENTOS[sinAcentos(w)] + '?');
+}
+
+/* ================= Inicio y navegacion ================= */
+const COMOS = [['todo','Todo'],['empleado','Empleado'],['jefe','Jefe'],['filtro','Gaby'],['final','Laura']];
+function verComo(){ return soyAdmin() ? (recordar.get('vercomo') || 'todo') : 'todo'; }
+function rolesVista(){
+  const v = verComo();
+  if (v === 'todo') return yo.roles;
+  return v === 'empleado' ? ['empleado'] : ['empleado', v];
+}
+
+function pintarMenu(){
+  let h = '<div class="quien"><b>' + esc(yo.nombre) + '</b>' + esc(yo.puesto || '') + '<br>' + esc(yo.area) + '</div>';
+  if (soyAdmin()){
+    h += '<div class="comos"><span>Ver la app como:</span><div>' + COMOS.map(([k, t]) =>
+      '<button type="button" data-como="' + k + '" class="' + (verComo() === k ? 'on' : '') + '">' + t + '</button>').join('') + '</div></div>';
+  }
+  h += '<button type="button" id="btnMiPin">Cambiar mi PIN</button><button type="button" id="btnSalir">Salir</button>';
+  $('menu').innerHTML = h;
+  $('menu').querySelectorAll('[data-como]').forEach(b => b.onclick = () => {
+    recordar.set('vercomo', b.dataset.como); $('menu').classList.add('oculto'); location.hash = ''; ir();
+  });
+  $('btnMiPin').onclick = () => { $('menu').classList.add('oculto'); abrirCambio(false); };
+  $('btnSalir').onclick = async () => {
+    await sb.auth.signOut(); yo = null; $('menu').classList.add('oculto'); cerrarPanel(); mostrar('entrar'); cargarLista();
+  };
+  const v = verComo();
+  $('vcomo').classList.toggle('oculto', v === 'todo');
+  $('vcomo').textContent = 'viendo como ' + (COMOS.find(c => c[0] === v) || [, ''])[1];
+}
+
+function vistaInicio(){
+  const roles = rolesVista();
+  const corto = yo.nombre_corto || yo.nombre.split(' ')[0];
+  const nPend = 0;
+  const tarjeta = (e, t, s, o = {}) => '<div class="card ' + (o.ir ? 'va' : 'pronto') + ' ' + (o.cls || '') + '"' + (o.ir ? ' data-ir="' + o.ir + '"' : '') + '>' +
+    (o.badge ? '<div class="badge">' + o.badge + '</div>' : '') + '<div class="e">' + e + '</div><b>' + t + '</b><span>' + s + (o.ir ? '' : ' · pronto') + '</span></div>';
+  let h = '<div class="hola"><h1>Hola, ' + esc(corto) + '</h1><div class="sub">' + esc(yo.area) + ' · ' +
+    (yo.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</div></div>';
+  h += '<div class="secc">Para todos</div><div class="grid">' +
+    tarjeta('📝', 'Nueva solicitud', 'diario') + tarjeta('⏱️', 'Mi banco de horas', 'saldo y movimientos') +
+    tarjeta('📂', 'Mis solicitudes', 'estado y PDFs') + tarjeta('📘', 'Guía', 'cómo se usa') + '</div>';
+  if (roles.some(r => ['jefe','filtro','final','admin'].includes(r)))
+    h += '<div class="secc">Para quien valida</div><div class="grid">' +
+      tarjeta('✅', 'Mi bandeja', 'pendientes de decidir', { cls: 'hi', badge: nPend || '' }) + tarjeta('📊', 'Panel general', 'todas, en vivo') + '</div>';
+  if (roles.some(r => ['admin','altas'].includes(r))){
+    const act = D.empleados.filter(e => e.activo).length, nav = avisosPersonas().total;
+    h += '<div class="secc">Administración</div><div class="grid">' +
+      tarjeta('👥', 'Personas y PINs', act + ' personas' + (nav ? ' · ⚠️ ' + nav + ' avisos' : ''), { ir: 'personas' }) +
+      tarjeta('🏗️', 'Proyectos', D.proyectos.filter(p => p.activo).length + ' activos', { ir: 'proyectos' }) +
+      tarjeta('🏢', 'Áreas y jefes', D.areas.length + ' áreas', { ir: 'areas' }) + '</div>';
+  }
+  h += '<div class="ver">' + VERSION + ' · Fase 1</div>';
+  $('vista').innerHTML = h;
+  $('vista').querySelectorAll('[data-ir]').forEach(c => c.onclick = () => location.hash = c.dataset.ir);
+}
+
+const VISTAS = { personas: ['Administración › Personas', vistaPersonas], proyectos: ['Administración › Proyectos', vistaProyectos],
+                 areas: ['Administración › Áreas y jefes', vistaAreas] };
+function ir(){
+  if (!yo) return;
+  const k = location.hash.slice(1);
+  const v = VISTAS[k];
+  cerrarPanel();
+  if (v && rolesVista().some(r => ['admin','altas'].includes(r))){ $('crumb').textContent = '› ' + v[0]; v[1](); }
+  else { $('crumb').textContent = ''; vistaInicio(); }
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', ir);
+$('btnCasa').onclick = () => { location.hash = ''; ir(); };
 $('btnAv').onclick = e => { e.stopPropagation(); $('menu').classList.toggle('oculto'); };
 document.addEventListener('click', () => $('menu').classList.add('oculto'));
 $('menu').addEventListener('click', e => e.stopPropagation());
-$('btnSalir').onclick = async () => {
-  await sb.auth.signOut(); $('menu').classList.add('oculto'); mostrar('entrar'); cargarLista();
-};
 
-function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+/* ================= Personas ================= */
+const filtro = { texto: '', area: '', estado: 'activos', aviso: '' };
 
-/* ---------------- Arranque ---------------- */
+function avisosPersonas(){
+  const act = D.empleados.filter(e => e.activo);
+  const nombres = act.filter(e => !e.nombre_revisado && avisoNombre(e.nombre_oficial).length);
+  const revisar = act.filter(e => e.jornada === 'MT' && horarioDe(e.id)?.por_revisar);
+  const sinHor = act.filter(e => e.jornada === 'MT' && !horarioDe(e.id));
+  return { nombres, revisar, sinHor, total: nombres.length + revisar.length + sinHor.length };
+}
+
+function vistaPersonas(){
+  const av = avisosPersonas();
+  const tarj = (k, n, t, s) => n ? '<button type="button" class="aviso ' + (filtro.aviso === k ? 'on' : '') + '" data-aviso="' + k + '"><b>⚠️ ' + n + ' ' + t + '</b>' + s + '</button>' : '';
+  let h = '<div class="titulo"><h2>Personas</h2><div class="sub">' + D.empleados.filter(e => e.activo).length +
+    ' activas · se editan aquí (el Google Sheet ya no se usa)</div>';
+  h += '<div class="avisos">' +
+    tarj('nombres', av.nombres.length, 'nombre' + (av.nombres.length > 1 ? 's' : '') + ' por revisar', av.nombres.map(e => avisoNombre(e.nombre_oficial)[0]).join(' · ')) +
+    tarj('revisar', av.revisar.length, 'horario' + (av.revisar.length > 1 ? 's' : '') + ' por revisar', 'cargados del Sheet; confírmalos') +
+    tarj('sinhor', av.sinHor.length, 'sin horario', av.sinHor.map(nombreCorto).join(', ')) + '</div></div>';
+  h += '<div class="barra"><input class="f buscar" id="pBuscar" type="search" placeholder="Buscar nombre o iniciales…" value="' + esc(filtro.texto) + '">' +
+    '<select class="f" id="pArea"><option value="">Todas las áreas</option>' + D.areas.map(a => '<option value="' + a.id + '"' + (filtro.area === a.id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>' +
+    '<select class="f" id="pEstado">' + [['activos','Activos'],['inactivos','Inactivos'],['todos','Todos']].map(([k, t]) => '<option value="' + k + '"' + (filtro.estado === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select>' +
+    '<span class="esp"></span><button class="btn" id="pNueva" type="button">+ Nueva persona</button></div>';
+  h += '<div class="tabla-w"><table><thead><tr><th>Nombre</th><th>Ini.</th><th class="opt">Puesto</th><th>Área</th><th class="opt">Firma</th><th class="opt">Jornada</th><th class="opt">Nómina</th><th>PIN</th></tr></thead><tbody id="pFilas"></tbody></table></div>';
+  h += '<div class="ver">' + VERSION + '</div>';
+  $('vista').innerHTML = h;
+  $('pBuscar').oninput = e => { filtro.texto = e.target.value; filasPersonas(); };
+  $('pArea').onchange = e => { filtro.area = e.target.value; filasPersonas(); };
+  $('pEstado').onchange = e => { filtro.estado = e.target.value; filasPersonas(); };
+  $('pNueva').onclick = () => abrirPersona(null);
+  $('vista').querySelectorAll('[data-aviso]').forEach(b => b.onclick = () => { filtro.aviso = filtro.aviso === b.dataset.aviso ? '' : b.dataset.aviso; vistaPersonas(); });
+  filasPersonas();
+}
+
+const ESTADO_PIN = { activo: ['c-ok','activo'], temporal: ['c-rev','temporal'], bloqueado: ['c-blk','bloqueado'], sin_pin: ['c-no','sin PIN'] };
+function filasPersonas(){
+  const av = avisosPersonas();
+  const t = sinAcentos(filtro.texto);
+  let gente = D.empleados.filter(e =>
+    (filtro.estado === 'todos' || (filtro.estado === 'activos') === e.activo) &&
+    (!filtro.area || e.area_id === filtro.area) &&
+    (!t || sinAcentos(e.nombre_oficial).includes(t) || sinAcentos(e.iniciales).includes(t)));
+  if (filtro.aviso){ const ids = new Set({ nombres: av.nombres, revisar: av.revisar, sinhor: av.sinHor }[filtro.aviso].map(e => e.id)); gente = gente.filter(e => ids.has(e.id)); }
+  gente.sort((a, b) => (areaPorId(a.area_id)?.orden - areaPorId(b.area_id)?.orden) || a.nombre_oficial.localeCompare(b.nombre_oficial, 'es'));
+  const marcaNom = new Set(av.nombres.map(e => e.id)), marcaHor = new Set([...av.revisar, ...av.sinHor].map(e => e.id));
+  $('pFilas').innerHTML = gente.length ? gente.map(e => {
+    const ep = ESTADO_PIN[D.accesos[e.id] || 'sin_pin'];
+    return '<tr class="clic' + (panelId === e.id ? ' sel' : '') + '" data-id="' + e.id + '">' +
+      '<td class="' + (e.activo ? '' : 'inact') + '">' + esc(e.nombre_oficial) + (marcaNom.has(e.id) ? ' <span class="warn">⚠️</span>' : '') + '</td>' +
+      '<td>' + esc(e.iniciales) + '</td><td class="opt">' + esc(e.puesto || '') + '</td>' +
+      '<td><span class="chip ' + areaClase(e.area_id) + '">' + esc(areaPorId(e.area_id)?.nombre || '') + '</span></td>' +
+      '<td class="opt">' + esc(nombreCorto(empPorId(e.firma_id))) + '</td>' +
+      '<td class="opt">' + e.jornada + (marcaHor.has(e.id) ? ' <span class="warn">•</span>' : '') + '</td>' +
+      '<td class="opt">' + (e.en_nomina ? 'Sí' : 'No') + '</td>' +
+      '<td><span class="chip ' + ep[0] + '">' + ep[1] + '</span></td></tr>';
+  }).join('') : '<tr><td colspan="8" class="vacio">Nadie coincide con el filtro.</td></tr>';
+  $('pFilas').querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => abrirPersona(tr.dataset.id));
+}
+
+/* ---- Panel de persona ---- */
+let panelId = null, horNuevo = false;
+function cerrarPanel(){ panelId = null; $('panel').classList.add('oculto'); $('vista').classList.remove('con-panel'); }
+
+function abrirPersona(id){
+  const e = id ? empPorId(id) : { nombre_oficial: '', iniciales: '', puesto: '', area_id: D.areas[0]?.id, jornada: 'TC', en_nomina: false, activo: true, roles: ['empleado'] };
+  panelId = id || 'nueva'; horNuevo = false;
+  const activos = D.empleados.filter(x => x.activo).sort((a, b) => a.nombre_oficial.localeCompare(b.nombre_oficial, 'es'));
+  const optGente = sel => '<option value="">—</option>' + activos.map(x => '<option value="' + x.id + '"' + (x.id === sel ? ' selected' : '') + '>' + esc(x.nombre_oficial) + '</option>').join('');
+  const warn = id && !e.nombre_revisado ? avisoNombre(e.nombre_oficial) : [];
+  let h = '<div class="cab"><div><h3>' + (id ? esc(e.nombre_oficial) : 'Nueva persona') + '</h3><div class="sub">' + (id ? esc(e.iniciales) + ' · editar datos' : 'llena sus datos') + '</div></div><button class="x" type="button" id="xPanel" aria-label="Cerrar">✕</button></div>';
+  h += '<label for="eNombre">Nombre completo (oficial)</label><input class="f" id="eNombre" value="' + esc(e.nombre_oficial) + '" autocapitalize="words">';
+  if (warn.length) h += '<div class="alerta" id="eWarn">⚠️ ' + warn.join(' · ') + '. Revísalo con RH. <button type="button" id="eNomOk">Está bien así</button></div>';
+  if (id) h += '<div class="ayuda">Si cambias el nombre, solo cambia de aquí en adelante (los PDF ya hechos se quedan igual).</div>';
+  h += '<div class="dos"><div><label for="eIni">Iniciales</label><input class="f" id="eIni" value="' + esc(e.iniciales) + '" autocapitalize="characters" maxlength="8"></div>' +
+       '<div><label for="eCorto">Cómo le dicen</label><input class="f" id="eCorto" value="' + esc(e.nombre_corto || '') + '" placeholder="' + esc((e.nombre_oficial || '').split(' ')[0]) + '"></div></div>';
+  h += '<label for="eArea">Área</label><select class="f" id="eArea">' + D.areas.map(a => '<option value="' + a.id + '"' + (a.id === e.area_id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>';
+  h += '<label for="ePuesto">Puesto (oficial, va en el PDF)</label><input class="f" id="ePuesto" value="' + esc(e.puesto || '') + '">';
+  h += '<div class="dos"><div><label for="eValida">Quién valida</label><select class="f" id="eValida">' + optGente(e.valida_id) + '</select></div>' +
+       '<div><label for="eFirma">Quién firma</label><select class="f" id="eFirma">' + optGente(e.firma_id) + '</select></div></div>';
+  h += '<div class="dos"><div><label for="eJornada">Jornada</label><select class="f" id="eJornada"><option value="TC"' + (e.jornada === 'TC' ? ' selected' : '') + '>Tiempo completo</option><option value="MT"' + (e.jornada === 'MT' ? ' selected' : '') + '>Medio tiempo</option></select></div>' +
+       '<div><label for="eNomina">En nómina</label><select class="f" id="eNomina"><option value="1"' + (e.en_nomina ? ' selected' : '') + '>Sí</option><option value="0"' + (!e.en_nomina ? ' selected' : '') + '>No</option></select></div></div>';
+  h += '<label class="check"><input type="checkbox" id="eActivo"' + (e.activo ? ' checked' : '') + '> Activa (si la apagas ya no puede entrar, pero su historial se queda)</label>';
+  if (soyAdmin()){
+    const R = [['jefe','Jefe de área'],['filtro','Filtro (Gaby)'],['final','Aprobación final (Laura)'],['altas','Altas y PINs'],['admin','Administrador']];
+    h += '<div class="bloque"><div class="t">Roles en el sistema</div><div class="roles">' + R.map(([k, t]) =>
+      '<label><input type="checkbox" data-rol="' + k + '"' + ((e.roles || []).includes(k) ? ' checked' : '') + '>' + t + '</label>').join('') + '</div></div>';
+  }
+  h += '<div id="eHorario"></div>';
+  if (id){
+    const est = D.accesos[id] || 'sin_pin', ep = ESTADO_PIN[est];
+    h += '<div class="bloque"><div class="t">Acceso <span class="chip ' + ep[0] + '">' + ep[1] + '</span></div>' +
+      '<div class="ayuda">El PIN temporal se lo das a la persona; al entrar, la app le pide elegir el suyo.</div>' +
+      '<div class="fila"><input class="f" id="eTemp" inputmode="numeric" maxlength="6" style="width:130px;text-align:center;letter-spacing:.2em" value="' + String(Math.floor(100000 + Math.random() * 900000)) + '">' +
+      '<button class="btn l" type="button" id="ePinTemp">Asignar PIN temporal</button>' +
+      (est === 'bloqueado' ? '<button class="btn l" type="button" id="eDesbloq">Desbloquear</button>' : '') + '</div></div>';
+  }
+  h += '<div class="acciones"><button class="btn" type="button" id="eGuardar">' + (id ? 'Guardar cambios' : 'Dar de alta') + '</button><button class="btn l" type="button" id="eCancelar">Cancelar</button></div>';
+  $('panel').innerHTML = h;
+  $('panel').classList.remove('oculto'); $('vista').classList.add('con-panel'); $('panel').scrollTop = 0;
+  if ($('pFilas')) filasPersonas();
+
+  let nombreOk = !!e.nombre_revisado;
+  if ($('eNomOk')) $('eNomOk').onclick = () => { nombreOk = true; $('eWarn').remove(); };
+  $('xPanel').onclick = $('eCancelar').onclick = () => { cerrarPanel(); if ($('pFilas')) filasPersonas(); };
+  $('eJornada').onchange = () => pintarHorario(id, $('eJornada').value);
+  pintarHorario(id, e.jornada);
+  if ($('ePinTemp')) $('ePinTemp').onclick = () => pinTemporal(id);
+  if ($('eDesbloq')) $('eDesbloq').onclick = () => desbloquear(id);
+  $('eGuardar').onclick = () => guardarPersona(id, () => nombreOk);
+}
+
+function pintarHorario(empId, jornada){
+  const cont = $('eHorario');
+  if (jornada !== 'MT'){ cont.innerHTML = '<div class="bloque"><div class="t">Horario</div><div class="ayuda">Tiempo completo: 9:00–18:00, lunes a viernes (regla general).</div></div>'; return; }
+  const h = empId && !horNuevo ? horarioDe(empId) : null;
+  const base = empId ? horarioDe(empId) : null;
+  const dias = ['Lun','Mar','Mié','Jue','Vie'];
+  let html = '<div class="bloque"><div class="t">Horario ' + (horNuevo ? '<span class="chip c-ok">periodo nuevo</span>' : h?.por_revisar ? '<span class="chip c-rev">por revisar</span>' : !h ? '<span class="chip c-rev">sin horario</span>' : '') + '</div>';
+  html += '<div class="dos"><div><label for="hPeriodo">Periodo</label><input class="f" id="hPeriodo" value="' + esc(horNuevo ? '' : h?.periodo || '') + '" placeholder="Ej. Semestre ago-dic"></div>' +
+          '<div><label for="hDesde">Vigente desde</label><input class="f" id="hDesde" type="date" value="' + (horNuevo || !h ? hoyISO() : h.vigente_desde) + '"></div></div>';
+  html += '<div class="hor">' + dias.map((d, i) => '<div><label for="hD' + (i + 1) + '">' + d + '</label><input class="f" id="hD' + (i + 1) + '" value="' + esc(textoDia(h || base, i + 1)) + '" placeholder="9:00-14:00"></div>').join('') + '</div>';
+  html += '<div class="ayuda">Escribe “9:00-14:00”, o “-” si ese día no trabaja. Si el turno cruza la medianoche, escríbelo tal cual (“19:30-7:30”).</div>';
+  if (h?.por_revisar) html += '<label class="check"><input type="checkbox" id="hRevisado"> Ya lo revisé, está correcto</label>';
+  if (h && !horNuevo) html += '<div class="fila"><button class="btn l" type="button" id="hNuevo">+ Nuevo periodo (desde otra fecha)</button></div>';
+  cont.innerHTML = html + '</div>';
+  if ($('hNuevo')) $('hNuevo').onclick = () => { horNuevo = true; pintarHorario(empId, 'MT'); };
+}
+
+function leerHorario(){
+  if (!$('hD1')) return null;
+  const dias = [];
+  for (let i = 1; i <= 5; i++){
+    const v = $('hD' + i).value.trim().replace(/\s/g, '').replace(/[–—]/g, '-');
+    if (v === '-' || v === ''){ dias.push({ dia: i, entrada: null, salida: null }); continue; }
+    const m = v.match(/^(\d{1,2}):?(\d{2})-(\d{1,2}):?(\d{2})$/);
+    if (!m || +m[1] > 23 || +m[3] > 23 || +m[2] > 59 || +m[4] > 59) throw new Error('Revisa el horario del ' + ['lunes','martes','miércoles','jueves','viernes'][i - 1] + ': escribe algo como 9:00-14:00 o “-”.');
+    dias.push({ dia: i, entrada: m[1].padStart(2, '0') + ':' + m[2], salida: m[3].padStart(2, '0') + ':' + m[4] });
+  }
+  const desde = $('hDesde').value;
+  if (!desde) throw new Error('Falta la fecha de “vigente desde”.');
+  return { periodo: $('hPeriodo').value.trim() || null, vigente_desde: desde, dias, revisado: $('hRevisado')?.checked };
+}
+
+async function guardarPersona(id, nombreOk){
+  const datos = {
+    nombre_oficial: $('eNombre').value.trim().replace(/\s+/g, ' '),
+    iniciales: $('eIni').value.trim().toUpperCase(),
+    nombre_corto: $('eCorto').value.trim() || null,
+    area_id: $('eArea').value, puesto: $('ePuesto').value.trim() || null,
+    valida_id: $('eValida').value || null, firma_id: $('eFirma').value || null,
+    jornada: $('eJornada').value, en_nomina: $('eNomina').value === '1', activo: $('eActivo').checked,
+    nombre_revisado: nombreOk()
+  };
+  if (soyAdmin()) datos.roles = ['empleado', ...[...$('panel').querySelectorAll('[data-rol]')].filter(c => c.checked).map(c => c.dataset.rol)];
+  if (!datos.nombre_oficial) return toast('Falta el nombre.', true);
+  if (!/^[A-ZÑ]{2,6}\d?$/.test(datos.iniciales)) return toast('Las iniciales van en mayúsculas, de 2 a 6 letras (puede llevar un número al final).', true);
+  const otro = D.empleados.find(x => x.id !== id && x.iniciales === datos.iniciales);
+  if (otro) return toast('Esas iniciales ya las tiene ' + otro.nombre_oficial + '. Agrega un número distintivo.', true);
+  if (id){
+    const prev = empPorId(id);
+    if (prev.iniciales !== datos.iniciales && !confirm('Cambiar las iniciales cambia sus folios de aquí en adelante. ¿Seguro?')) return;
+  }
+  let hor;
+  try { hor = datos.jornada === 'MT' ? leerHorario() : null; } catch (err){ return toast(err.message, true); }
+  $('eGuardar').disabled = true;
+  try {
+    let empId = id;
+    if (id){
+      const r = await sb.from('empleados').update(datos).eq('id', id); if (r.error) throw r.error;
+    } else {
+      const r = await sb.from('empleados').insert(datos).select('id').single(); if (r.error) throw r.error; empId = r.data.id;
+    }
+    if (hor) await guardarHorario(empId, hor);
+    await cargarCatalogos();
+    toast(id ? 'Cambios guardados.' : 'Persona dada de alta. Ahora asígnale un PIN temporal.');
+    if (location.hash === '#personas'){ vistaPersonas(); abrirPersona(empId); }
+  } catch (err){
+    toast('No se pudo guardar: ' + traducirError(err), true);
+  } finally { if ($('eGuardar')) $('eGuardar').disabled = false; }
+}
+
+async function guardarHorario(empId, hor){
+  const actual = horNuevo ? null : horarioDe(empId);
+  let hid = actual?.id;
+  if (!actual && hor.dias.every(d => !d.entrada)) return; // no crear un horario vacio
+  const cab = { periodo: hor.periodo, vigente_desde: hor.vigente_desde, por_revisar: actual ? (actual.por_revisar && !hor.revisado) : false };
+  const cambio = !actual || actual.periodo !== hor.periodo || actual.vigente_desde !== hor.vigente_desde || cab.por_revisar !== actual.por_revisar ||
+    hor.dias.some(d => textoDia(actual, d.dia) !== (d.entrada ? hhmm(d.entrada) + '-' + hhmm(d.salida) : '-'));
+  if (!cambio) return;
+  if (hid){ const r = await sb.from('horarios').update(cab).eq('id', hid); if (r.error) throw r.error; }
+  else { const r = await sb.from('horarios').insert({ ...cab, empleado_id: empId }).select('id').single(); if (r.error) throw r.error; hid = r.data.id; }
+  const r = await sb.from('horario_dias').upsert(hor.dias.map(d => ({ ...d, horario_id: hid })), { onConflict: 'horario_id,dia' });
+  if (r.error) throw r.error;
+}
+
+async function pinTemporal(id){
+  const pin = $('eTemp').value.trim();
+  if (!/^\d{6}$/.test(pin)) return toast('El PIN temporal tiene 6 números.', true);
+  const e = empPorId(id);
+  if (!confirm('¿Asignar el PIN temporal ' + pin + ' a ' + e.nombre_oficial + '? Si ya tenía uno, se reemplaza.')) return;
+  const { error } = await sb.rpc('admin_pin_temporal', { p_empleado: id, p_pin: pin });
+  if (error) return toast('No se pudo: ' + traducirError(error), true);
+  await cargarCatalogos(); toast('PIN temporal ' + pin + ' asignado. Dáselo a ' + nombreCorto(e) + '.');
+  vistaPersonas(); abrirPersona(id);
+}
+async function desbloquear(id){
+  const { error } = await sb.rpc('admin_desbloquear', { p_empleado: id });
+  if (error) return toast('No se pudo: ' + traducirError(error), true);
+  await cargarCatalogos(); toast('Desbloqueado. Ya puede entrar con su PIN.'); vistaPersonas(); abrirPersona(id);
+}
+function traducirError(err){
+  const m = err?.message || String(err);
+  if (/duplicate key.*nombre_oficial/i.test(m)) return 'ya existe una persona con ese nombre.';
+  if (/duplicate key.*iniciales/i.test(m)) return 'esas iniciales ya existen.';
+  if (/duplicate key.*nombre_corto/i.test(m)) return 'ya existe un proyecto con ese nombre corto.';
+  if (/duplicate key.*nombre/i.test(m)) return 'ese nombre ya existe.';
+  if (/row-level security|permission|Sin permiso/i.test(m)) return 'no tienes permiso para esto.';
+  return m;
+}
+
+/* ================= Proyectos (edicion en el renglon) ================= */
+let editProy = null;
+function vistaProyectos(){
+  let h = '<div class="titulo"><h2>Proyectos</h2><div class="sub">El nombre corto lo ve quien pide el permiso; el oficial va en el PDF. Apagar ≠ borrar.</div></div>';
+  h += '<div class="barra"><input class="f buscar" id="prBuscar" type="search" placeholder="Buscar proyecto…"><span class="esp"></span><button class="btn" id="prNuevo" type="button">+ Nuevo proyecto</button></div>';
+  h += '<div class="tabla-w"><table><thead><tr><th>Nombre corto</th><th>Nombre oficial (PDF)</th><th style="width:90px">Activo</th></tr></thead><tbody id="prFilas"></tbody></table></div>';
+  h += '<div class="ayuda">Clic en un renglón para editarlo ahí mismo.</div><div class="ver">' + VERSION + '</div>';
+  $('vista').innerHTML = h;
+  $('prBuscar').oninput = filasProyectos;
+  $('prNuevo').onclick = () => { editProy = 'nuevo'; filasProyectos(); $('prCorto')?.focus(); };
+  filasProyectos();
+}
+function filasProyectos(){
+  const t = sinAcentos($('prBuscar')?.value);
+  const ps = D.proyectos.filter(p => !t || sinAcentos(p.nombre_corto + ' ' + (p.nombre_oficial || '')).includes(t))
+    .sort((a, b) => (b.activo - a.activo) || a.nombre_corto.localeCompare(b.nombre_corto, 'es'));
+  const edit = p => '<tr><td><input class="f" id="prCorto" value="' + esc(p?.nombre_corto || '') + '" placeholder="Nombre corto"></td>' +
+    '<td><input class="f" id="prOficial" value="' + esc(p?.nombre_oficial || '') + '" placeholder="Nombre oficial (opcional)"><div class="fila" style="margin:6px 0 8px"><button class="btn" type="button" id="prGuardar">Guardar</button><button class="btn l" type="button" id="prCancelar">Cancelar</button></div></td>' +
+    '<td><label class="check" style="margin:0"><input type="checkbox" id="prActivo"' + (p ? (p.activo ? ' checked' : '') : ' checked') + '> sí</label></td></tr>';
+  let h = editProy === 'nuevo' ? edit(null) : '';
+  h += ps.map(p => editProy === p.id ? edit(p) :
+    '<tr class="clic" data-id="' + p.id + '"><td class="' + (p.activo ? '' : 'inact') + '">' + esc(p.nombre_corto) + '</td><td class="' + (p.activo ? '' : 'inact') + '">' +
+    (p.nombre_oficial ? esc(p.nombre_oficial) : '<span class="c-no">— sin nombre oficial (se usa el corto)</span>') + '</td><td>' +
+    (p.activo ? '<span class="chip c-ok">sí</span>' : '<span class="chip c-no">no</span>') + '</td></tr>').join('');
+  $('prFilas').innerHTML = h || '<tr><td colspan="3" class="vacio">No hay proyectos.</td></tr>';
+  $('prFilas').querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => { editProy = tr.dataset.id; filasProyectos(); $('prCorto').focus(); });
+  if ($('prGuardar')){
+    $('prCancelar').onclick = () => { editProy = null; filasProyectos(); };
+    $('prGuardar').onclick = async () => {
+      const d = { nombre_corto: $('prCorto').value.trim(), nombre_oficial: $('prOficial').value.trim() || null, activo: $('prActivo').checked };
+      if (!d.nombre_corto) return toast('Falta el nombre corto.', true);
+      const r = editProy === 'nuevo' ? await sb.from('proyectos').insert(d) : await sb.from('proyectos').update(d).eq('id', editProy);
+      if (r.error) return toast('No se pudo guardar: ' + traducirError(r.error), true);
+      editProy = null; await cargarCatalogos(); filasProyectos(); toast('Proyecto guardado.');
+    };
+  }
+}
+
+/* ================= Areas y jefes ================= */
+let editArea = null;
+function vistaAreas(){
+  let h = '<div class="titulo"><h2>Áreas y jefes</h2><div class="sub">El área de cada persona define a qué bandeja llegan sus solicitudes; el jefe del área las valida primero.</div></div>';
+  h += '<div class="barra"><span class="esp"></span><button class="btn" id="arNueva" type="button">+ Nueva área</button></div>';
+  h += '<div class="tabla-w"><table><thead><tr><th>Área</th><th>Jefe del área</th><th class="opt">Puesto del jefe</th><th class="opt" style="width:80px">Personas</th><th style="width:80px">Orden</th></tr></thead><tbody id="arFilas"></tbody></table></div>';
+  h += '<div class="ayuda">Clic en un renglón para editarlo. El puesto del jefe sale de su ficha en Personas.</div><div class="ver">' + VERSION + '</div>';
+  $('vista').innerHTML = h;
+  $('arNueva').onclick = () => { editArea = 'nueva'; filasAreas(); $('arNombre')?.focus(); };
+  filasAreas();
+}
+function filasAreas(){
+  const jefeDe = aid => empPorId(D.jefes.find(j => j.area_id === aid)?.jefe_id);
+  const activos = D.empleados.filter(x => x.activo).sort((a, b) => a.nombre_oficial.localeCompare(b.nombre_oficial, 'es'));
+  const edit = a => { const j = a ? jefeDe(a.id) : null; return '<tr><td><input class="f" id="arNombre" value="' + esc(a?.nombre || '') + '" placeholder="Nombre del área"></td>' +
+    '<td><select class="f" id="arJefe"><option value="">— sin jefe (va directo a Gaby)</option>' + activos.map(x => '<option value="' + x.id + '"' + (x.id === j?.id ? ' selected' : '') + '>' + esc(x.nombre_oficial) + '</option>').join('') + '</select>' +
+    '<div class="fila" style="margin:6px 0 8px"><button class="btn" type="button" id="arGuardar">Guardar</button><button class="btn l" type="button" id="arCancelar">Cancelar</button></div></td>' +
+    '<td class="opt"></td><td class="opt"></td><td><input class="f" id="arOrden" inputmode="numeric" value="' + (a?.orden ?? (D.areas.length + 1)) + '" style="width:64px"></td></tr>'; };
+  let h = editArea === 'nueva' ? edit(null) : '';
+  h += D.areas.map(a => { if (editArea === a.id) return edit(a); const j = jefeDe(a.id);
+    return '<tr class="clic" data-id="' + a.id + '"><td><span class="chip ' + areaClase(a.id) + '">' + esc(a.nombre) + '</span></td><td>' + (j ? esc(j.nombre_oficial) : '<span class="c-no">— sin jefe</span>') + '</td>' +
+      '<td class="opt">' + esc(j?.puesto || '') + '</td><td class="opt">' + D.empleados.filter(e => e.activo && e.area_id === a.id).length + '</td><td>' + a.orden + '</td></tr>'; }).join('');
+  $('arFilas').innerHTML = h;
+  $('arFilas').querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => { editArea = tr.dataset.id; filasAreas(); });
+  if ($('arGuardar')){
+    $('arCancelar').onclick = () => { editArea = null; filasAreas(); };
+    $('arGuardar').onclick = async () => {
+      const d = { nombre: $('arNombre').value.trim().replace(/\s+/g, ' '), orden: parseInt($('arOrden').value, 10) || 0 };
+      if (!d.nombre) return toast('Falta el nombre del área.', true);
+      let aid = editArea;
+      const r = editArea === 'nueva' ? await sb.from('areas').insert(d).select('id').single() : await sb.from('areas').update(d).eq('id', editArea);
+      if (r.error) return toast('No se pudo guardar: ' + traducirError(r.error), true);
+      if (editArea === 'nueva') aid = r.data.id;
+      const r2 = await sb.from('jefes_area').upsert({ area_id: aid, jefe_id: $('arJefe').value || null }, { onConflict: 'area_id' });
+      if (r2.error) return toast('Se guardó el área pero no el jefe: ' + traducirError(r2.error), true);
+      editArea = null; await cargarCatalogos(); filasAreas(); toast('Área guardada.');
+    };
+  }
+}
+
+/* ================= Arranque ================= */
+async function arrancar(){
+  const { data, error } = await sb.rpc('mi_perfil');
+  if (error || !data){
+    await sb.auth.signOut(); mostrar('entrar'); cargarLista();
+    return aviso($('msgPin'), 'Entraste, pero tu cuenta no está ligada a ninguna persona. Avísale a Valen.');
+  }
+  yo = data;
+  try { await cargarCatalogos(); } catch (err){ toast('No pude cargar los datos: ' + traducirError(err), true); }
+  $('btnAv').textContent = yo.iniciales;
+  pintarMenu();
+  if (yo.debe_cambiar) return abrirCambio(true);
+  mostrar('app'); ir();
+}
+
 (async () => {
   const { data } = await sb.auth.getSession();
-  if (data.session) return entrar();
-  mostrar('entrar');
-  cargarLista();
+  if (data.session) return arrancar();
+  mostrar('entrar'); cargarLista();
 })();
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
