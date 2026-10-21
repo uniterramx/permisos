@@ -13,6 +13,12 @@
 - **Hosting** → GitHub Pages; el repo se hace público.
 - **Fases** → aprobadas las 0–7 de PROMPT_CLAUDE_CODE.md.
 
+- **Fase 1 · fuente de verdad** → organigrama, proyectos y cualquier otro catálogo se **editan dentro de la app**; los Google Sheets quedan en el pasado (solo fuente de la carga inicial).
+- **D4** → corregir solo ortografía que NO sea de nombres ("Coodinador" → "Coordinador"). Los nombres se cargan tal cual; si parecen mal escritos ("Gomez", "Nuñez") → tarjeta de aviso en la app.
+- **B7** → cargar los horarios MT que hay, marcados "por revisar" y editables en la app (con fecha de vigencia).
+- **PIN inicial** → (a) Valen/Gaby asignan uno temporal; la persona lo cambia la primera vez que entra.
+- **D1/D3** → cargar ruteo y firmas tal cual (ya se analizó al construir el sistema viejo). No poner avisos de eso.
+
 ## ANTES DE EMPEZAR
 
 **M2. ¿El sistema de Google se sigue usando?** Lo último es del 28-ago; hay 2 en Raúl, 33 en Gaby y 18
