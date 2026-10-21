@@ -3,6 +3,14 @@
 > Ordenadas por **cuándo estorban**. Claude Code: pregunta las de "ANTES DE EMPEZAR" en la primera
 > sesión, de una en una o en bloques chicos; las demás cuando toque esa parte. Cada una trae opciones.
 
+## RESPONDIDAS (21-oct-2026)
+- **M2** → (c) ya no se usa desde ago (se pausó por otros proyectos). No se sabe si algo se rompió. Objetivo: presentárselo a Laura para empezar a usarlo.
+- **Alcance de migración** → solo catálogos base; NO solicitudes/decisiones/PDFs viejos. (Pendiente: ¿saldos del banco y vacaciones?)
+- **A1** → (b)+(a): PIN de 6 dígitos con bloqueo tras 5 intentos para empleados; correo obligatorio para quien aprueba.
+- **A2** → (b) Valen y Gaby.
+- **Hosting** → GitHub Pages; el repo se hace público.
+- **Fases** → aprobadas las 0–7 de PROMPT_CLAUDE_CODE.md.
+
 ## ANTES DE EMPEZAR
 
 **M2. ¿El sistema de Google se sigue usando?** Lo último es del 28-ago; hay 2 en Raúl, 33 en Gaby y 18

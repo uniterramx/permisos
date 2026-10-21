@@ -28,7 +28,8 @@ de horas + bitácora**. Ahora se migra TODO a una **web app propia**.
 | Acceso | **PIN o correo, cada quien elige** (correo = link mágico/OTP de Supabase; PIN = nombre + PIN). Ver 07_Preguntas_Abiertas #A1 sobre seguridad del PIN |
 | Firmas | **Imprimir y firmar a mano** (como hoy). El sistema genera el PDF; no hay firma digital |
 | Avisos | **Contador de pendientes dentro de la app** + **Pushover opcional** para quien lo instale (cada quien guarda su user key en su perfil) |
-| Arranque | **Migrar TODO, pendientes incluidos** (los de agosto siguen su curso en el sistema nuevo) |
+| Arranque | **Solo se migra lo BASE** (catálogos: áreas, empleados, jefes, horarios, proyectos). Las solicitudes, decisiones y PDFs viejos **NO** se migran (decisión 21-oct, cambia la anterior de "migrar todo"). El sistema viejo está sin uso desde ago-2026; la app nueva arranca limpia para presentársela a Laura |
+| Repo | `vmmterminus-star/uniterra-permisos`, **público** (requisito de GitHub Pages gratis; los datos viven en Supabase) |
 
 ## 3. Quién es Valen y cómo trabajar con ella (OBLIGATORIO)
 
