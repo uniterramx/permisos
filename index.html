@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Permisos UT</title>
+<meta name="description" content="Solicitudes de permiso · Uniterra">
+<meta name="theme-color" content="#f8f6f3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Permisos UT">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20180%20180%22%3E%3Crect%20width%3D%22180%22%20height%3D%22180%22%20rx%3D%2240%22%20fill%3D%22%23efeae3%22/%3E%3Crect%20x%3D%2234%22%20y%3D%2244%22%20width%3D%22112%22%20height%3D%22100%22%20rx%3D%2214%22%20fill%3D%22%23fff%22%20stroke%3D%22%235a4d3e%22%20stroke-width%3D%227%22/%3E%3Cpath%20d%3D%22M34%2058a14%2014%200%200%201%2014-14h84a14%2014%200%200%201%2014%2014v14H34z%22%20fill%3D%22%235a4d3e%22/%3E%3Cline%20x1%3D%2262%22%20y1%3D%2232%22%20x2%3D%2262%22%20y2%3D%2254%22%20stroke%3D%22%235a4d3e%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22/%3E%3Cline%20x1%3D%22118%22%20y1%3D%2232%22%20x2%3D%22118%22%20y2%3D%2254%22%20stroke%3D%22%235a4d3e%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M66%20108l16%2016%2032-34%22%20fill%3D%22none%22%20stroke%3D%22%2338761D%22%20stroke-width%3D%2210%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E%0A">
+<link rel="icon" href="icons/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cafe:#5a4d3e; --crema:#f8f6f3; --arena:#efeae3; --borde:#e2ddd6; --sub:#9a8e7f; --cero:#c4bdb1;
+  --verde-f:#C6E7D0; --verde:#38761D; --naranja:#b06630; --rojo:#b04040; --rojo-f:#fce8e8;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--crema);color:var(--cafe);font-family:Alexandria,system-ui,sans-serif}
+body{min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overflow-x:hidden}
+button,input,select{font-family:inherit;font-size:16px;color:var(--cafe)}
+.oculto{display:none!important}
+.wrap{max-width:480px;margin:0 auto}
+
+/* ---- Entrar ---- */
+#entrar .in{padding:40px 22px 28px}
+.logo svg{width:56px;height:56px;display:block}
+h1{font-size:22px;margin:12px 0 2px;font-weight:700}
+.sub{font-size:13px;color:var(--sub)}
+.tabs{display:flex;background:var(--arena);border-radius:12px;padding:4px;margin:22px 0 6px}
+.tabs button{flex:1;border:0;background:none;padding:11px;font-size:14px;color:var(--sub);border-radius:9px;min-height:44px;cursor:pointer}
+.tabs button.on{background:#fff;color:var(--cafe);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+label{display:block;font-size:12px;color:var(--sub);margin:14px 0 6px}
+.f{width:100%;height:48px;border:1px solid var(--borde);background:#fff;border-radius:10px;padding:0 14px;outline:none;-webkit-appearance:none;appearance:none}
+.f:focus{border-color:var(--cafe)}
+.sel{position:relative}.sel:after{content:'▾';position:absolute;right:14px;top:13px;pointer-events:none;color:var(--cafe)}
+.pin{display:flex;gap:8px}
+.pin input{flex:1;min-width:0;height:52px;border:1px solid var(--borde);background:#fff;border-radius:10px;text-align:center;font-size:22px;outline:none;padding:0}
+.pin input:focus{border-color:var(--cafe)}
+.btn{width:100%;margin-top:22px;height:50px;border:0;background:var(--cafe);color:#fff;border-radius:12px;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.45}
+.btn.sec{background:none;color:var(--sub);margin-top:8px;font-weight:400;font-size:14px}
+.msg{font-size:13px;margin-top:14px;padding:10px 12px;border-radius:10px;background:var(--rojo-f);color:var(--rojo);line-height:1.45}
+.msg.ok{background:#eaf5e8;color:#4a8c42}
+.note{font-size:11px;color:var(--sub);text-align:center;margin-top:16px;line-height:1.6}
+.ver{text-align:center;font-size:10px;color:var(--cero);padding:18px 0 10px}
+
+/* ---- Inicio ---- */
+.top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--borde);background:var(--crema)}
+.top svg{width:30px;height:30px}.top b{font-size:15px;flex:1}
+.av{width:40px;height:40px;border-radius:50%;border:0;background:var(--arena);font-size:12px;font-weight:700;cursor:pointer}
+.menu{position:absolute;right:16px;top:58px;background:#fff;border:1px solid var(--borde);border-radius:12px;box-shadow:0 6px 20px rgba(90,77,62,.15);padding:6px;min-width:220px}
+.menu .quien{padding:10px 12px;font-size:12px;color:var(--sub);border-bottom:1px solid var(--borde);line-height:1.5}
+.menu .quien b{display:block;color:var(--cafe);font-size:13px}
+.menu button{width:100%;text-align:left;border:0;background:none;padding:12px;border-radius:8px;font-size:14px;cursor:pointer;min-height:44px}
+.hola{padding:20px 20px 4px}.hola h1{font-size:24px;margin:0}.hola .sub{margin-top:4px}
+.secc{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:20px 20px 8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
+.card{position:relative;background:#fff;border:1px solid var(--borde);border-radius:10px;padding:14px;min-height:96px;text-align:left;font-size:13px}
+.card .e{font-size:22px;line-height:1}.card b{display:block;margin-top:8px;font-size:13px}.card span{font-size:11px;color:var(--sub)}
+.card.hi{background:var(--verde-f);border-color:#a9d6b6}.card.hi b{color:var(--verde)}
+.card.pronto{opacity:.55}
+.badge{position:absolute;top:10px;right:10px;background:var(--naranja);color:#fff;font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px}
+.carga{padding:80px 20px;text-align:center;color:var(--sub);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="cargando" class="carga">Cargando…</div>
+
+  <!-- ============ ENTRAR ============ -->
+  <section id="entrar" class="oculto"><div class="in">
+    <div class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h1>Permisos UT</h1>
+    <div class="sub">Solicitudes de permiso · Uniterra</div>
+
+    <div class="tabs">
+      <button id="tabPin" class="on" type="button">Con PIN</button>
+      <button id="tabCorreo" type="button">Con correo</button>
+    </div>
+
+    <form id="formPin" autocomplete="off">
+      <label for="selArea">Tu área</label>
+      <div class="sel"><select id="selArea" class="f"></select></div>
+      <label for="selNombre">Tu nombre</label>
+      <div class="sel"><select id="selNombre" class="f"></select></div>
+      <label>PIN (6 dígitos)</label>
+      <div class="pin" id="pinCajas"></div>
+      <button class="btn" id="btnPin" type="submit">Entrar</button>
+      <div class="msg oculto" id="msgPin"></div>
+    </form>
+
+    <form id="formCorreo" class="oculto">
+      <div id="pasoCorreo">
+        <label for="inCorreo">Tu correo</label>
+        <input id="inCorreo" class="f" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="nombre@correo.com">
+        <button class="btn" id="btnMandar" type="submit">Mandarme un código</button>
+      </div>
+      <div id="pasoCodigo" class="oculto">
+        <label for="inCodigo">Código que te llegó por correo</label>
+        <input id="inCodigo" class="f" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456" style="letter-spacing:.3em;text-align:center;font-size:20px">
+        <button class="btn" id="btnCodigo" type="submit">Entrar</button>
+        <button class="btn sec" id="btnOtroCorreo" type="button">Usar otro correo</button>
+      </div>
+      <div class="msg oculto" id="msgCorreo"></div>
+    </form>
+
+    <div class="note">¿Olvidaste tu PIN? Pídeselo a Gaby o a Valen.<br>Jefes, Gaby y Laura entran con correo.</div>
+  </div>
+  <div class="ver" id="verEntrar"></div>
+  </section>
+
+  <!-- ============ INICIO ============ -->
+  <section id="inicio" class="oculto">
+    <div class="top"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Permisos UT</b><button class="av" id="btnAv" type="button" aria-label="Mi cuenta"></button></div>
+    <div class="menu oculto" id="menu">
+      <div class="quien" id="menuQuien"></div>
+      <button id="btnSalir" type="button">Salir</button>
+    </div>
+    <div class="hola"><h1 id="saludo"></h1><div class="sub" id="detalle"></div></div>
+    <div id="tarjetas"></div>
+    <div class="ver" id="verInicio"></div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const VERSION = 'v0.1.0';
+const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+const ver = VERSION + ' · Fase 0';
+$('verEntrar').textContent = ver;
+
+// Recordar la ultima seleccion (comodidad; si falla no pasa nada)
+const recordar = {
+  get(k){ try { return localStorage.getItem('ut_' + k); } catch(e){ return null; } },
+  set(k, v){ try { localStorage.setItem('ut_' + k, v); } catch(e){} }
+};
+
+function mostrar(id){
+  ['cargando','entrar','inicio'].forEach(s => $(s).classList.toggle('oculto', s !== id));
+}
+function aviso(el, texto, ok){
+  el.textContent = texto; el.classList.toggle('ok', !!ok); el.classList.toggle('oculto', !texto);
+}
+
+/* ---------------- Entrar con PIN ---------------- */
+let lista = [];
+const cajas = [];
+for (let i = 0; i < 6; i++){
+  const c = document.createElement('input');
+  c.type = 'password'; c.inputMode = 'numeric'; c.maxLength = 1; c.pattern = '[0-9]*';
+  c.autocomplete = 'off'; c.setAttribute('aria-label', 'Dígito ' + (i + 1));
+  c.addEventListener('input', () => {
+    c.value = c.value.replace(/\D/g, '').slice(-1);
+    if (c.value && i < 5) cajas[i + 1].focus();
+    if (pinActual().length === 6) $('formPin').requestSubmit();
+  });
+  c.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !c.value && i > 0){ cajas[i - 1].focus(); cajas[i - 1].value = ''; }
+  });
+  c.addEventListener('paste', e => {
+    const d = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+    if (!d) return; e.preventDefault();
+    cajas.forEach((k, j) => k.value = d[j] || '');
+    cajas[Math.min(d.length, 5)].focus();
+    if (d.length === 6) $('formPin').requestSubmit();
+  });
+  cajas.push(c); $('pinCajas').appendChild(c);
+}
+const pinActual = () => cajas.map(c => c.value).join('');
+const limpiarPin = () => { cajas.forEach(c => c.value = ''); };
+
+async function cargarLista(){
+  const { data, error } = await sb.rpc('login_lista');
+  if (error){ aviso($('msgPin'), 'No pude cargar la lista de personas. Revisa tu internet y recarga.'); return; }
+  lista = data || [];
+  const areas = [...new Map(lista.map(p => [p.area, p.area_orden])).entries()].sort((a, b) => a[1] - b[1]).map(a => a[0]);
+  $('selArea').innerHTML = areas.length
+    ? areas.map(a => '<option>' + esc(a) + '</option>').join('')
+    : '<option value="">Todavía no hay nadie con PIN</option>';
+  const a = recordar.get('area'); if (a && areas.includes(a)) $('selArea').value = a;
+  llenarNombres();
+}
+function llenarNombres(){
+  const gente = lista.filter(p => p.area === $('selArea').value);
+  $('selNombre').innerHTML = gente.map(p => '<option value="' + p.empleado_id + '">' + esc(p.nombre) + '</option>').join('');
+  const n = recordar.get('persona'); if (n && gente.some(p => p.empleado_id === n)) $('selNombre').value = n;
+}
+$('selArea').addEventListener('change', () => { recordar.set('area', $('selArea').value); llenarNombres(); });
+$('selNombre').addEventListener('change', () => recordar.set('persona', $('selNombre').value));
+
+$('formPin').addEventListener('submit', async e => {
+  e.preventDefault();
+  const empleado = $('selNombre').value, pin = pinActual();
+  if (!empleado) return aviso($('msgPin'), 'Elige tu nombre.');
+  if (pin.length !== 6) return aviso($('msgPin'), 'El PIN tiene 6 números.');
+  $('btnPin').disabled = true; aviso($('msgPin'), '');
+  try {
+    const { data, error } = await sb.rpc('login_pin', { p_empleado: empleado, p_pin: pin });
+    if (error) throw error;
+    if (!data.ok){
+      limpiarPin(); cajas[0].focus();
+      const t = {
+        pin_incorrecto: 'PIN incorrecto. Te quedan ' + data.quedan + ' intento' + (data.quedan === 1 ? '' : 's') + '.',
+        bloqueado: 'Tu PIN quedó bloqueado por seguridad. Pídele a Gaby o a Valen que lo desbloquee.',
+        sin_pin: 'Todavía no tienes PIN. Pídeselo a Gaby o a Valen.'
+      };
+      return aviso($('msgPin'), t[data.error] || 'No se pudo entrar.');
+    }
+    recordar.set('persona', empleado);
+    const r = await sb.auth.signInWithPassword({ email: data.email, password: data.secreto });
+    if (r.error) throw r.error;
+    limpiarPin();
+    await entrar();
+  } catch (err){
+    aviso($('msgPin'), 'Algo falló al entrar: ' + (err.message || err));
+  } finally { $('btnPin').disabled = false; }
+});
+
+/* ---------------- Entrar con correo (código de 6 dígitos) ---------------- */
+function modo(pin){
+  $('tabPin').classList.toggle('on', pin); $('tabCorreo').classList.toggle('on', !pin);
+  $('formPin').classList.toggle('oculto', !pin); $('formCorreo').classList.toggle('oculto', pin);
+  recordar.set('modo', pin ? 'pin' : 'correo');
+}
+$('tabPin').onclick = () => modo(true);
+$('tabCorreo').onclick = () => modo(false);
+
+$('formCorreo').addEventListener('submit', async e => {
+  e.preventDefault();
+  const codigoVisible = !$('pasoCodigo').classList.contains('oculto');
+  const correo = $('inCorreo').value.trim().toLowerCase();
+  aviso($('msgCorreo'), '');
+  if (!codigoVisible){
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) return aviso($('msgCorreo'), 'Escribe un correo válido.');
+    $('btnMandar').disabled = true;
+    const { error } = await sb.auth.signInWithOtp({ email: correo, options: { shouldCreateUser: false } });
+    $('btnMandar').disabled = false;
+    if (error) return aviso($('msgCorreo'), /signups|not allowed|not found/i.test(error.message)
+      ? 'Ese correo no está dado de alta. Pídeselo a Valen o a Gaby.'
+      : 'No pude mandar el código: ' + error.message);
+    recordar.set('correo', correo);
+    $('pasoCorreo').classList.add('oculto'); $('pasoCodigo').classList.remove('oculto');
+    aviso($('msgCorreo'), 'Te mandé un código a ' + correo + '. Revisa también spam.', true);
+    $('inCodigo').focus();
+  } else {
+    const codigo = $('inCodigo').value.replace(/\D/g, '');
+    if (codigo.length < 6) return aviso($('msgCorreo'), 'Escribe el código completo.');
+    $('btnCodigo').disabled = true;
+    const { error } = await sb.auth.verifyOtp({ email: correo, token: codigo, type: 'email' });
+    $('btnCodigo').disabled = false;
+    if (error) return aviso($('msgCorreo'), 'Código incorrecto o vencido. Pide otro.');
+    $('inCodigo').value = '';
+    await entrar();
+  }
+});
+$('btnOtroCorreo').onclick = () => {
+  $('pasoCodigo').classList.add('oculto'); $('pasoCorreo').classList.remove('oculto'); aviso($('msgCorreo'), '');
+};
+
+/* ---------------- Inicio ---------------- */
+const TARJETAS = {
+  todos: [
+    ['📝', 'Nueva solicitud', 'diario'],
+    ['⏱️', 'Mi banco de horas', 'saldo y movimientos'],
+    ['📂', 'Mis solicitudes', 'estado y PDFs'],
+    ['📘', 'Guía', 'cómo se usa']
+  ],
+  valida: [
+    ['✅', 'Mi bandeja', 'pendientes de decidir', 'hi'],
+    ['📊', 'Panel general', 'todas, en vivo']
+  ],
+  admin: [
+    ['👥', 'Personas y PINs', 'altas y desbloqueos'],
+    ['🗂️', 'Catálogos', 'áreas, horarios, proyectos']
+  ]
+};
+function bloque(titulo, items){
+  return '<div class="secc">' + titulo + '</div><div class="grid">' + items.map(([e, t, s, cls]) =>
+    '<div class="card pronto ' + (cls || '') + '"><div class="e">' + e + '</div><b>' + t + '</b><span>' + s + ' · pronto</span></div>'
+  ).join('') + '</div>';
+}
+
+async function entrar(){
+  const { data, error } = await sb.rpc('mi_perfil');
+  if (error || !data){
+    await sb.auth.signOut();
+    mostrar('entrar');
+    return aviso($('msgPin'), 'Entraste, pero tu cuenta no está ligada a ninguna persona. Avísale a Valen.');
+  }
+  const p = data, roles = p.roles || [];
+  const corto = p.nombre_corto || p.nombre.split(' ')[0];
+  $('saludo').textContent = 'Hola, ' + corto;
+  $('detalle').textContent = p.area + ' · ' + (p.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo');
+  $('btnAv').textContent = p.iniciales;
+  $('menuQuien').innerHTML = '<b>' + esc(p.nombre) + '</b>' + esc(p.puesto || '') + '<br>' + esc(p.area);
+  let html = bloque('Para todos', TARJETAS.todos);
+  if (roles.some(r => ['jefe','filtro','final','admin'].includes(r))) html += bloque('Para quien valida', TARJETAS.valida);
+  if (roles.some(r => ['admin','altas'].includes(r))) html += bloque('Administración', TARJETAS.admin);
+  $('tarjetas').innerHTML = html;
+  $('verInicio').textContent = ver + ' · las tarjetas se encienden por fase';
+  mostrar('inicio');
+}
+
+$('btnAv').onclick = e => { e.stopPropagation(); $('menu').classList.toggle('oculto'); };
+document.addEventListener('click', () => $('menu').classList.add('oculto'));
+$('menu').addEventListener('click', e => e.stopPropagation());
+$('btnSalir').onclick = async () => {
+  await sb.auth.signOut(); $('menu').classList.add('oculto'); mostrar('entrar'); cargarLista();
+};
+
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------------- Arranque ---------------- */
+(async () => {
+  const c = recordar.get('correo'); if (c) $('inCorreo').value = c;
+  modo(recordar.get('modo') !== 'correo');
+  const { data } = await sb.auth.getSession();
+  if (data.session) return entrar();
+  mostrar('entrar');
+  cargarLista();
+})();
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
