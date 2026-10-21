@@ -7,7 +7,8 @@
 - **M2** → (c) ya no se usa desde ago (se pausó por otros proyectos). No se sabe si algo se rompió. Objetivo: presentárselo a Laura para empezar a usarlo.
 - **Alcance de migración** → solo catálogos base; NO solicitudes/decisiones/PDFs viejos. Saldos iniciales (banco, reposición, vacaciones) → (c) los da Gaby al arrancar (ella llevó registro a la par).
 - **V1** → (a) paleta cálida de Sheets/Banco + verde del Panel.
-- **A1** → (b)+(a): PIN de 6 dígitos con bloqueo tras 5 intentos para empleados; correo obligatorio para quien aprueba.
+- **A1** → (cambio 21-oct) **TODOS entran con PIN** de 6 dígitos, bloqueo tras 5 intentos (desbloquean Valen/Gaby). Sin correo en la pantalla de entrar.
+- **Dispositivo** → la app es **primero de computadora** y en segundo plano de celular (diseñar escritorio primero, que también funcione en iPhone).
 - **A2** → (b) Valen y Gaby.
 - **Hosting** → GitHub Pages; el repo se hace público.
 - **Fases** → aprobadas las 0–7 de PROMPT_CLAUDE_CODE.md.

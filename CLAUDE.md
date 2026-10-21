@@ -21,11 +21,11 @@ de horas + bitácora**. Ahora se migra TODO a una **web app propia**.
 
 | Tema | Decisión |
 |---|---|
-| Tipo | **Web app instalable (PWA)**: compu + iPhone, se agrega a la pantalla de inicio |
+| Tipo | **Web app instalable (PWA)**: **primero computadora**, luego iPhone (se agrega a la pantalla de inicio) |
 | Google | **Salir por completo**. Google solo se usa como FUENTE de la migración |
 | Backend | **Supabase** (Postgres + Auth + Storage + Edge Functions) |
 | Hosting | **GitHub Pages** (Valen ya lo usa en sus otras apps; no conoce Cloudflare) |
-| Acceso | **PIN o correo, cada quien elige** (correo = link mágico/OTP de Supabase; PIN = nombre + PIN). Ver 07_Preguntas_Abiertas #A1 sobre seguridad del PIN |
+| Acceso | **(cambio 21-oct) Todos con PIN** de 6 dígitos + bloqueo tras 5 intentos. Antes: PIN o correo (correo = link mágico/OTP de Supabase; PIN = nombre + PIN). Ver 07_Preguntas_Abiertas #A1 sobre seguridad del PIN |
 | Firmas | **Imprimir y firmar a mano** (como hoy). El sistema genera el PDF; no hay firma digital |
 | Avisos | **Contador de pendientes dentro de la app** + **Pushover opcional** para quien lo instale (cada quien guarda su user key en su perfil) |
 | Arranque | **Solo se migra lo BASE** (catálogos: áreas, empleados, jefes, horarios, proyectos). Las solicitudes, decisiones y PDFs viejos **NO** se migran (decisión 21-oct, cambia la anterior de "migrar todo"). El sistema viejo está sin uso desde ago-2026; la app nueva arranca limpia para presentársela a Laura |

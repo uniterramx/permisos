@@ -31,6 +31,7 @@ button,input,select{font-family:inherit;font-size:16px;color:var(--cafe)}
 
 /* ---- Entrar ---- */
 #entrar .in{padding:40px 22px 28px}
+#formPin{margin-top:16px}
 .logo svg{width:56px;height:56px;display:block}
 h1{font-size:22px;margin:12px 0 2px;font-weight:700}
 .sub{font-size:13px;color:var(--sub)}
@@ -69,6 +70,23 @@ label{display:block;font-size:12px;color:var(--sub);margin:14px 0 6px}
 .card.pronto{opacity:.55}
 .badge{position:absolute;top:10px;right:10px;background:var(--naranja);color:#fff;font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px}
 .carga{padding:80px 20px;text-align:center;color:var(--sub);font-size:13px}
+
+/* ---- Computadora (pantalla principal) ---- */
+@media (min-width:760px){
+  body{background:var(--arena)}
+  .wrap{max-width:none}
+  #entrar{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px}
+  #entrar .in{width:420px;background:var(--crema);border:1px solid var(--borde);border-radius:18px;padding:36px 36px 30px;box-shadow:0 10px 40px rgba(90,77,62,.12)}
+  #inicio{min-height:100dvh;background:var(--crema)}
+  .top{padding:14px 32px}
+  .menu{right:28px}
+  .cuerpo{max-width:1100px;margin:0 auto;padding:12px 32px 24px}
+  .hola{padding:24px 0 4px}.hola h1{font-size:28px}
+  .secc{margin:26px 0 10px}
+  .grid{grid-template-columns:repeat(4,1fr);gap:14px;padding:0}
+  .card{min-height:118px;padding:18px;transition:box-shadow .15s}
+  .card:not(.pronto):hover{box-shadow:0 4px 14px rgba(90,77,62,.12);cursor:pointer}
+}
 </style>
 </head>
 <body>
@@ -82,10 +100,6 @@ label{display:block;font-size:12px;color:var(--sub);margin:14px 0 6px}
     <h1>Permisos UT</h1>
     <div class="sub">Solicitudes de permiso · Uniterra</div>
 
-    <div class="tabs">
-      <button id="tabPin" class="on" type="button">Con PIN</button>
-      <button id="tabCorreo" type="button">Con correo</button>
-    </div>
 
     <form id="formPin" autocomplete="off">
       <label for="selArea">Tu área</label>
@@ -98,22 +112,8 @@ label{display:block;font-size:12px;color:var(--sub);margin:14px 0 6px}
       <div class="msg oculto" id="msgPin"></div>
     </form>
 
-    <form id="formCorreo" class="oculto">
-      <div id="pasoCorreo">
-        <label for="inCorreo">Tu correo</label>
-        <input id="inCorreo" class="f" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="nombre@correo.com">
-        <button class="btn" id="btnMandar" type="submit">Mandarme un código</button>
-      </div>
-      <div id="pasoCodigo" class="oculto">
-        <label for="inCodigo">Código que te llegó por correo</label>
-        <input id="inCodigo" class="f" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456" style="letter-spacing:.3em;text-align:center;font-size:20px">
-        <button class="btn" id="btnCodigo" type="submit">Entrar</button>
-        <button class="btn sec" id="btnOtroCorreo" type="button">Usar otro correo</button>
-      </div>
-      <div class="msg oculto" id="msgCorreo"></div>
-    </form>
 
-    <div class="note">¿Olvidaste tu PIN? Pídeselo a Gaby o a Valen.<br>Jefes, Gaby y Laura entran con correo.</div>
+    <div class="note">¿Olvidaste tu PIN o se bloqueó? Pídeselo a Gaby o a Valen.</div>
   </div>
   <div class="ver" id="verEntrar"></div>
   </section>
@@ -125,9 +125,11 @@ label{display:block;font-size:12px;color:var(--sub);margin:14px 0 6px}
       <div class="quien" id="menuQuien"></div>
       <button id="btnSalir" type="button">Salir</button>
     </div>
-    <div class="hola"><h1 id="saludo"></h1><div class="sub" id="detalle"></div></div>
-    <div id="tarjetas"></div>
-    <div class="ver" id="verInicio"></div>
+    <div class="cuerpo">
+      <div class="hola"><h1 id="saludo"></h1><div class="sub" id="detalle"></div></div>
+      <div id="tarjetas"></div>
+      <div class="ver" id="verInicio"></div>
+    </div>
   </section>
 
 </div>
@@ -135,7 +137,7 @@ label{display:block;font-size:12px;color:var(--sub);margin:14px 0 6px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
-const VERSION = 'v0.1.0';
+const VERSION = 'v0.1.1';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 const ver = VERSION + ' · Fase 0';
@@ -228,47 +230,6 @@ $('formPin').addEventListener('submit', async e => {
   } finally { $('btnPin').disabled = false; }
 });
 
-/* ---------------- Entrar con correo (código de 6 dígitos) ---------------- */
-function modo(pin){
-  $('tabPin').classList.toggle('on', pin); $('tabCorreo').classList.toggle('on', !pin);
-  $('formPin').classList.toggle('oculto', !pin); $('formCorreo').classList.toggle('oculto', pin);
-  recordar.set('modo', pin ? 'pin' : 'correo');
-}
-$('tabPin').onclick = () => modo(true);
-$('tabCorreo').onclick = () => modo(false);
-
-$('formCorreo').addEventListener('submit', async e => {
-  e.preventDefault();
-  const codigoVisible = !$('pasoCodigo').classList.contains('oculto');
-  const correo = $('inCorreo').value.trim().toLowerCase();
-  aviso($('msgCorreo'), '');
-  if (!codigoVisible){
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) return aviso($('msgCorreo'), 'Escribe un correo válido.');
-    $('btnMandar').disabled = true;
-    const { error } = await sb.auth.signInWithOtp({ email: correo, options: { shouldCreateUser: false } });
-    $('btnMandar').disabled = false;
-    if (error) return aviso($('msgCorreo'), /signups|not allowed|not found/i.test(error.message)
-      ? 'Ese correo no está dado de alta. Pídeselo a Valen o a Gaby.'
-      : 'No pude mandar el código: ' + error.message);
-    recordar.set('correo', correo);
-    $('pasoCorreo').classList.add('oculto'); $('pasoCodigo').classList.remove('oculto');
-    aviso($('msgCorreo'), 'Te mandé un código a ' + correo + '. Revisa también spam.', true);
-    $('inCodigo').focus();
-  } else {
-    const codigo = $('inCodigo').value.replace(/\D/g, '');
-    if (codigo.length < 6) return aviso($('msgCorreo'), 'Escribe el código completo.');
-    $('btnCodigo').disabled = true;
-    const { error } = await sb.auth.verifyOtp({ email: correo, token: codigo, type: 'email' });
-    $('btnCodigo').disabled = false;
-    if (error) return aviso($('msgCorreo'), 'Código incorrecto o vencido. Pide otro.');
-    $('inCodigo').value = '';
-    await entrar();
-  }
-});
-$('btnOtroCorreo').onclick = () => {
-  $('pasoCodigo').classList.add('oculto'); $('pasoCorreo').classList.remove('oculto'); aviso($('msgCorreo'), '');
-};
-
 /* ---------------- Inicio ---------------- */
 const TARJETAS = {
   todos: [
@@ -324,8 +285,6 @@ function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','
 
 /* ---------------- Arranque ---------------- */
 (async () => {
-  const c = recordar.get('correo'); if (c) $('inCorreo').value = c;
-  modo(recordar.get('modo') !== 'correo');
   const { data } = await sb.auth.getSession();
   if (data.session) return entrar();
   mostrar('entrar');
