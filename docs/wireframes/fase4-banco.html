@@ -214,6 +214,14 @@ details.pp summary{cursor:pointer;font-size:11px;color:var(--sub);text-transform
 .big b{display:block;font-size:28px;line-height:1.15;margin-top:2px;font-variant-numeric:tabular-nums}
 .big small{font-size:11px;color:var(--sub)}
 .big.hi{background:var(--arena)}
+.big.dep{background:var(--apr-f);border-color:#cfe6cb}.big.dep span,.big.dep b{color:var(--apr)}
+.big.ret{background:var(--rech-f);border-color:#f0cccc}.big.ret span,.big.ret b{color:var(--rech)}
+.rep .big.deu{background:#f5e4d8;border-color:#ebcdb8}.rep .big.deu span{color:#a56a3f}
+.rep .big.rp{background:#e3edf6;border-color:#c8dbec}.rep .big.rp span{color:#37699e}
+.rep .big.pe{background:#ece5f5}
+.big b.zero{color:var(--cero)!important}
+.stat.k-neg{background:#f5e4d8;border-color:#ebcdb8}.stat.k-rep{background:#ece5f5;border-color:#d9cdea}
+table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
 .rep .big{border-color:#d9cdea}.rep .big span{color:#6b4a94}
 .reph{display:flex;align-items:center;gap:8px;margin:18px 0 0;font-size:11px;color:#6b4a94;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
 .zero{color:var(--cero)!important}.neg-t{color:#a56a3f}.pos-t{color:#37699e}
@@ -226,7 +234,7 @@ tr.anul td:first-child,tr.anul td:last-child{text-decoration:none}
 .formaj{background:var(--blanco);border:1px solid var(--borde);border-radius:12px;padding:12px 14px;margin-top:10px}
 .g3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px}
 .segm{display:flex;background:var(--arena);border-radius:8px;padding:3px;gap:2px}
-.segm button{flex:1;border:0;background:none;border-radius:6px;font-size:12.5px;color:var(--sub);height:30px}
+.segm{width:max-content;max-width:100%}.segm button{flex:none;border:0;background:none;border-radius:6px;font-size:12.5px;color:var(--sub);height:30px;padding:0 16px;white-space:nowrap}
 .segm button.on{background:var(--blanco);color:var(--cafe);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .queda{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:6px 0;border-bottom:1px solid #f3f1ec}
 .queda:last-child{border-bottom:0}
@@ -316,11 +324,11 @@ function vPersona(k,mio){
   const lista=MV.filter(x=>x[0]===k&&(ver==='banco'?!esRep(x):esRep(x)));
   let acc=0;
   let h=`<div class="hola">${mio?'':'<button class="lnk" data-ir="banco">← Banco de horas</button>'}<h1>${mio?'Mi banco de horas':esc(nom)}</h1><div class="sub">${mio?esc(nom)+' · ':''}<span class="chip ${AREAS[ar][1]}">${AREAS[ar][0]}</span></div></div>`;
-  h+=`<div class="saldo"><div class="big hi"><span>Saldo</span><b class="${r.saldo<0?'neg-t':''}">${r.saldo<0?'−':''}${fh(Math.abs(r.saldo))} h</b><small>disponible</small></div><div class="big"><span>Depósitos</span><b class="${r.dep?'':'zero'}">${fh(r.dep)} h</b><small>horas extra + saldo inicial</small></div><div class="big"><span>Retiros</span><b class="${r.ret?'':'zero'}">${fh(r.ret)} h</b><small>uso de horas</small></div></div>`;
-  h+=`<div class="reph">Reposición de horas <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--sub)">· aparte: no toca tu banco</span></div><div class="saldo rep"><div class="big"><span>Debe</span><b class="${r.debe?'neg-t':'zero'}">${fh(r.debe)} h</b></div><div class="big"><span>Repuesto</span><b class="${r.rep?'pos-t':'zero'}">${fh(r.rep)} h</b></div><div class="big"><span>Pendiente</span><b class="${r.pend>0?'neg-t':r.pend<0?'pos-t':'zero'}">${fh(r.pend)} h</b><small>${r.pend>0?'te falta reponer':r.pend<0?'repusiste de más':'al corriente'}</small></div></div>`;
-  h+=`<div class="barra"><div class="segm" style="min-width:260px"><button class="${ver==='banco'?'on':''}" data-ver="banco">Movimientos del banco</button><button class="${ver==='rep'?'on':''}" data-ver="rep">Reposición</button></div><span class="esp"></span>${!mio&&ROLES[rol].ajusta?'<button class="btn chico" id="ajBtn">+ Ajuste a mano</button>':''}</div>`;
+  h+=`<div class="saldo"><div class="big hi"><span>Saldo</span><b class="${r.saldo<0?'neg-t':''}">${r.saldo<0?'−':''}${fh(Math.abs(r.saldo))} h</b><small>disponible</small></div><div class="big dep"><span>Depósitos</span><b class="${r.dep?'':'zero'}">${fh(r.dep)} h</b><small>horas extra + saldo inicial</small></div><div class="big ret"><span>Retiros</span><b class="${r.ret?'':'zero'}">${fh(r.ret)} h</b><small>uso de horas</small></div></div>`;
+  h+=`<div class="reph">Reposición de horas <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--sub)">· aparte: no toca tu banco</span></div><div class="saldo rep"><div class="big deu"><span>Debe</span><b class="${r.debe?'neg-t':'zero'}">${fh(r.debe)} h</b></div><div class="big rp"><span>Repuesto</span><b class="${r.rep?'pos-t':'zero'}">${fh(r.rep)} h</b></div><div class="big pe"><span>Pendiente</span><b class="${r.pend>0?'neg-t':r.pend<0?'pos-t':'zero'}">${fh(r.pend)} h</b><small>${r.pend>0?'te falta reponer':r.pend<0?'repusiste de más':'al corriente'}</small></div></div>`;
+  h+=`<div class="barra"><div class="segm"><button class="${ver==='banco'?'on':''}" data-ver="banco">Movimientos del banco</button><button class="${ver==='rep'?'on':''}" data-ver="rep">Reposición</button></div><span class="esp"></span>${!mio&&ROLES[rol].ajusta?'<button class="btn chico" id="ajBtn">+ Ajuste a mano</button>':''}</div>`;
   if(!mio&&ROLES[rol].ajusta&&horasAjuste)h+=`<div class="formaj"><div class="fst">Ajuste a mano · queda registrado que lo hizo Gaby</div><div class="g3"><div><label class="lbl">¿Dónde?</label><div class="segm"><button class="${ajTipo==='banco'?'on':''}" data-aj="banco">Banco</button><button class="${ajTipo==='rep'?'on':''}" data-aj="rep">Reposición</button></div></div><div><label class="lbl" for="ajH">Horas (+ suma, − resta)</label><input class="f" id="ajH" value="+1" inputmode="decimal"></div></div><label class="lbl" for="ajM">Motivo (obligatorio)</label><input class="f" id="ajM" placeholder="Ej.: horas que repuso el sábado 8"><div style="display:flex;gap:8px;margin-top:10px"><button class="btn chico" id="ajOk">Guardar ajuste</button><button class="btn chico l" id="ajNo">Cancelar</button></div></div>`;
-  h+=`<div class="tabla-w" style="margin-top:4px"><table><thead><tr><th>Fecha</th><th>Folio</th><th>Movimiento</th><th>Referencia</th><th class="${ver==='rep'?'rp':''}">Horas</th><th class="${ver==='rep'?'rp':''}">${ver==='rep'?'Pendiente':'Saldo'}</th>${ver==='banco'?'<th>Bitácora</th>':''}</tr></thead><tbody>`;
+  h+=`<div class="tabla-w" style="margin-top:4px"><table class="angosta"><thead><tr><th>Fecha</th><th>Folio</th><th>Movimiento</th><th>Referencia</th><th class="${ver==='rep'?'rp':''}">Horas</th><th class="${ver==='rep'?'rp':''}">${ver==='rep'?'Pendiente':'Saldo'}</th>${ver==='banco'?'<th>Bitácora</th>':''}</tr></thead><tbody>`;
   h+=lista.map(m=>{acc+=ver==='rep'?-m[5]:m[5];const anul=MV.some(x=>x[0]===k&&x[3]==='rev'&&x[2]===m[2])&&m[3]!=='rev';
     return `<tr class="${anul?'anul':''}"><td>${m[1]}</td><td>${esc(m[2])}</td><td><span class="tipo-mv ${CL[m[3]]}">${TXT[m[3]]}</span></td><td>${esc(m[4])}</td><td class="num">${sgn(m[5])}</td><td class="num"><b>${fh(acc)} h</b></td>${ver==='banco'?`<td class="inact">${m[3]==='ini'?'—':'activa'}</td>`:''}</tr>`}).join('')||`<tr><td colspan="7" class="vacio" style="position:static">Sin movimientos.</td></tr>`;
   h+=`</tbody></table></div><div class="nota"><b>Cómo se lee:</b> cada aprobación del jefe deja un renglón; nada se borra. Si se corrige una solicitud, el renglón original sale tachado y abajo aparecen su <b>reverso</b> y el movimiento nuevo (B2). La columna Bitácora se llena en la Fase 5 (cada 15 movimientos se imprime una).${ver==='rep'?' En Reposición el pendiente sube con lo que debes y baja con lo que repones.':''}</div>`;
@@ -331,7 +339,7 @@ function vBanco(){
   const filas=ks.map(k=>[k,resumen(k)]).sort((a,b)=>orden==='saldo'?a[1].saldo-b[1].saldo:orden==='pend'?b[1].pend-a[1].pend:GENTE[a[0]][0].localeCompare(GENTE[b[0]][0],'es'));
   const neg=filas.filter(f=>f[1].saldo<0).length,deben=filas.filter(f=>f[1].pend>0).length;
   let h=`<div class="hola"><h1>Banco de horas</h1><div class="sub">${rol==='raul'?'Tu área: Taller de Proyectos':'Todas las áreas'} · toca una persona para ver sus movimientos</div></div>`;
-  h+=`<div class="stats"><div class="stat"><span>Personas</span><b>${filas.length}</b></div><div class="stat"><span>Horas en el banco</span><b>${fh(filas.reduce((a,f)=>a+f[1].saldo,0))}</b></div><div class="stat"><span>En negativo</span><b class="${neg?'':'z'}" style="${neg?'color:#a56a3f':''}">${neg}</b></div><div class="stat"><span>Deben reponer</span><b class="${deben?'':'z'}" style="${deben?'color:#6b4a94':''}">${deben}</b></div><div class="stat"><span>Horas por reponer</span><b>${fh(filas.reduce((a,f)=>a+Math.max(0,f[1].pend),0))}</b></div></div>`;
+  h+=`<div class="stats"><div class="stat"><span>Personas</span><b>${filas.length}</b></div><div class="stat"><span>Horas en el banco</span><b>${fh(filas.reduce((a,f)=>a+f[1].saldo,0))}</b></div><div class="stat k-neg"><span>En negativo</span><b class="${neg?'':'z'}" style="${neg?'color:#a56a3f':''}">${neg}</b></div><div class="stat k-rep"><span>Deben reponer</span><b class="${deben?'':'z'}" style="${deben?'color:#6b4a94':''}">${deben}</b></div><div class="stat k-rep"><span>Horas por reponer</span><b>${fh(filas.reduce((a,f)=>a+Math.max(0,f[1].pend),0))}</b></div></div>`;
   h+=`<div class="barra"><input class="f buscar" placeholder="Buscar persona…"><select class="f" id="orden"><option value="nombre" ${orden==='nombre'?'selected':''}>Ordenar por nombre</option><option value="saldo" ${orden==='saldo'?'selected':''}>Saldo más bajo primero</option><option value="pend" ${orden==='pend'?'selected':''}>Más pendiente de reponer</option></select></div>`;
   h+=`<div class="tabla-w"><table><thead><tr><th>Persona</th><th>Área</th><th>Depósitos</th><th>Retiros</th><th>Saldo</th><th class="rp">Debe</th><th class="rp">Repuesto</th><th class="rp">Pendiente</th><th>Último movimiento</th></tr></thead><tbody>`;
   h+=filas.map(([k,r])=>`<tr data-p="${k}"><td><b>${esc(GENTE[k][0])}</b></td><td class="${AREAS[GENTE[k][1]][1]}">${AREAS[GENTE[k][1]][0]}</td><td class="num">${num(r.dep)}</td><td class="num">${num(r.ret)}</td><td class="num"><b class="${r.saldo<0?'neg-t':''}">${r.saldo?(r.saldo<0?'−':'')+fh(Math.abs(r.saldo))+' h':'<span class="zero">0</span>'}</b></td><td class="num">${r.debe?'<span class="neg-t">'+fh(r.debe)+' h</span>':'<span class="zero">0</span>'}</td><td class="num">${r.rep?'<span class="pos-t">'+fh(r.rep)+' h</span>':'<span class="zero">0</span>'}</td><td class="num">${r.pend?'<b class="'+(r.pend>0?'neg-t':'pos-t')+'">'+fh(r.pend)+' h</b>':'<span class="zero">0</span>'}</td><td>${r.ult}</td></tr>`).join('');
@@ -339,19 +347,19 @@ function vBanco(){
   return h;
 }
 function vAprobar(){
-  return `<div class="hola"><h1>Mi bandeja</h1><div class="sub">Así se ve el detalle cuando el jefe va a aprobar algo que mueve el banco.</div></div><div class="nota">Abre el detalle a la derecha (ya está abierto). Prueba “Cambiar horas”.</div>`;
+  return `<div class="hola"><h1>Mi bandeja</h1><div class="sub">Así se ve el detalle cuando el jefe va a aprobar algo que mueve el banco.</div></div><div class="nota">El detalle se abre a la derecha. Prueba “Cambiar horas”; se cierra con la ✕ o al decidir. <button class="lnk" id="reabrir">Volver a abrirlo</button></div>`;
 }
 function pintarPanel(){
   const c=$('#capa');
   if(pant!=='aprobar'){c.innerHTML='';return}
   const saldo=resumen('LAMC').saldo,h0=-2,hh=horasAjuste?-1.5:h0,queda=saldo+hh;
-  c.innerHTML=`<aside class="panel" role="dialog" aria-label="Detalle"><div class="pcab"><div><h3>Luis Alonso Muñoz Casas</h3><div class="sub">F-LAMC-2026-0022 · <span class="chip d-pend">Nueva - espera jefe</span></div></div></div>
+  c.innerHTML=`<aside class="panel" role="dialog" aria-label="Detalle"><div class="pcab"><div><h3>Luis Alonso Muñoz Casas</h3><div class="sub">F-LAMC-2026-0022 · <span class="chip d-pend">Nueva - espera jefe</span></div></div><button class="x" id="xP" aria-label="Cerrar">×</button></div>
   <div class="fsec"><div class="fst">Qué pide</div><div class="r"><span>Tipo</span><b>Salida anticipada · Uso de horas acumuladas</b></div><div class="r"><span>Día</span><b>11/11/2026</b></div><div class="r"><span>Qué pasó</span><b>Salió 16:00 (horario 9:00 a 18:00)</b></div></div>
   <div class="fsec"><div class="fst">Banco de horas<span class="esp"></span>${horasAjuste?'':'<button class="lnk" id="chH">Cambiar horas</button>'}</div>
    ${horasAjuste?`<div class="g3"><div><label class="lbl" for="nh">Horas que se descuentan</label><input class="f" id="nh" value="1.5" inputmode="decimal"></div><div><label class="lbl" for="nm">¿Por qué? (obligatorio)</label><input class="f" id="nm" value="Repuso media hora en la comida"></div></div><div class="peq">El cálculo daba 2 h. Queda registrado que Raúl lo cambió a 1.5 h.</div>`:''}
    <div class="queda"><span class="sub">Saldo hoy</span><b class="${saldo<0?'neg-t':''}">${saldo<0?'−':''}${fh(Math.abs(saldo))} h</b></div><div class="queda"><span class="sub">Esta solicitud</span><b>${sgn(hh)}</b></div><div class="queda"><span class="sub">Queda en</span><b class="${queda<0?'neg-t':''}">${queda<0?'−':''}${fh(Math.abs(queda))} h</b></div>
    ${queda<0?`<div class="alerta am">Con esta solicitud su saldo queda en <b>−${fh(Math.abs(queda))} h</b>. Puedes aprobarla igual (B4a).</div>`:''}</div>
-  <div class="ppie"><div class="bts"><button class="btn apr" id="apr">Aprobar</button><button class="btn camb">Pedir cambios</button><button class="btn rech">Rechazar</button><button class="btn res chico">Resuelto</button></div></div></aside>`;
+  <div class="ppie"><div class="bts"><button class="btn apr" id="apr">Aprobar</button><button class="btn camb" id="apr2">Pedir cambios</button><button class="btn rech" id="apr3">Rechazar</button><button class="btn res chico" id="apr4">Resuelto</button></div></div></aside>`;
 }
 document.addEventListener('click',e=>{const t=e.target.closest('button,[data-p]');if(!t)return;
   if(t.dataset.ir){ir(t.dataset.ir);return}
@@ -361,7 +369,10 @@ document.addEventListener('click',e=>{const t=e.target.closest('button,[data-p]'
   if(t.id==='ajBtn'){horasAjuste=true;$('#cuerpo').innerHTML=vPersona(persona,false);return}
   if(t.id==='ajNo'||t.id==='ajOk'){horasAjuste=false;$('#cuerpo').innerHTML=vPersona(persona,false);if(t.id==='ajOk')toast('Ajuste guardado (de ejemplo)');return}
   if(t.id==='chH'){horasAjuste=true;pintarPanel();return}
-  if(t.id==='apr'){toast('Aprobada: se descuentan '+(horasAjuste?'1.5':'2')+' h del banco de Luis');horasAjuste=false;return}
+  if(t.id==='apr'){toast('Aprobada: se descuentan '+(horasAjuste?'1.5':'2')+' h del banco de Luis');horasAjuste=false;$('#capa').innerHTML='';return}
+  if(/^apr\d$/.test(t.id)){toast('Listo (de ejemplo)');horasAjuste=false;$('#capa').innerHTML='';return}
+  if(t.id==='reabrir'){pintarPanel();return}
+  if(t.id==='xP'){horasAjuste=false;$('#capa').innerHTML='';return}
 });
 document.addEventListener('change',e=>{if(e.target.id==='vercomo'){rol=e.target.value;horasAjuste=false;ir(rol==='emp'&&pant==='banco'?'mibanco':pant)}if(e.target.id==='orden'){orden=e.target.value;pintar()}});
 {const h=location.hash.slice(1);if(['mibanco','banco','aprobar'].includes(h))pant=h}
