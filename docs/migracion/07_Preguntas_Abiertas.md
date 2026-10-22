@@ -18,6 +18,11 @@
 - **B7** → cargar los horarios MT que hay, marcados "por revisar" y editables en la app (con fecha de vigencia).
 - **PIN inicial** → (a) Valen/Gaby asignan uno temporal; la persona lo cambia la primera vez que entra.
 - **D1/D3** → cargar ruteo y firmas tal cual (ya se analizó al construir el sistema viejo). No poner avisos de eso.
+- **B1** (22-oct) → (a) la pregunta cambia a **"¿Último día que faltas?"** (ya no "¿en qué fecha regresas?"). El cálculo cuenta de inicio a ese día inclusive.
+- **B10** (22-oct) → **separar** el campo 3 en "Redacción para el formato" y "Etiqueta para el banco".
+- **B8** (22-oct) → **sin límite** de días hacia atrás por ahora; más adelante se revisa con Laura si quiere un tope.
+- **V2** (22-oct) → "Pedir cambios" en **naranja** `#fef0e6/#b06630` (comunica "algo falta o está mal"; el azul no).
+- **Horario en la ficha** (22-oct) → cambiar los campos de texto por **selectores de hora** (entrada y salida por día), rango base 8:00–20:00. Pendiente para el 23-oct (ver docs/PENDIENTES_VALEN.md).
 
 ## ANTES DE EMPEZAR
 
