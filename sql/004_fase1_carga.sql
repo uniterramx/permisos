@@ -6,8 +6,6 @@
 -- Cambios contra el Sheet: se quitan espacios sobrantes ("Dirección ", "Nuñez ")
 -- y se corrige el puesto "Coodinador" -> "Coordinador". Los NOMBRES van tal cual.
 -- =====================================================================
-begin;
-
 -- 1) Personas (26)
 insert into public.empleados (nombre_oficial, nombre_corto, iniciales, puesto, area_id, jornada, en_nomina, roles)
 select v.nombre, v.corto, v.ini, v.puesto, a.id, v.jornada::public.jornada, v.nomina, v.roles::public.rol[]
@@ -111,74 +109,124 @@ insert into public.proyectos (nombre_corto, nombre_oficial) values
 on conflict (nombre_corto) do nothing;
 
 -- 5) Horarios de medio tiempo (todos "por revisar"; solo a quien todavia no tiene horario)
-create temp table _hor (ini text, periodo text, desde date, dia int, txt text) on commit drop;
-insert into _hor values
-  ('AEGF', 'Vacaciones Jun-Ago', '2026-06-01', 1, '9:00-14:00'),
-  ('AEGF', 'Vacaciones Jun-Ago', '2026-06-01', 2, '9:00-14:00'),
-  ('AEGF', 'Vacaciones Jun-Ago', '2026-06-01', 3, '9:00-14:00'),
-  ('AEGF', 'Vacaciones Jun-Ago', '2026-06-01', 4, '9:00-14:00'),
-  ('AEGF', 'Vacaciones Jun-Ago', '2026-06-01', 5, '9:00-13:00'),
-  ('VMM', 'Vacaciones Jun-Ago', '2026-06-01', 1, '9:00-14:00'),
-  ('VMM', 'Vacaciones Jun-Ago', '2026-06-01', 2, '9:00-14:00'),
-  ('VMM', 'Vacaciones Jun-Ago', '2026-06-01', 3, '9:00-14:00'),
-  ('VMM', 'Vacaciones Jun-Ago', '2026-06-01', 4, '9:00-14:00'),
-  ('VMM', 'Vacaciones Jun-Ago', '2026-06-01', 5, '9:00-14:00'),
-  ('JAMV', 'Vacaciones Jun-Ago', '2026-06-01', 1, '9:00-18:00'),
-  ('JAMV', 'Vacaciones Jun-Ago', '2026-06-01', 2, '9:00-18:00'),
-  ('JAMV', 'Vacaciones Jun-Ago', '2026-06-01', 3, '9:00-18:00'),
-  ('JAMV', 'Vacaciones Jun-Ago', '2026-06-01', 4, '9:00-18:00'),
-  ('JAMV', 'Vacaciones Jun-Ago', '2026-06-01', 5, '9:00-18:00'),
-  ('REMC', 'Vacaciones Jun-Ago', '2026-06-01', 1, '9:00-18:00'),
-  ('REMC', 'Vacaciones Jun-Ago', '2026-06-01', 2, '9:00-18:00'),
-  ('REMC', 'Vacaciones Jun-Ago', '2026-06-01', 3, '9:00-18:00'),
-  ('REMC', 'Vacaciones Jun-Ago', '2026-06-01', 4, '9:00-18:00'),
-  ('REMC', 'Vacaciones Jun-Ago', '2026-06-01', 5, '9:00-18:00'),
-  ('MAPD', 'Indefinido', '2026-01-01', 1, '10:00-17:00'),
-  ('MAPD', 'Indefinido', '2026-01-01', 2, '10:00-17:00'),
-  ('MAPD', 'Indefinido', '2026-01-01', 3, '10:00-17:00'),
-  ('MAPD', 'Indefinido', '2026-01-01', 4, '10:00-17:00'),
-  ('MAPD', 'Indefinido', '2026-01-01', 5, '10:00-17:00'),
-  ('JFCE', 'Vacaciones Jun-Ago', '2026-06-01', 1, '9:00-14:00'),
-  ('JFCE', 'Vacaciones Jun-Ago', '2026-06-01', 2, '9:00-14:00'),
-  ('JFCE', 'Vacaciones Jun-Ago', '2026-06-01', 3, '9:00-14:00'),
-  ('JFCE', 'Vacaciones Jun-Ago', '2026-06-01', 4, '9:00-14:00'),
-  ('JFCE', 'Vacaciones Jun-Ago', '2026-06-01', 5, '-'),
-  ('PCCH', 'Vacaciones Jun-Ago', '2026-06-01', 1, '10:00-15:00'),
-  ('PCCH', 'Vacaciones Jun-Ago', '2026-06-01', 2, '-'),
-  ('PCCH', 'Vacaciones Jun-Ago', '2026-06-01', 3, '10:00-15:00'),
-  ('PCCH', 'Vacaciones Jun-Ago', '2026-06-01', 4, '10:00-15:00'),
-  ('PCCH', 'Vacaciones Jun-Ago', '2026-06-01', 5, '10:00-15:00'),
-  ('GTB', 'Indefinido', '2026-01-01', 1, '9:00-18:00'),
-  ('GTB', 'Indefinido', '2026-01-01', 2, '9:00-18:00'),
-  ('GTB', 'Indefinido', '2026-01-01', 3, '9:00-18:00'),
-  ('GTB', 'Indefinido', '2026-01-01', 4, '9:00-18:00'),
-  ('GTB', 'Indefinido', '2026-01-01', 5, '9:00-14:00'),
-  ('MISN', 'Indefinido', '2026-01-01', 1, '7:00-13:00'),
-  ('MISN', 'Indefinido', '2026-01-01', 2, '7:00-13:00'),
-  ('MISN', 'Indefinido', '2026-01-01', 3, '7:00-13:00'),
-  ('MISN', 'Indefinido', '2026-01-01', 4, '7:00-13:00'),
-  ('MISN', 'Indefinido', '2026-01-01', 5, '7:00-13:00'),
-  ('KYGS', 'Indefinido', '2026-01-01', 1, '19:30-7:30'),
-  ('KYGS', 'Indefinido', '2026-01-01', 2, '19:30-7:30'),
-  ('KYGS', 'Indefinido', '2026-01-01', 3, '19:30-7:30'),
-  ('KYGS', 'Indefinido', '2026-01-01', 4, '19:30-7:30'),
-  ('KYGS', 'Indefinido', '2026-01-01', 5, '19:30-7:30');
-
+with h (ini, periodo, desde, dia, txt) as (values
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-14:00'),
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-14:00'),
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-14:00'),
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-14:00'),
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '9:00-13:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-14:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-14:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-14:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-14:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '9:00-14:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-18:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-18:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-18:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-18:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '9:00-18:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 1, '10:00-17:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 2, '10:00-17:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 3, '10:00-17:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 4, '10:00-17:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 5, '10:00-17:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-14:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-14:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-14:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-14:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '-'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '10:00-15:00'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '-'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '10:00-15:00'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '10:00-15:00'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '10:00-15:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 1, '9:00-18:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 2, '9:00-18:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 3, '9:00-18:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 4, '9:00-18:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 5, '9:00-14:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 1, '7:00-13:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 2, '7:00-13:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 3, '7:00-13:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 4, '7:00-13:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 5, '7:00-13:00'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 1, '19:30-7:30'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 2, '19:30-7:30'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 3, '19:30-7:30'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 4, '19:30-7:30'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 5, '19:30-7:30')
+)
 insert into public.horarios (empleado_id, periodo, vigente_desde, por_revisar)
 select distinct e.id, h.periodo, h.desde, true
-from _hor h join public.empleados e on e.iniciales = h.ini
+from h join public.empleados e on e.iniciales = h.ini
 where not exists (select 1 from public.horarios x where x.empleado_id = e.id);
 
+with h (ini, periodo, desde, dia, txt) as (values
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-14:00'),
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-14:00'),
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-14:00'),
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-14:00'),
+  ('AEGF', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '9:00-13:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-14:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-14:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-14:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-14:00'),
+  ('VMM', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '9:00-14:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-18:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-18:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-18:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-18:00'),
+  ('JAMV', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-18:00'),
+  ('REMC', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '9:00-18:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 1, '10:00-17:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 2, '10:00-17:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 3, '10:00-17:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 4, '10:00-17:00'),
+  ('MAPD', 'Indefinido', date '2026-01-01', 5, '10:00-17:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '9:00-14:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '9:00-14:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '9:00-14:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '9:00-14:00'),
+  ('JFCE', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '-'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 1, '10:00-15:00'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 2, '-'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 3, '10:00-15:00'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 4, '10:00-15:00'),
+  ('PCCH', 'Vacaciones Jun-Ago', date '2026-06-01', 5, '10:00-15:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 1, '9:00-18:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 2, '9:00-18:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 3, '9:00-18:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 4, '9:00-18:00'),
+  ('GTB', 'Indefinido', date '2026-01-01', 5, '9:00-14:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 1, '7:00-13:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 2, '7:00-13:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 3, '7:00-13:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 4, '7:00-13:00'),
+  ('MISN', 'Indefinido', date '2026-01-01', 5, '7:00-13:00'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 1, '19:30-7:30'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 2, '19:30-7:30'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 3, '19:30-7:30'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 4, '19:30-7:30'),
+  ('KYGS', 'Indefinido', date '2026-01-01', 5, '19:30-7:30')
+)
 insert into public.horario_dias (horario_id, dia, entrada, salida)
 select hz.id, h.dia,
        case when h.txt = '-' then null else split_part(h.txt, '-', 1)::time end,
        case when h.txt = '-' then null else split_part(h.txt, '-', 2)::time end
-from _hor h
+from h
 join public.empleados e on e.iniciales = h.ini
 join public.horarios hz on hz.empleado_id = e.id and hz.periodo = h.periodo and hz.vigente_desde = h.desde
 on conflict (horario_id, dia) do nothing;
 
-commit;
 
 -- Comprobacion: debe decir 26 / 6 / 13 / 10 / 50
 select (select count(*) from public.empleados)    as personas,
