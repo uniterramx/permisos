@@ -23,6 +23,10 @@
 - **B8** (22-oct) → **sin límite** de días hacia atrás por ahora; más adelante se revisa con Laura si quiere un tope.
 - **V2** (22-oct) → "Pedir cambios" en **naranja** `#fef0e6/#b06630` (comunica "algo falta o está mal"; el azul no).
 - **Horario en la ficha** (22-oct) → cambiar los campos de texto por **selectores de hora** (entrada y salida por día), cada **30 min**, rango base 8:00–20:00 + casilla **"Otro horario"** (0:00–23:30, turnos de noche). Hecho en v0.2.2.
+- **Fase 2 · formato del formulario** (22-oct) → **paso a paso como Google Forms** (una pregunta por página, Atrás/Siguiente). Nada de miniatura del PDF: el empleado solo ve un **resumen de información** (su horario, qué afecta, horas que se mueven, cómo queda su banco) y la redacción en texto.
+- **Hora de llegada/salida** → selector **cada 5 minutos**.
+- **Capturar a nombre de otro** → sí, **Gaby y Valen**; queda registrado quién la capturó.
+- **Después de enviar** → no se edita; se corrige con "Corregir una solicitud". Antes de enviar: paso de **revisión + casilla "Confirmo que la información es verídica"** con aviso de que después habrá que corregir.
 
 ## ANTES DE EMPEZAR
 
