@@ -143,6 +143,47 @@ td input.f,td select.f{height:34px;font-size:13px}
 .check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--cafe);margin:10px 0 0}
 .check input{width:20px;height:20px;margin:0}
 
+/* ---- Ficha de persona ---- */
+.panel{background:var(--crema)}
+.fcab{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.fav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.fcab-t{flex:1;min-width:0}.fcab-t h3{margin:0;font-size:16px;line-height:1.25}
+.fchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.fsec{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:12px 14px;margin-top:10px;position:relative}
+.fst{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);margin-bottom:8px}
+.fst .chip{text-transform:none;letter-spacing:0}
+.fl{display:block;font-size:10.5px;color:var(--sub);margin:8px 0 3px}
+.fsec .f{height:34px;font-size:13px;padding:0 10px;border-radius:8px}
+.fsec select.f{padding-right:26px;background-position:right 9px center}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.ii{margin-left:auto;width:20px;height:20px;border-radius:50%;border:1px solid var(--cero);background:#fff;color:var(--sub);font-size:11px;font-weight:700;padding:0;line-height:1}
+.tipbox{position:absolute;right:12px;top:36px;z-index:4;width:250px;max-width:calc(100% - 24px);background:var(--cafe);color:#fff;font-size:11.5px;font-weight:400;text-transform:none;letter-spacing:0;border-radius:8px;padding:8px 10px;line-height:1.45;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.seg{display:flex;background:var(--arena);border-radius:8px;padding:3px;gap:2px}
+.seg button{flex:1;border:0;background:none;border-radius:6px;font-size:12.5px;color:var(--sub);padding:0 6px;height:28px}
+.seg button.on{background:#fff;color:var(--cafe);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.fsec .alerta{margin-top:6px}
+.fsec .check{font-size:12px;margin-top:8px}.fsec .check input{width:16px;height:16px}
+.btn.chico{height:34px;font-size:13px;padding:0 12px}
+.rol{display:inline-flex;align-items:center;border:1px solid var(--borde);border-radius:14px;padding:5px 11px;font-size:12px;margin:0 4px 6px 0;background:#fff;color:var(--cafe);cursor:pointer}
+.rol input{position:absolute;opacity:0;width:0;height:0}
+.rol:has(input:checked){background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.periodos{margin:10px 0 0}
+.per{min-height:38px;padding:4px 9px;font-size:11.5px}.per.mas{color:var(--sub);border-style:dashed}
+.htab{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
+.htab td{border:0;border-top:1px solid #f3f1ec;height:auto;padding:5px 2px;background:none!important;position:static;min-width:0;box-shadow:none;white-space:nowrap}
+.htab td.dn{font-weight:600;width:34px}
+.htab .tog{height:28px;font-size:11.5px;padding:0 9px;border-radius:14px}
+.htab .hh{display:flex;align-items:center;gap:5px}
+.htab .hs{height:30px;font-size:12.5px;padding:0 20px 0 8px;border-radius:15px;background-position:right 7px center;width:74px;min-width:0}
+.htab td:nth-child(2){width:84px}
+.htab .tog{width:78px}
+.htab .a{font-size:11px;color:var(--sub)}
+.hopc{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin-top:6px}
+.hopc .check{margin:0}
+.lnk{border:0;background:none;color:var(--cafe);text-decoration:underline;font-size:12px;padding:0}
+.fpie{position:sticky;bottom:-28px;display:flex;gap:8px;margin:14px -18px -28px;padding:12px 18px calc(14px + env(safe-area-inset-bottom));background:var(--crema);border-top:1px solid var(--borde)}
+.fpie .btn{height:40px}
+
 /* ---- Nueva solicitud (paso a paso) ---- */
 .wiz{display:block;padding-top:18px}
 .wiz-res{display:none}
@@ -188,7 +229,7 @@ td input.f,td select.f{height:34px;font-size:13px}
 }
 
 /* celular: se ven todas las columnas y la tabla se desliza de lado */
-@media (max-width:759px){ table{min-width:720px} }
+@media (max-width:759px){ .tabla-w table{min-width:720px} }
 
 /* ---- Computadora (pantalla principal) ---- */
 @media (min-width:760px){
@@ -268,7 +309,7 @@ td input.f,td select.f{height:34px;font-size:13px}
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.3.1';
+const VERSION = 'v0.3.2';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 $('verEntrar').textContent = VERSION + ' · Fase 2';
@@ -598,48 +639,78 @@ function filasPersonas(){
 let panelId = null, horNuevo = false, horSel = null;
 function cerrarPanel(){ panelId = null; $('panel').classList.add('oculto'); $('vista').classList.remove('con-panel'); }
 
+// Ficha de persona: apartados en tarjetas, campos compactos, ayuda en el (i)
+const tipAyuda = txt => '<button type="button" class="ii" aria-label="Ayuda">i</button><span class="tipbox oculto">' + txt + '</span>';
+const seg = (id, val, ops) => '<div class="seg" data-seg="' + id + '">' + ops.map(([v, t]) => '<button type="button" data-v="' + v + '" class="' + (String(v) === String(val) ? 'on' : '') + '">' + t + '</button>').join('') + '</div><input type="hidden" id="' + id + '" value="' + val + '">';
+
 function abrirPersona(id){
   const e = id ? empPorId(id) : { nombre_oficial: '', iniciales: '', puesto: '', area_id: D.areas[0]?.id, jornada: 'TC', en_nomina: false, activo: true, roles: ['empleado'] };
   panelId = id || 'nueva'; horNuevo = false; horSel = null;
   const activos = D.empleados.filter(x => x.activo).sort((a, b) => a.nombre_oficial.localeCompare(b.nombre_oficial, 'es'));
   const optGente = sel => '<option value="">—</option>' + activos.map(x => '<option value="' + x.id + '"' + (x.id === sel ? ' selected' : '') + '>' + esc(x.nombre_oficial) + '</option>').join('');
   const warn = id && !e.nombre_revisado ? avisoNombre(e.nombre_oficial) : [];
-  let h = '<div class="cab"><div><h3>' + (id ? esc(e.nombre_oficial) : 'Nueva persona') + '</h3><div class="sub">' + (id ? esc(e.iniciales) + ' · editar datos' : 'llena sus datos') + '</div></div><button class="x" type="button" id="xPanel" aria-label="Cerrar">✕</button></div>';
-  h += '<label for="eNombre">Nombre completo (oficial)</label><input class="f" id="eNombre" value="' + esc(e.nombre_oficial) + '" autocapitalize="words">';
-  if (warn.length) h += '<div class="alerta" id="eWarn">⚠️ ' + warn.join(' · ') + '. Revísalo con RH. <button type="button" id="eNomOk">Está bien así</button></div>';
-  if (id) h += '<div class="ayuda">Si cambias el nombre, solo cambia de aquí en adelante (los PDF ya hechos se quedan igual).</div>';
-  h += '<div class="dos"><div><label for="eIni">Iniciales</label><input class="f" id="eIni" value="' + esc(e.iniciales) + '" autocapitalize="characters" maxlength="8"></div>' +
-       '<div><label for="eCorto">Cómo le dicen</label><input class="f" id="eCorto" value="' + esc(e.nombre_corto || '') + '" placeholder="' + esc((e.nombre_oficial || '').split(' ')[0]) + '"></div></div>';
-  h += '<label for="eArea">Área</label><select class="f" id="eArea">' + D.areas.map(a => '<option value="' + a.id + '"' + (a.id === e.area_id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>';
-  h += '<label for="ePuesto">Puesto (oficial, va en el PDF)</label><input class="f" id="ePuesto" value="' + esc(e.puesto || '') + '">';
-  h += '<div class="dos"><div><label for="eValida">Quién valida</label><select class="f" id="eValida">' + optGente(e.valida_id) + '</select></div>' +
-       '<div><label for="eFirma">Quién firma</label><select class="f" id="eFirma">' + optGente(e.firma_id) + '</select></div></div>';
-  h += '<div class="dos"><div><label for="eJornada">Jornada</label><select class="f" id="eJornada"><option value="TC"' + (e.jornada === 'TC' ? ' selected' : '') + '>Tiempo completo</option><option value="MT"' + (e.jornada === 'MT' ? ' selected' : '') + '>Medio tiempo</option></select></div>' +
-       '<div><label for="eNomina">En nómina</label><select class="f" id="eNomina"><option value="1"' + (e.en_nomina ? ' selected' : '') + '>Sí</option><option value="0"' + (!e.en_nomina ? ' selected' : '') + '>No</option></select></div></div>';
-  h += '<label class="check"><input type="checkbox" id="eActivo"' + (e.activo ? ' checked' : '') + '> Activa (si la apagas ya no puede entrar, pero su historial se queda)</label>';
+  const est = id ? (D.accesos[id] || 'sin_pin') : null, ep = est ? ESTADO_PIN[est] : null;
+  const area = areaPorId(e.area_id);
+  const sec = (titulo, cuerpo, extra) => '<section class="fsec"><div class="fst">' + titulo + (extra || '') + '</div>' + cuerpo + '</section>';
+  const campo = (lbl, html) => '<div><label class="fl">' + lbl + '</label>' + html + '</div>';
+
+  let h = '<div class="fcab"><div class="fav ' + areaClase(e.area_id) + '">' + esc(e.iniciales || '+') + '</div><div class="fcab-t"><h3>' + (id ? esc(e.nombre_oficial) : 'Nueva persona') + '</h3>' +
+    '<div class="fchips">' + (area ? '<span class="chip ' + areaClase(e.area_id) + '">' + esc(area.nombre) + '</span>' : '') +
+    (ep ? '<span class="chip ' + ep[0] + '">PIN ' + ep[1] + '</span>' : '') + '<span class="chip a6">' + (e.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</span>' +
+    (e.activo ? '' : '<span class="chip c-blk">inactiva</span>') + '</div></div><button class="x" type="button" id="xPanel" aria-label="Cerrar">✕</button></div>';
+
+  h += sec('Identidad',
+    campo('Nombre completo (oficial)', '<input class="f" id="eNombre" value="' + esc(e.nombre_oficial) + '" autocapitalize="words">') +
+    (warn.length ? '<div class="alerta" id="eWarn">⚠️ ' + warn.join(' · ') + ' <button type="button" id="eNomOk">Está bien así</button></div>' : '') +
+    '<div class="g2">' + campo('Iniciales', '<input class="f" id="eIni" value="' + esc(e.iniciales) + '" autocapitalize="characters" maxlength="8">') +
+    campo('Cómo le dicen', '<input class="f" id="eCorto" value="' + esc(e.nombre_corto || '') + '" placeholder="' + esc((e.nombre_oficial || '').split(' ')[0]) + '">') + '</div>',
+    tipAyuda('El nombre y las iniciales salen en el PDF y en el folio. Si los cambias, solo cambia de aquí en adelante; lo ya impreso se queda igual.'));
+
+  h += sec('Puesto y área',
+    '<div class="g2">' + campo('Área', '<select class="f" id="eArea">' + D.areas.map(a => '<option value="' + a.id + '"' + (a.id === e.area_id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>') +
+    campo('En nómina', seg('eNomina', e.en_nomina ? '1' : '0', [['1', 'Sí'], ['0', 'No']])) + '</div>' +
+    campo('Puesto (oficial)', '<input class="f" id="ePuesto" value="' + esc(e.puesto || '') + '">'),
+    tipAyuda('El puesto va en el PDF debajo del nombre. El área define a qué bandeja llegan sus solicitudes. “En nómina” decide si su PDF lleva logo.'));
+
+  h += sec('Quién valida y quién firma',
+    '<div class="g2">' + campo('Valida', '<select class="f" id="eValida">' + optGente(e.valida_id) + '</select>') +
+    campo('Firma', '<select class="f" id="eFirma">' + optGente(e.firma_id) + '</select>') + '</div>',
+    tipAyuda('Valida: con quién se habla el permiso (informativo). Firma: quién firma su PDF; debe estar en nómina.'));
+
+  h += sec('Jornada y horario', seg('eJornada', e.jornada, [['TC', 'Tiempo completo'], ['MT', 'Medio tiempo']]) + '<div id="eHorario"></div>', '<span id="hEstado"></span>');
+
   if (soyAdmin()){
     const R = [['jefe','Jefe de área'],['filtro','Filtro (Gaby)'],['final','Aprobación final (Laura)'],['altas','Altas y PINs'],['admin','Administrador']];
-    h += '<div class="bloque"><div class="t">Roles en el sistema</div><div class="roles">' + R.map(([k, t]) =>
-      '<label><input type="checkbox" data-rol="' + k + '"' + ((e.roles || []).includes(k) ? ' checked' : '') + '>' + t + '</label>').join('') + '</div></div>';
+    h += sec('Roles', '<div class="roles">' + R.map(([k, t]) => '<label class="rol"><input type="checkbox" data-rol="' + k + '"' + ((e.roles || []).includes(k) ? ' checked' : '') + '>' + t + '</label>').join('') + '</div>',
+      tipAyuda('Prende los roles que tiene esta persona en el sistema. Todos son “empleado” además de esto.'));
   }
-  h += '<div id="eHorario"></div>';
-  if (id){
-    const est = D.accesos[id] || 'sin_pin', ep = ESTADO_PIN[est];
-    h += '<div class="bloque"><div class="t">Acceso <span class="chip ' + ep[0] + '">' + ep[1] + '</span></div>' +
-      '<div class="ayuda">El PIN temporal se lo das a la persona; al entrar, la app le pide elegir el suyo.</div>' +
-      '<div class="fila"><input class="f" id="eTemp" inputmode="numeric" maxlength="6" style="width:130px;text-align:center;letter-spacing:.2em" value="' + String(Math.floor(100000 + Math.random() * 900000)) + '">' +
-      '<button class="btn l" type="button" id="ePinTemp">Asignar PIN temporal</button>' +
-      (est === 'bloqueado' ? '<button class="btn l" type="button" id="eDesbloq">Desbloquear</button>' : '') + '</div></div>';
-  }
-  h += '<div class="acciones"><button class="btn" type="button" id="eGuardar">' + (id ? 'Guardar cambios' : 'Dar de alta') + '</button><button class="btn l" type="button" id="eCancelar">Cancelar</button></div>';
+
+  h += sec('Acceso',
+    (id ? '<div class="fila" style="margin-top:0"><input class="f" id="eTemp" inputmode="numeric" maxlength="6" style="width:110px;text-align:center;letter-spacing:.18em" value="' + String(Math.floor(100000 + Math.random() * 900000)) + '">' +
+      '<button class="btn l chico" type="button" id="ePinTemp">Dar PIN temporal</button>' +
+      (est === 'bloqueado' ? '<button class="btn l chico" type="button" id="eDesbloq">Desbloquear</button>' : '') + '</div>' : '<div class="peq">Después de darla de alta le asignas su PIN temporal.</div>') +
+    '<label class="check"><input type="checkbox" id="eActivo"' + (e.activo ? ' checked' : '') + '> Activa · si la apagas ya no entra, pero su historial se queda</label>',
+    tipAyuda('El PIN temporal se lo das a la persona; al entrar, la app le pide elegir el suyo.'));
+
+  h += '<div class="fpie"><button class="btn" type="button" id="eGuardar">' + (id ? 'Guardar cambios' : 'Dar de alta') + '</button><button class="btn l" type="button" id="eCancelar">Cancelar</button></div>';
   $('panel').innerHTML = h;
   $('panel').classList.remove('oculto'); $('vista').classList.add('con-panel'); $('panel').scrollTop = 0;
   if ($('pFilas')) filasPersonas();
 
+  // interruptores (Si/No, TC/MT)
+  $('panel').querySelectorAll('[data-seg]').forEach(s => s.querySelectorAll('button').forEach(b => b.onclick = () => {
+    s.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    $(s.dataset.seg).value = b.dataset.v;
+    if (s.dataset.seg === 'eJornada') pintarHorario(id, b.dataset.v);
+  }));
+  // ayudas (i)
+  $('panel').querySelectorAll('.ii').forEach(b => b.onclick = ev => { ev.stopPropagation(); const t = b.nextElementSibling;
+    $('panel').querySelectorAll('.tipbox').forEach(x => { if (x !== t) x.classList.add('oculto'); }); t.classList.toggle('oculto'); });
+  $('panel').onclick = () => $('panel').querySelectorAll('.tipbox').forEach(x => x.classList.add('oculto'));
+
   let nombreOk = !!e.nombre_revisado;
   if ($('eNomOk')) $('eNomOk').onclick = () => { nombreOk = true; $('eWarn').remove(); };
   $('xPanel').onclick = $('eCancelar').onclick = () => { cerrarPanel(); if ($('pFilas')) filasPersonas(); };
-  $('eJornada').onchange = () => pintarHorario(id, $('eJornada').value);
   pintarHorario(id, e.jornada);
   if ($('ePinTemp')) $('ePinTemp').onclick = () => pinTemporal(id);
   if ($('eDesbloq')) $('eDesbloq').onclick = () => desbloquear(id);
@@ -648,35 +719,31 @@ function abrirPersona(id){
 
 function pintarHorario(empId, jornada){
   const cont = $('eHorario');
-  if (jornada !== 'MT'){ cont.innerHTML = '<div class="bloque"><div class="t">Horario</div><div class="ayuda">Tiempo completo: 9:00–18:00, lunes a viernes (regla general).</div></div>'; return; }
+  if (jornada !== 'MT'){ cont.innerHTML = '<div class="peq" style="margin-top:8px">Tiempo completo: 9:00–18:00, lunes a viernes (regla general).</div>'; $('hEstado').innerHTML = ''; return; }
   const todos = empId ? D.horarios.filter(x => x.empleado_id === empId).sort((a, b) => a.vigente_desde.localeCompare(b.vigente_desde)) : [];
   const vig = empId ? horarioDe(empId) : null;
   const elegido = (horSel && todos.find(x => x.id === horSel)) || vig;
   const h = empId && !horNuevo ? elegido : null;
   const base = elegido;
   const dias = ['Lun','Mar','Mié','Jue','Vie'];
-  let html = '<div class="bloque"><div class="t">Horario ' + (horNuevo ? '<span class="chip c-ok">periodo nuevo</span>' : h?.por_revisar ? '<span class="chip c-rev">por revisar</span>' : !h ? '<span class="chip c-rev">sin horario</span>' : '') + '</div>';
-  if (todos.length > 1 || (todos.length && horNuevo)){
-    html += '<div class="periodos">' + todos.map(x => { const et = x.id === vig?.id ? 'vigente' : x.vigente_desde > hoyISO() ? 'próximo' : 'anterior';
+  $('hEstado').innerHTML = horNuevo ? '<span class="chip c-ok">periodo nuevo</span>' : h?.por_revisar ? '<span class="chip c-rev">por revisar</span>' : !h ? '<span class="chip c-rev">sin horario</span>' : '';
+  let html = '<div class="periodos">' + todos.map(x => { const et = x.id === vig?.id ? 'vigente' : x.vigente_desde > hoyISO() ? 'próximo' : 'anterior';
       return '<button type="button" class="per' + (!horNuevo && x.id === h?.id ? ' on' : '') + '" data-per="' + x.id + '">' + esc(x.periodo || 'Sin nombre') + '<span>' + et + ' · desde ' + fechaMX(x.vigente_desde) + '</span></button>'; }).join('') +
-      (horNuevo ? '<button type="button" class="per on">Periodo nuevo<span>sin guardar</span></button>' : '') + '</div>';
-  }
-  html += '<div class="dos"><div><label for="hPeriodo">Periodo</label><input class="f" id="hPeriodo" value="' + esc(horNuevo ? '' : h?.periodo || '') + '" placeholder="Ej. Semestre ago-dic"></div>' +
-          '<div><label for="hDesde">Vigente desde</label><input class="f" id="hDesde" type="date" value="' + (horNuevo || !h ? hoyISO() : h.vigente_desde) + '"></div></div>';
+    (horNuevo ? '<button type="button" class="per on">Periodo nuevo<span>sin guardar</span></button>' : (empId ? '<button type="button" class="per mas" id="hNuevo">+ periodo nuevo</button>' : '')) + '</div>';
+  html += '<div class="g2">' + '<div><label class="fl" for="hPeriodo">Periodo</label><input class="f" id="hPeriodo" value="' + esc(horNuevo ? '' : h?.periodo || '') + '" placeholder="Ej. Semestre ago-dic"></div>' +
+          '<div><label class="fl" for="hDesde">Vigente desde</label><input class="f" id="hDesde" type="date" value="' + (horNuevo || !h ? hoyISO() : h.vigente_desde) + '"></div></div>';
   const ref = h || base;
   const diasRef = [1, 2, 3, 4, 5].map(i => ref?.horario_dias?.find(x => x.dia === i));
   const fuera = diasRef.some(d => d?.entrada && (!enRango(d.entrada) || !enRango(d.salida) || d.salida.slice(0, 5) <= d.entrada.slice(0, 5)));
-  html += '<label class="check"><input type="checkbox" id="hAmplio"' + (fuera ? ' checked' : '') + '> Otro horario (antes de las 8:00, después de las 20:00 o turno de noche)</label>';
-  html += '<div class="dias">' + dias.map((n, i) => { const d = diasRef[i], trabaja = !!d?.entrada;
-    return '<div class="dia"><span class="dn">' + n + '</span>' +
-      '<button type="button" class="tog' + (trabaja ? ' on' : '') + '" id="hT' + (i + 1) + '" aria-pressed="' + trabaja + '">' + (trabaja ? 'Trabaja' : 'Descansa') + '</button>' +
-      '<select class="f hs" id="hE' + (i + 1) + '" aria-label="Entrada ' + n + '"' + (trabaja ? '' : ' disabled') + '></select><span class="a">a</span>' +
-      '<select class="f hs" id="hS' + (i + 1) + '" aria-label="Salida ' + n + '"' + (trabaja ? '' : ' disabled') + '></select></div>'; }).join('') + '</div>';
-  html += '<div class="fila"><button class="btn l" type="button" id="hCopiar">Copiar el lunes a toda la semana</button></div>';
-  html += '<div class="ayuda" id="hNota">Elige a qué hora entra y sale cada día. “Descansa” = ese día no trabaja.</div>';
-  if (h?.por_revisar) html += '<label class="check"><input type="checkbox" id="hRevisado"> Ya lo revisé, está correcto</label>';
-  if (h && !horNuevo) html += '<div class="fila"><button class="btn l" type="button" id="hNuevo">+ Nuevo periodo (desde otra fecha)</button></div>';
-  cont.innerHTML = html + '</div>';
+  html += '<table class="htab">' + dias.map((n, i) => { const d = diasRef[i], trabaja = !!d?.entrada;
+    return '<tr><td class="dn">' + n + '</td><td><button type="button" class="tog' + (trabaja ? ' on' : '') + '" id="hT' + (i + 1) + '" aria-pressed="' + trabaja + '">' + (trabaja ? 'Trabaja' : 'Descansa') + '</button></td>' +
+      '<td class="hh"><select class="f hs" id="hE' + (i + 1) + '" aria-label="Entrada ' + n + '"' + (trabaja ? '' : ' disabled') + '></select><span class="a">a</span>' +
+      '<select class="f hs" id="hS' + (i + 1) + '" aria-label="Salida ' + n + '"' + (trabaja ? '' : ' disabled') + '></select></td></tr>'; }).join('') + '</table>';
+  html += '<div class="hopc"><label class="check"><input type="checkbox" id="hAmplio"' + (fuera ? ' checked' : '') + '> Otro horario (noche / fuera de 8–20)</label>' +
+    '<button class="lnk" type="button" id="hCopiar">copiar lunes a todos</button>' +
+    (h?.por_revisar ? '<label class="check"><input type="checkbox" id="hRevisado"> Ya lo revisé</label>' : '') + '</div>';
+  html += '<div class="peq" id="hNota"></div>';
+  cont.innerHTML = html;
   const valores = diasRef.map(d => d?.entrada ? [d.entrada.slice(0, 5), d.salida.slice(0, 5)] : ['09:00', '14:00']);
   llenarHoras(valores);
   $('hAmplio').onchange = () => llenarHoras(leerSelects());
@@ -728,7 +795,7 @@ function notaHorario(){
   }
   n.innerHTML = malos.length ? '<span class="warn">⚠️ Revisa el ' + malos.join(', ') + ': la salida tiene que ser después de la entrada.</span>'
     : noche.length ? 'Turno de noche el ' + noche.join(', ') + ': sale al día siguiente.'
-    : 'Elige a qué hora entra y sale cada día. “Descansa” = ese día no trabaja.';
+    : '';
 }
 
 function leerHorario(){
