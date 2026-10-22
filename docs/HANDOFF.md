@@ -4,8 +4,12 @@
 - **Fase 0 (esqueleto)**: ✅ PWA en GitHub Pages, entrada con PIN, ícono D (calendario + palomita).
 - **Fase 1 (catálogos)**: ✅ construida y cargada (v0.2.0). SQL 001–004 corridos en Supabase
   (26 personas, 6 jefes, 13 proyectos, 10 horarios). **Falta que Valen la pruebe** (ver abajo).
-- Siguiente: **Fase 2 · Solicitar** (formulario con las 8 opciones + redacción automática + folios).
-  Wireframe primero.
+- **Fase 2 (solicitar)**: ✅ construida (v0.3.0): formulario paso a paso, cálculos (`js/calculos.js`, 39 tests en
+  `tests/calculos.test.js`), redondeo a 15 min, folios, ruteo inicial, modo PRUEBA, "Mis solicitudes". SQL 006.
+  Corrección (-R1) se hace en la Fase 3. **Falta: Valen corre SQL 005 y 006 y prueba.**
+- Siguiente: **Fase 3 · Bandejas**. Wireframe primero.
+- Pruebas locales: hay Postgres 16 en la máquina; `sql/` se prueba contra una imitación de Supabase
+  (roles anon/authenticated, `auth.uid()` por `request.jwt.claim.sub`). Ver cómo en el historial de este chat.
 
 ## Datos clave
 - App: https://vmmterminus-star.github.io/uniterra-permisos/

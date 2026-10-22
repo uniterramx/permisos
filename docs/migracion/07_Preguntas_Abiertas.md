@@ -28,6 +28,8 @@
 - **Capturar a nombre de otro** → sí, **Gaby y Valen**; queda registrado quién la capturó.
 - **Después de enviar** → no se edita; se corrige con "Corregir una solicitud". Antes de enviar: paso de **revisión + casilla "Confirmo que la información es verídica"** con aviso de que después habrá que corregir.
 
+- **B5 redondeo** (22-oct) → al **cuarto de hora más cercano** (15 min), ya no a la hora completa. Ej.: 1 h 40 min → 1.75 h; 08:30–09:00 → 0.5 h.
+
 ## ANTES DE EMPEZAR
 
 **M2. ¿El sistema de Google se sigue usando?** Lo último es del 28-ago; hay 2 en Raúl, 33 en Gaby y 18

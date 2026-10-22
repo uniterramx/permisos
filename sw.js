@@ -1,7 +1,7 @@
 // Service worker de Permisos UT. Cambiar VERSION en cada entrega (debe coincidir con index.html).
-const VERSION = 'v0.2.3';
+const VERSION = 'v0.3.0';
 const CACHE = 'permisos-ut-' + VERSION;
-const SHELL = ['./', './index.html', './config.js', './manifest.webmanifest',
+const SHELL = ['./', './index.html', './config.js', './js/calculos.js', './js/solicitar.js', './manifest.webmanifest',
   './icons/apple-touch-icon.png', './icons/icon-192.png', './icons/icon-512.png', './icons/favicon.ico'];
 
 self.addEventListener('install', e => {

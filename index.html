@@ -141,6 +141,50 @@ td input.f,td select.f{height:36px;font-size:16px}
 .check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--cafe);margin:10px 0 0}
 .check input{width:20px;height:20px;margin:0}
 
+/* ---- Nueva solicitud (paso a paso) ---- */
+.wiz{display:block;padding-top:18px}
+.wiz-res{display:none}
+.prog{display:flex;gap:4px;margin-bottom:6px}.prog i{flex:1;height:5px;border-radius:3px;background:var(--borde)}.prog i.on{background:var(--cafe)}
+.pn{font-size:11px;color:var(--sub)}
+.res-cel{margin-top:10px;background:#fff;border:1px solid var(--borde);border-radius:12px;padding:10px 14px;font-size:12px}
+.res-cel summary{cursor:pointer;list-style:none;line-height:1.5}
+.res-cel summary::-webkit-details-marker{display:none}
+.wcard{background:#fff;border:1px solid var(--borde);border-radius:14px;padding:20px 18px;margin-top:12px}
+.q{font-size:20px;font-weight:700;margin:0 0 4px;line-height:1.3}.qs{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.5}
+.wnav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.wnav .btn{min-width:120px}
+.tipos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tipo{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:12px;font-size:13px;text-align:left;min-height:72px;color:var(--cafe)}
+.tipo .e{display:block;font-size:20px;margin-bottom:4px}.tipo small{display:block;font-size:10px;color:var(--sub)}
+.tipo.on{border:2px solid var(--cafe);font-weight:600}.tipo.pronto{opacity:.5;cursor:default}
+.wchips{display:flex;flex-wrap:wrap;gap:8px}
+.wchip{border:1px solid var(--borde);background:#fff;border-radius:22px;padding:10px 14px;font-size:14px;min-height:44px;color:var(--cafe)}
+.wchip.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.rango{display:flex;align-items:flex-end;gap:10px}.rango>div{flex:1;max-width:180px}.rango>span{padding-bottom:12px;color:var(--sub)}
+.ta{height:auto;padding:10px 12px;line-height:1.45;resize:vertical}
+.tag{font-size:10px;background:var(--arena);border-radius:8px;padding:2px 7px;margin-left:4px;color:var(--sub)}
+.res{background:#fff;border:1px solid var(--borde);border-radius:14px;padding:16px 18px;font-size:12.5px;line-height:1.5}
+.res h4{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub)}
+.r{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #f3f1ec;font-size:13px}.r span{color:var(--sub);flex:none}.r b{text-align:right;font-weight:600}
+.lista .r{padding:10px 0}
+.pos{color:#37699e}.neg{color:#a56a3f}
+.peq{font-size:11px;color:var(--sub);line-height:1.5}
+.red{font-family:'Times New Roman',Times,serif;font-style:italic;font-size:14px;background:var(--alt);border-radius:8px;padding:10px 12px;margin-top:6px;line-height:1.5}
+.cambiar{border:0;background:none;color:var(--cafe);text-decoration:underline;font-size:11px;padding:0 0 0 6px;font-weight:400}
+.confirma{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin:16px 0 0;background:var(--rev-f);border:1px solid #f0dfb0;border-radius:10px;padding:12px;color:var(--cafe);line-height:1.5;cursor:pointer}
+.confirma input{width:22px;height:22px;margin:0;flex:none}
+.listo{text-align:center;padding:36px 10px;max-width:520px;margin:0 auto}.folio{font-size:26px;font-weight:700;margin:4px 0}
+.pasos{text-align:left;font-size:14px;line-height:1.9;margin:16px auto 0;max-width:320px}
+.listo-btns{display:flex;flex-direction:column;gap:8px;margin-top:22px}
+@media (min-width:760px){
+  .wiz{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start;max-width:1040px;margin:0 auto}
+  .wiz-res{display:block;position:sticky;top:80px;margin-top:22px}
+  .res-cel{display:none}
+  .wcard{padding:26px 28px}
+  .q{font-size:22px}
+  .tipos{grid-template-columns:repeat(4,1fr)}
+}
+
 /* columnas que se esconden en celular */
 @media (max-width:759px){ .opt{display:none} }
 
@@ -220,11 +264,12 @@ td input.f,td select.f{height:36px;font-size:16px}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
+<script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.2.3';
+const VERSION = 'v0.3.0';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
-$('verEntrar').textContent = VERSION + ' · Fase 1';
+$('verEntrar').textContent = VERSION + ' · Fase 2';
 
 /* ================= Utilidades ================= */
 const recordar = {
@@ -453,8 +498,8 @@ function vistaInicio(){
   let h = '<div class="hola"><h1>Hola, ' + esc(corto) + '</h1><div class="sub">' + esc(yo.area) + ' · ' +
     (yo.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</div></div>';
   h += '<div class="secc">Para todos</div><div class="grid">' +
-    tarjeta('📝', 'Nueva solicitud', 'diario') + tarjeta('⏱️', 'Mi banco de horas', 'saldo y movimientos') +
-    tarjeta('📂', 'Mis solicitudes', 'estado y PDFs') + tarjeta('📘', 'Guía', 'cómo se usa') + '</div>';
+    tarjeta('📝', 'Nueva solicitud', 'diario', { ir: 'nueva' }) + tarjeta('⏱️', 'Mi banco de horas', 'saldo y movimientos') +
+    tarjeta('📂', 'Mis solicitudes', 'estado y folios', { ir: 'mias' }) + tarjeta('📘', 'Guía', 'cómo se usa') + '</div>';
   if (roles.some(r => ['jefe','filtro','final','admin'].includes(r)))
     h += '<div class="secc">Para quien valida</div><div class="grid">' +
       tarjeta('✅', 'Mi bandeja', 'pendientes de decidir', { cls: 'hi', badge: nPend || '' }) + tarjeta('📊', 'Panel general', 'todas, en vivo') + '</div>';
@@ -465,7 +510,7 @@ function vistaInicio(){
       tarjeta('🏗️', 'Proyectos', D.proyectos.filter(p => p.activo).length + ' activos', { ir: 'proyectos' }) +
       tarjeta('🏢', 'Áreas y jefes', D.areas.length + ' áreas', { ir: 'areas' }) + '</div>';
   }
-  h += '<div class="ver">' + VERSION + ' · Fase 1</div>';
+  h += '<div class="ver">' + VERSION + ' · Fase 2</div>';
   $('vista').innerHTML = h;
   $('vista').querySelectorAll('[data-ir]').forEach(c => c.onclick = () => location.hash = c.dataset.ir);
 }
@@ -477,7 +522,7 @@ function ir(){
   const k = location.hash.slice(1);
   const v = VISTAS[k];
   cerrarPanel();
-  if (v && rolesVista().some(r => ['admin','altas'].includes(r))){ $('crumb').textContent = '› ' + v[0]; v[1](); }
+  if (v && (v[2] === 'todos' || rolesVista().some(r => ['admin','altas'].includes(r)))){ $('crumb').textContent = '› ' + v[0]; v[1](); }
   else { $('crumb').textContent = ''; vistaInicio(); }
   window.scrollTo(0, 0);
 }
@@ -888,13 +933,15 @@ async function arrancar(){
   mostrar('app'); ir();
 }
 
-(async () => {
+// Arranca cuando ya cargaron todos los scripts (js/solicitar.js registra sus vistas)
+window.addEventListener('DOMContentLoaded', async () => {
   const { data } = await sb.auth.getSession();
   if (data.session) return arrancar();
   mostrar('entrar'); cargarLista();
-})();
+});
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
+<script src="js/solicitar.js"></script>
 </body>
 </html>
