@@ -126,7 +126,10 @@ tr.corr td{color:var(--sub)}
 .d-rech{background:var(--rech-f);color:var(--rech)}.d-camb{background:var(--camb-f);color:var(--camb)}
 .d-res{background:var(--res-f);color:var(--res)}.d-ppc{background:var(--ppc-f);color:var(--ppc)}
 .d-na{color:var(--cero);font-weight:400}
-.a1{background:#e8eef5;color:#4a6484}.a2{background:#ece9f3;color:#635a7e}.a3{background:#e4efee;color:#40706a}.a4{background:#f0eae0;color:#7d6a4d}.a5{background:#f2eaee;color:#7d5a68}
+.a1,tbody tr td.a1{background:#e8eef5;color:#4a6484}.a2,tbody tr td.a2{background:#ece9f3;color:#635a7e}.a3,tbody tr td.a3{background:#e4efee;color:#40706a}.a4,tbody tr td.a4{background:#f0eae0;color:#7d6a4d}.a5,tbody tr td.a5{background:#f2eaee;color:#7d5a68}
+.bloques{display:flex;flex-direction:column}.bloques>.stats{order:1}.o-res{order:2}.o-tab{order:3}
+table.mini{width:auto}
+@media (max-width:760px){.o-res{order:4}}
 .vacio{padding:24px;text-align:center;color:var(--sub);font-size:13px}
 
 /* Resumen por persona */
@@ -336,7 +339,7 @@ function vBandeja(){
   const todas=filasEtapa(tab);
   const cuenta=v=>todas.filter(s=>v.includes(miDec(s,tab))&&!s.corregidaPor).length;
   const st5=[['tot','Total',todas.length,'var(--cafe)'],['apr','Aprobadas',cuenta(['apr','res','ppc'])+todas.filter(s=>s.corregidaPor).length,'var(--apr)'],['pend','Pendientes',cuenta(['pend']),'var(--pend)'],['camb','Pedir cambios',todas.filter(s=>!s.corregidaPor&&(miDec(s,tab)==='camb'||(tab==='gaby'&&s.d.jefe.v==='camb'))).length,'var(--camb)'],['rech','Rechazadas',cuenta(['rech']),'var(--rech)']];
-  h+=`<div class="stats">${st5.map(([k,t,n,c])=>`<button class="stat ${filtro===k?'on':''}" data-filtro="${k}"><span><i class="pt" style="background:${c}"></i>${t}</span><b class="${n?'':'z'}">${n}</b></button>`).join('')}</div>`;
+  h+=`<div class="bloques"><div class="stats">${st5.map(([k,t,n,c])=>`<button class="stat ${filtro===k?'on':''}" data-filtro="${k}"><span><i class="pt" style="background:${c}"></i>${t}</span><b class="${n?'':'z'}">${n}</b></button>`).join('')}</div>`;
   let filas=todas.filter(s=>{
     const v=miDec(s,tab);
     if(filtro==='pend'&&!esPend(s,tab))return false;
@@ -347,7 +350,8 @@ function vBandeja(){
     return true;
   });
   filas.sort((a,b)=>esPend(b,tab)-esPend(a,tab));
-  h+=`<div class="barra"><input class="f buscar" id="buscar" placeholder="Buscar persona o folio" value="${esc(buscar)}">
+  h+=`<div class="o-tab"><div class="barra"><input class="f buscar" id="buscar" placeholder="Buscar persona o folio" value="${esc(buscar)}">
+    <div class="seg" role="group" aria-label="Qué ver"><button class="${filtro==='pend'?'on':''}" data-filtro="pend">Pendientes</button><button class="${filtro==='tot'?'on':''}" data-filtro="tot">Todas</button></div>
     <span class="esp"></span><span class="sub" style="font-size:12px">Toca una fila para ver el detalle</span></div>`;
   const pend=filas.filter(s=>esPend(s,tab));
   const marc=pend.filter(s=>marcadas.has(s.f));
@@ -364,11 +368,13 @@ function vBandeja(){
     <td>${s.rec}</td><td><span class="chip ${AREAS[s.ar].c}">${AREAS[s.ar].n}</span></td><td>${s.tipo}</td><td class="${s.just?'':'inact'}">${s.just||'—'}</td><td>${s.dias}</td><td>${s.hor}</td><td>${s.hecho}</td><td class="num">${horas(s.h)}</td>
     ${prev.map(pp=>`<td>${s.d[pp]?chipD(s.d[pp].v):chipD('na')}</td>`).join('')}
     <td>${cell}</td><td class="corta ${dc&&dc.com?'':'inact'}">${esc(dc&&dc.com||(s.esJefe&&tab==='gaby'?'Firma Pável pendiente':'—'))}</td></tr>`}).join('')||`<tr><td colspan="12" class="vacio" style="position:static">Nada por aquí con este filtro.</td></tr>`;
-  h+=`</tbody></table></div>`;
-  // resumen por persona
+  h+=`</tbody></table></div></div>`;
+  // resumen por persona: solo quien tiene algo con el filtro puesto
+  const verPer=x=>({pend:x.p,apr:x.a,camb:x.c,rech:x.r}[filtro]??x.t)>0;
+  const tRes={pend:'solo quien tiene pendientes',apr:'solo quien tiene aprobadas',camb:'solo quien tiene cambios pedidos',rech:'solo quien tiene rechazadas'}[filtro]||'todos';
   const per={};todas.forEach(s=>{const k=s.emp;per[k]=per[k]||{t:0,a:0,p:0,c:0,r:0};const v=miDec(s,tab);per[k].t++;if(s.corregidaPor||['apr','res','ppc'].includes(v))per[k].a++;else if(v==='pend')per[k].p++;else if(v==='camb'||(tab==='gaby'&&s.d.jefe.v==='camb'))per[k].c++;else if(v==='rech')per[k].r++});
-  h+=`<details class="pp" open><summary>Resumen por persona</summary><div class="tabla-w"><table><thead><tr><th>Persona</th><th>Total</th><th>Aprob.</th><th>Pend.</th><th>Cambios</th><th>Rech.</th><th>Estado</th></tr></thead><tbody>${Object.entries(per).map(([n,x])=>`<tr><td>${esc(n)}</td>${[x.t,x.a,x.p,x.c,x.r].map(v=>`<td class="num ${v?'':'cero'}">${v}</td>`).join('')}<td><div class="bar">${[[x.a,'var(--apr)'],[x.p,'var(--pend)'],[x.c,'var(--camb)'],[x.r,'var(--rech)']].map(([v,c])=>v?`<i style="width:${v/x.t*100}%;background:${c}"></i>`:'').join('')}</div></td></tr>`).join('')}</tbody></table></div></details>`;
-  h+=`<div class="nota"><b>Lote (F4a):</b> al abrir, todas las pendientes ya vienen marcadas; desmarca las que quieras revisar con calma. <b>Pendientes</b> es el filtro de arriba que viene puesto; toca “Total” para ver todo.</div>`;
+  h+=`<details class="pp o-res" open><summary>Resumen por persona · ${tRes}</summary><div class="tabla-w"><table class="mini"><thead><tr><th>Persona</th><th>Total</th><th>Aprob.</th><th>Pend.</th><th>Cambios</th><th>Rech.</th><th>Estado</th></tr></thead><tbody>${Object.entries(per).filter(([n,x])=>verPer(x)).map(([n,x])=>`<tr><td>${esc(n)}</td>${[x.t,x.a,x.p,x.c,x.r].map(v=>`<td class="num ${v?'':'cero'}">${v}</td>`).join('')}<td><div class="bar">${[[x.a,'var(--apr)'],[x.p,'var(--pend)'],[x.c,'var(--camb)'],[x.r,'var(--rech)']].map(([v,c])=>v?`<i style="width:${v/x.t*100}%;background:${c}"></i>`:'').join('')}</div></td></tr>`).join('')||`<tr><td colspan="7" class="vacio" style="position:static">Nadie con este filtro.</td></tr>`}</tbody></table></div></details></div>`;
+  h+=`<div class="nota"><b>Lote (F4a):</b> al abrir, todas las pendientes ya vienen marcadas; desmarca las que quieras revisar con calma. Al abrir sale <b>Pendientes</b>; el botón <b>Todas</b> (junto al buscador) o las tarjetas de arriba cambian lo que ves. El resumen por persona sigue ese mismo filtro: va arriba en la compu y abajo en el celular.</div>`;
   return h;
 }
 const norm=t=>String(t).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
