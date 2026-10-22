@@ -309,7 +309,7 @@ td input.f,td select.f{height:34px;font-size:13px}
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.3.2';
+const VERSION = 'v0.3.3';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 $('verEntrar').textContent = VERSION + ' · Fase 2';
@@ -536,8 +536,10 @@ function vistaInicio(){
   const roles = rolesVista();
   const corto = yo.nombre_corto || yo.nombre.split(' ')[0];
   const nPend = 0;
-  const tarjeta = (e, t, s, o = {}) => '<div class="card ' + (o.ir ? 'va' : 'pronto') + ' ' + (o.cls || '') + '"' + (o.ir ? ' data-ir="' + o.ir + '"' : '') + '>' +
-    (o.badge ? '<div class="badge">' + o.badge + '</div>' : '') + '<div class="e">' + e + '</div><b>' + t + '</b><span>' + s + (o.ir ? '' : ' · pronto') + '</span></div>';
+  const tarjeta = (e, t, s, o = {}) => '<div class="card ' + (o.ir || o.href ? 'va' : 'pronto') + ' ' + (o.cls || '') + '"' + (o.ir ? ' data-ir="' + o.ir + '"' : '') + (o.href ? ' data-href="' + o.href + '"' : '') + '>' +
+    (o.badge ? '<div class="badge">' + o.badge + '</div>' : '') + '<div class="e">' + e + '</div><b>' + t + '</b><span>' + s + (o.ir || o.href ? '' : ' · pronto') + '</span></div>';
+  // Fase 3 en diseño: solo admin ve la vista previa (wireframe)
+  const wf = roles.includes('admin') ? 'docs/wireframes/fase3-bandejas.html#' : '';
   let h = '<div class="hola"><h1>Hola, ' + esc(corto) + '</h1><div class="sub">' + esc(yo.area) + ' · ' +
     (yo.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</div></div>';
   h += '<div class="secc">Para todos</div><div class="grid">' +
@@ -545,7 +547,9 @@ function vistaInicio(){
     tarjeta('📂', 'Mis solicitudes', 'estado y folios', { ir: 'mias' }) + tarjeta('📘', 'Guía', 'cómo se usa') + '</div>';
   if (roles.some(r => ['jefe','filtro','final','admin'].includes(r)))
     h += '<div class="secc">Para quien valida</div><div class="grid">' +
-      tarjeta('✅', 'Mi bandeja', 'pendientes de decidir', { cls: 'hi', badge: nPend || '' }) + tarjeta('📊', 'Panel general', 'todas, en vivo') + '</div>';
+      tarjeta('✅', 'Mi bandeja', wf ? 'vista previa (wireframe)' : 'pendientes de decidir', { cls: 'hi', badge: nPend || '', href: wf && wf + 'bandeja' }) +
+      tarjeta('📊', 'Panel general', wf ? 'vista previa (wireframe)' : 'todas, en vivo', { href: wf && wf + 'panel' }) +
+      (wf ? tarjeta('✏️', 'Corregir una solicitud', 'vista previa (wireframe)', { href: wf + 'corregir' }) : '') + '</div>';
   if (roles.some(r => ['admin','altas'].includes(r))){
     const act = D.empleados.filter(e => e.activo).length, nav = avisosPersonas().total;
     h += '<div class="secc">Administración</div><div class="grid">' +
@@ -556,6 +560,7 @@ function vistaInicio(){
   h += '<div class="ver">' + VERSION + ' · Fase 2</div>';
   $('vista').innerHTML = h;
   $('vista').querySelectorAll('[data-ir]').forEach(c => c.onclick = () => location.hash = c.dataset.ir);
+  $('vista').querySelectorAll('[data-href]').forEach(c => c.onclick = () => location.href = c.dataset.href);
 }
 
 const VISTAS = { personas: ['Administración › Personas', vistaPersonas], proyectos: ['Administración › Proyectos', vistaProyectos],
