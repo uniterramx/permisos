@@ -200,6 +200,21 @@ async function pintarSaldoInicio(){
   } catch (err){ if (faltaSQL008(err)) card.querySelector('span').textContent = 'falta el SQL 008'; }
 }
 
+/* ================= Inicio: avisos (p. ej. Gaby o Laura rechazaron algo que ya movio el banco) ================= */
+async function pintarAvisosInicio(){
+  const caja = $('avisosBanco'); if (!caja) return;
+  const { data, error } = await sb.from('avisos').select('*').is('visto_at', null).order('id');
+  if (error || !data?.length){ caja.innerHTML = ''; return; }
+  caja.innerHTML = data.map(a => '<div class="aviso-c info"><div><b>Aviso</b>' + (a.es_prueba ? ' <span class="chip c-rev">prueba</span>' : '') + '<br>' + esc(a.texto) + '</div>' +
+    '<button class="btn chico l" type="button" data-visto="' + a.id + '">Entendido</button></div>').join('');
+  caja.querySelectorAll('[data-visto]').forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    const r = await sb.rpc('aviso_visto', { p_id: +b.dataset.visto });
+    if (r.error){ b.disabled = false; return toast(errBanco(r.error), true); }
+    b.closest('.aviso-c').remove();
+  });
+}
+
 /* ================= Borrar pruebas (admin) ================= */
 async function vistaPruebas(){
   $('vista').innerHTML = '<div class="titulo"><h2>Pruebas</h2><div class="sub">Folios PRUEBA y los movimientos del banco que hicieron. Solo tú los ves.</div></div><div class="carga">Contando…</div>';

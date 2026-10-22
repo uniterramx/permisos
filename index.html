@@ -280,6 +280,7 @@ details.pp summary{cursor:pointer;font-size:11px;color:var(--sub);text-transform
 .oblig{color:var(--naranja);font-size:10.5px}
 .aviso-c{background:#fef0e6;border:1px solid #f2d2b8;color:var(--naranja);border-radius:12px;padding:12px 14px;font-size:13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
 .aviso-c div{flex:1;min-width:200px;line-height:1.5}.aviso-c b{color:var(--cafe)}
+.aviso-c.info{background:#fff;border-color:var(--borde);color:var(--cafe)}
 .desg{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.desg i{font-style:normal;font-size:10.5px;background:#fff;border-radius:8px;padding:1px 7px;color:var(--verde)}
 .opc{display:flex;flex-direction:column;gap:8px}
 .op{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--borde);background:#fff;border-radius:12px;padding:10px 12px;font-size:13px;min-height:52px;color:var(--cafe)}
@@ -399,7 +400,7 @@ table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.5.0';
+const VERSION = 'v0.5.1';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 $('verEntrar').textContent = VERSION + ' · Fase 4';
@@ -628,7 +629,7 @@ function vistaInicio(){
   const tarjeta = (e, t, s, o = {}) => '<div class="card ' + (o.ir ? 'va' : 'pronto') + ' ' + (o.cls || '') + '"' + (o.ir ? ' data-ir="' + o.ir + '"' : '') + '>' +
     (o.badge ? '<div class="badge">' + o.badge + '</div>' : '') + '<div class="e">' + e + '</div><b>' + t + '</b><span>' + s + (o.ir ? '' : ' · pronto') + '</span></div>';
   let h = '<div class="hola"><h1>Hola, ' + esc(corto) + '</h1><div class="sub">' + esc(yo.area) + ' · ' +
-    (yo.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</div></div><div id="avisosInicio"></div>';
+    (yo.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</div></div><div id="avisosBanco"></div><div id="avisosInicio"></div>';
   h += '<div class="secc">Para todos</div><div class="grid">' +
     tarjeta('📝', 'Nueva solicitud', 'diario', { ir: 'nueva' }) + tarjeta('⏱️', 'Mi banco de horas', 'saldo y movimientos', { ir: 'banco' }) +
     tarjeta('📂', 'Mis solicitudes', 'estado y folios', { ir: 'mias' }) + tarjeta('✏️', 'Corregir una solicitud', 'cuando te piden cambios', { ir: 'corregir' }) +
@@ -650,6 +651,7 @@ function vistaInicio(){
   $('vista').querySelectorAll('[data-ir]').forEach(c => c.onclick = () => location.hash = c.dataset.ir);
   pintarExtrasInicio().catch(() => {});
   pintarSaldoInicio().catch(() => {});
+  pintarAvisosInicio().catch(() => {});
 }
 
 const VISTAS = { personas: ['Administración › Personas', vistaPersonas], proyectos: ['Administración › Proyectos', vistaProyectos],

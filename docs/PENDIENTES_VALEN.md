@@ -43,4 +43,6 @@
 - [ ] PRUEBA de horas extras → aprobarla como jefe → revisar "Mi banco de horas" de esa persona (Banco de horas → tocar su nombre).
 - [ ] PRUEBA de llegada tarde con uso de horas → "Cambiar horas" antes de aprobar → aprobar → ver el retiro.
 - [ ] Cambiar la decisión de una aprobada → debe salir el reverso. Corregir una aprobada (-R1) y aprobarla como Gaby → reverso + movimiento nuevo.
+- [ ] Correr también `sql/009_rechazo_regresa_horas.sql` (después del 008). Al final: "si", "si". App v0.5.1.
+- [ ] PRUEBA aprobada por jefe y Gaby → Laura la rechaza con comentario → debe salir el reverso y un aviso en tu Inicio.
 - [ ] Al terminar: Inicio → Administración → 🧪 Pruebas → Borrar todas las pruebas.
