@@ -1,5 +1,5 @@
 // Service worker de Permisos UT. Cambiar VERSION en cada entrega (debe coincidir con index.html).
-const VERSION = 'v0.2.0';
+const VERSION = 'v0.2.1';
 const CACHE = 'permisos-ut-' + VERSION;
 const SHELL = ['./', './index.html', './config.js', './manifest.webmanifest',
   './icons/apple-touch-icon.png', './icons/icon-192.png', './icons/icon-512.png', './icons/favicon.ico'];

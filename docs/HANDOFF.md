@@ -27,6 +27,14 @@
 - Valen tiene TODOS los roles y el menú "Ver la app como" (Todo/Empleado/Jefe/Gaby/Laura).
 - Inicio > Administración con tarjetas directas: Personas y PINs · Proyectos · Áreas y jefes.
 
+## Bug del 22-oct (horario no se guardaba) → v0.2.1
+- Síntoma: al guardar un horario se refrescaba y volvía al original, sin error.
+- Causa probable: Supabase responde "ok" aunque RLS bloquee un UPDATE (0 renglones, sin error). No se pudo
+  confirmar contra la base real (la sesión no se conecta a Supabase).
+- Arreglo: horario se guarda con la función `guardar_horario` (SQL 005, un solo paso, errores claros);
+  la app verifica tras recargar que el cambio quedó; los UPDATE de personas/proyectos/áreas exigen 1 renglón.
+- **Pendiente: Valen corre `sql/005_guardar_horario.sql`** (su select final muestra los últimos cambios = diagnóstico).
+
 ## Pendientes de probar (Fase 1)
 1. Personas: abrir una ficha, editar, guardar; revisar avisos (3 nombres, 10 horarios, 2 sin horario).
 2. Asignar PIN temporal a alguien de prueba → salir → entrar como esa persona → debe pedir PIN nuevo.

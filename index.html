@@ -212,7 +212,7 @@ td input.f,td select.f{height:36px;font-size:16px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
-const VERSION = 'v0.2.0';
+const VERSION = 'v0.2.1';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 $('verEntrar').textContent = VERSION + ' · Fase 1';
@@ -647,12 +647,14 @@ async function guardarPersona(id, nombreOk){
   try {
     let empId = id;
     if (id){
-      const r = await sb.from('empleados').update(datos).eq('id', id); if (r.error) throw r.error;
+      const r = await sb.from('empleados').update(datos).eq('id', id).select('id'); if (r.error) throw r.error;
+      if (!r.data?.length) throw new Error('la base no aceptó el cambio (permiso). Avísale a Valen.');
     } else {
       const r = await sb.from('empleados').insert(datos).select('id').single(); if (r.error) throw r.error; empId = r.data.id;
     }
-    if (hor) await guardarHorario(empId, hor);
+    const esperado = hor ? await guardarHorario(empId, hor) : null;
     await cargarCatalogos();
+    if (!verificarHorario(empId, esperado)) throw new Error('el horario no quedó guardado en la base. Toma captura y avísale a Claude.');
     toast(id ? 'Cambios guardados.' : 'Persona dada de alta. Ahora asígnale un PIN temporal.');
     if (location.hash === '#personas'){ vistaPersonas(); abrirPersona(empId); }
   } catch (err){
@@ -662,16 +664,29 @@ async function guardarPersona(id, nombreOk){
 
 async function guardarHorario(empId, hor){
   const actual = horNuevo ? null : horarioDe(empId);
-  let hid = actual?.id;
-  if (!actual && hor.dias.every(d => !d.entrada)) return; // no crear un horario vacio
-  const cab = { periodo: hor.periodo, vigente_desde: hor.vigente_desde, por_revisar: actual ? (actual.por_revisar && !hor.revisado) : false };
-  const cambio = !actual || actual.periodo !== hor.periodo || actual.vigente_desde !== hor.vigente_desde || cab.por_revisar !== actual.por_revisar ||
-    hor.dias.some(d => textoDia(actual, d.dia) !== (d.entrada ? hhmm(d.entrada) + '-' + hhmm(d.salida) : '-'));
-  if (!cambio) return;
-  if (hid){ const r = await sb.from('horarios').update(cab).eq('id', hid); if (r.error) throw r.error; }
-  else { const r = await sb.from('horarios').insert({ ...cab, empleado_id: empId }).select('id').single(); if (r.error) throw r.error; hid = r.data.id; }
-  const r = await sb.from('horario_dias').upsert(hor.dias.map(d => ({ ...d, horario_id: hid })), { onConflict: 'horario_id,dia' });
-  if (r.error) throw r.error;
+  if (!actual && hor.dias.every(d => !d.entrada)) return null; // no crear un horario vacio
+  const porRevisar = actual ? (actual.por_revisar && !hor.revisado) : false;
+  const cambio = !actual || actual.periodo !== hor.periodo || actual.vigente_desde !== hor.vigente_desde || porRevisar !== actual.por_revisar ||
+    hor.dias.some(d => textoDia(actual, d.dia) !== textoGuardado(d));
+  if (!cambio) return null;
+  // Todo en una sola funcion del servidor: o se guarda completo o da error claro.
+  const { data, error } = await sb.rpc('guardar_horario', {
+    p_empleado: empId, p_horario: actual?.id || null, p_periodo: hor.periodo,
+    p_desde: hor.vigente_desde, p_por_revisar: porRevisar, p_dias: hor.dias });
+  if (error){
+    if (/guardar_horario|PGRST202|schema cache/i.test(error.message + ' ' + error.code))
+      throw new Error('falta correr el SQL 005 en Supabase (guardar_horario).');
+    throw error;
+  }
+  return { id: data, dias: hor.dias };
+}
+const textoGuardado = d => d.entrada ? hhmm(d.entrada) + '-' + hhmm(d.salida) : '-';
+
+// Revisa contra la base que lo guardado si quedo (nada de "ok" silencioso).
+function verificarHorario(empId, esperado){
+  if (!esperado) return true;
+  const h = D.horarios.find(x => x.id === esperado.id);
+  return !!h && esperado.dias.every(d => textoDia(h, d.dia) === textoGuardado(d));
 }
 
 async function pinTemporal(id){
@@ -730,8 +745,9 @@ function filasProyectos(){
     $('prGuardar').onclick = async () => {
       const d = { nombre_corto: $('prCorto').value.trim(), nombre_oficial: $('prOficial').value.trim() || null, activo: $('prActivo').checked };
       if (!d.nombre_corto) return toast('Falta el nombre corto.', true);
-      const r = editProy === 'nuevo' ? await sb.from('proyectos').insert(d) : await sb.from('proyectos').update(d).eq('id', editProy);
+      const r = editProy === 'nuevo' ? await sb.from('proyectos').insert(d) : await sb.from('proyectos').update(d).eq('id', editProy).select('id');
       if (r.error) return toast('No se pudo guardar: ' + traducirError(r.error), true);
+      if (editProy !== 'nuevo' && !r.data?.length) return toast('La base no aceptó el cambio (permiso).', true);
       editProy = null; await cargarCatalogos(); filasProyectos(); toast('Proyecto guardado.');
     };
   }
@@ -767,8 +783,9 @@ function filasAreas(){
       const d = { nombre: $('arNombre').value.trim().replace(/\s+/g, ' '), orden: parseInt($('arOrden').value, 10) || 0 };
       if (!d.nombre) return toast('Falta el nombre del área.', true);
       let aid = editArea;
-      const r = editArea === 'nueva' ? await sb.from('areas').insert(d).select('id').single() : await sb.from('areas').update(d).eq('id', editArea);
+      const r = editArea === 'nueva' ? await sb.from('areas').insert(d).select('id').single() : await sb.from('areas').update(d).eq('id', editArea).select('id');
       if (r.error) return toast('No se pudo guardar: ' + traducirError(r.error), true);
+      if (editArea !== 'nueva' && !r.data?.length) return toast('La base no aceptó el cambio (permiso).', true);
       if (editArea === 'nueva') aid = r.data.id;
       const r2 = await sb.from('jefes_area').upsert({ area_id: aid, jefe_id: $('arJefe').value || null }, { onConflict: 'area_id' });
       if (r2.error) return toast('Se guardó el área pero no el jefe: ' + traducirError(r2.error), true);
