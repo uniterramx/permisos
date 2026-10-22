@@ -10,7 +10,7 @@
 - **Ajustes 22-oct (v0.3.1–0.3.2)**: campos de 13–14 px (zoom de iPhone apagado con `maximum-scale=1`), tablas que
   se deslizan de lado con el nombre fijo, ficha de persona rediseñada en apartados (aprobada por Valen).
 - Valen trabaja con el modo **/adhd**: un paso por mensaje, plan antes de código, estado al inicio.
-- Pendiente de preguntar: redondeo al cuarto MÁS CERCANO (20 min → 15) o siempre HACIA ARRIBA (20 → 30).
+- Redondeo confirmado (22-oct): al cuarto de hora **más cercano** (20 min → 15, 23 min → 30).
 - Siguiente: **Fase 3 · Bandejas**. Wireframe primero.
 - Pruebas locales: hay Postgres 16 en la máquina; `sql/` se prueba contra una imitación de Supabase
   (roles anon/authenticated, `auth.uid()` por `request.jwt.claim.sub`). Ver cómo en el historial de este chat.
