@@ -90,7 +90,7 @@ function queHecho(s){
   return '';
 }
 function horasTxt(s){
-  const n = +s.horas_calculadas;
+  const n = +(s.horas_override ?? s.horas_calculadas);
   if (!n) return '<span class="cero">—</span>';
   return '<span class="' + (n > 0 ? 'pos' : 'neg') + '">' + (n > 0 ? '+' : '−') + Calc.fmtH(Math.abs(n)) + '</span>';
 }
@@ -216,7 +216,7 @@ function cerrarDetalle(){ B.abierta = null; B.cambio = false; B.editRed = false;
 
 function abrirDetalle(id, st, lista){
   const s = (lista || B.sol).find(x => x.id === id); if (!s) return;
-  if (B.abierta !== id){ B.cambio = false; B.editRed = false; }
+  if (B.abierta !== id){ B.cambio = false; B.editRed = false; B.cambiaHoras = false; }
   B.abierta = id;
   $('vista').querySelectorAll('tr[data-id]').forEach(tr => tr.classList.toggle('sel', tr.dataset.id === id));
   const e = empPorId(s.empleado_id), v = st ? decDe(s, st) : null;
@@ -234,6 +234,7 @@ function abrirDetalle(id, st, lista){
     fila('Horas al banco', +s.horas_calculadas ? horasTxt(s) + (s.mueve === 'no' ? ' <span class="peq">(no mueve banco)</span>' : '') : '') +
     fila('Proyecto', esc(proyTxt(s))) + fila('Motivo / detalle', esc(detalleTxt(s))) + fila('Verificación', esc(s.verificacion || '')) +
     fila('Recibida', cuando(s.recibido_at) + (s.capturado_por && s.capturado_por !== s.empleado_id ? ' · capturó ' + esc(nombreCorto(empPorId(s.capturado_por))) : '')) + '</section>';
+  if (s.mueve !== 'no') h += '<section class="fsec" id="dBanco"><div class="ayuda">Cargando banco…</div></section>';
   h += '<section class="fsec"><div class="fst">Redacción para el formato<span class="esp"></span>' + (editable && !B.editRed ? '<button class="lnk" type="button" id="dEditRed">Editar</button>' : '') + '</div>' +
     (B.editRed && editable
       ? '<textarea class="f ta" id="dRedTxt" rows="4">' + esc(s.redaccion) + '</textarea><div class="fila"><button class="btn chico" type="button" id="dRedOk">Guardar redacción</button><button class="btn chico l" type="button" id="dRedNo">Cancelar</button></div><div class="ayuda">Queda registrado quién la cambió y cómo decía antes.</div>'
@@ -264,6 +265,7 @@ function abrirDetalle(id, st, lista){
   $('panel').innerHTML = h;
   $('panel').classList.remove('oculto'); $('vista').classList.add('con-panel');
   $('dX').onclick = cerrarDetalle;
+  if ($('dBanco')) pintarBancoDetalle(s, st, async () => { try { B.sol = await cargarSolicitudes(); } catch (err){} if ($('bFilas')) filasBandeja(); abrirDetalle(id, st); });
   const re = () => abrirDetalle(id, st, lista);
   if ($('dEditRed')) $('dEditRed').onclick = () => { B.editRed = true; re(); };
   if ($('dRedNo')) $('dRedNo').onclick = () => { B.editRed = false; re(); };
@@ -364,7 +366,7 @@ function calcCorr(){
       proyecto: D.proyectos.find(p => p.id === proyId)?.nombre_corto, comision_ref: o.comision_ref, texto_oficial: o.texto_oficial, notas: o.notas, motivo_cambio: o.motivo_cambio };
     const r = Calc.calcular(empPorId(o.empleado_id) || { jornada: 'TC' }, D.horarios.filter(h => h.empleado_id === o.empleado_id), s);
     Object.assign(out, { fecha_inicio: fi, fecha_fin: ff, hora_ref: hr, hora_fin: hf, proyecto_id: proyId || '', tipo: r.tipo,
-      horas_calculadas: r.horas, calculo: r.calculo, horario_oficial: r.oficial ? hhmm(r.oficial.entrada) + '-' + hhmm(r.oficial.salida) : '',
+      mueve: r.mueve, horas_calculadas: r.horas, calculo: r.calculo, horario_oficial: r.oficial ? hhmm(r.oficial.entrada) + '-' + hhmm(r.oficial.salida) : '',
       verificacion: r.verificacion?.texto || '', redaccion: r.redaccion });
   }
   if (c.has('texto') && (v.texto || '').trim()) out.redaccion = v.texto.trim();
@@ -420,7 +422,7 @@ function pintarCorregir(){
     h += '<div class="qs">Así se va a ir:</div><div class="lista">' + fila('Folio nuevo', esc(folioNuevo(o.folio))) + fila('Corrige a', esc(o.folio)) +
       (o.empleado_id !== yo.id ? fila('A nombre de', esc(empPorId(o.empleado_id)?.nombre_oficial || '')) : '') +
       fila('Qué te pidieron', esc(C.que)) + fila('Qué cambia', [...C.cambia].map(k => nombres[k]).join(', ')) +
-      ('horas_calculadas' in c && +c.horas_calculadas ? fila('Horas', horasTxt({ horas_calculadas: c.horas_calculadas }) + ' <span class="peq">(la corrección no mueve el banco)</span>') : '') +
+      ('horas_calculadas' in c && +c.horas_calculadas ? fila('Horas', horasTxt({ horas_calculadas: c.horas_calculadas }) + ' <span class="peq">(al aprobarla Gaby, reemplaza al movimiento de la original)</span>') : '') +
       fila('Va con', 'Gaby, directo (tu jefe la ve como “Pasó por corrección”)') + '</div>' +
       '<div class="peq" style="margin-top:12px">Texto del formato:</div><div class="red">' + esc(c.redaccion || o.redaccion) + '</div>' +
       '<label class="confirma"><input type="checkbox" id="cOk"' + (C.ok ? ' checked' : '') + '><span>Confirmo que la información es verídica. Después de enviar no se edita; si algo sale mal, se vuelve a corregir.</span></label>';

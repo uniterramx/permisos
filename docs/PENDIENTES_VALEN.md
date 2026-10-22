@@ -36,3 +36,11 @@
 ## Resultado 22-oct (tarde)
 - Diagnóstico SQL 005: el horario de la noche anterior nunca llegó a la base (la pantalla vieja lo perdía). Con v0.3.0 ya se guarda.
 - SQL 005 y 006 corridos. Primera solicitud de prueba creada y leída de vuelta en "Mis solicitudes".
+
+## 5. Fase 4 (v0.5.0) · banco de horas
+- [ ] Correr `sql/008_fase4_banco.sql` (SQL Editor → New query → pegar completo → Run). Al final: "si", "si", "si".
+- [ ] Recargar con Ctrl+Shift+R → abajo **v0.5.0 · Fase 4**.
+- [ ] PRUEBA de horas extras → aprobarla como jefe → revisar "Mi banco de horas" de esa persona (Banco de horas → tocar su nombre).
+- [ ] PRUEBA de llegada tarde con uso de horas → "Cambiar horas" antes de aprobar → aprobar → ver el retiro.
+- [ ] Cambiar la decisión de una aprobada → debe salir el reverso. Corregir una aprobada (-R1) y aprobarla como Gaby → reverso + movimiento nuevo.
+- [ ] Al terminar: Inicio → Administración → 🧪 Pruebas → Borrar todas las pruebas.
