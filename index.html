@@ -119,6 +119,10 @@ td input.f,td select.f{height:36px;font-size:16px}
 .bloque{margin-top:16px;padding-top:12px;border-top:1px solid var(--arena)}
 .bloque>.t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);display:flex;justify-content:space-between;align-items:center;gap:8px}
 .dias{margin-top:6px}
+.periodos{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.per{border:1px solid var(--borde);background:#fff;border-radius:10px;padding:6px 10px;font-size:12px;text-align:left;min-height:44px}
+.per span{display:block;font-size:10px;color:var(--sub)}
+.per.on{border:2px solid var(--cafe)}
 .dia{display:grid;grid-template-columns:34px 92px 1fr 12px 1fr;gap:6px;align-items:center;margin-top:8px}
 .dia .dn{font-size:12px;font-weight:600}
 .dia .a{font-size:11px;color:var(--sub);text-align:center}
@@ -217,7 +221,7 @@ td input.f,td select.f{height:36px;font-size:16px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
-const VERSION = 'v0.2.2';
+const VERSION = 'v0.2.3';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 $('verEntrar').textContent = VERSION + ' · Fase 1';
@@ -544,12 +548,12 @@ function filasPersonas(){
 }
 
 /* ---- Panel de persona ---- */
-let panelId = null, horNuevo = false;
+let panelId = null, horNuevo = false, horSel = null;
 function cerrarPanel(){ panelId = null; $('panel').classList.add('oculto'); $('vista').classList.remove('con-panel'); }
 
 function abrirPersona(id){
   const e = id ? empPorId(id) : { nombre_oficial: '', iniciales: '', puesto: '', area_id: D.areas[0]?.id, jornada: 'TC', en_nomina: false, activo: true, roles: ['empleado'] };
-  panelId = id || 'nueva'; horNuevo = false;
+  panelId = id || 'nueva'; horNuevo = false; horSel = null;
   const activos = D.empleados.filter(x => x.activo).sort((a, b) => a.nombre_oficial.localeCompare(b.nombre_oficial, 'es'));
   const optGente = sel => '<option value="">—</option>' + activos.map(x => '<option value="' + x.id + '"' + (x.id === sel ? ' selected' : '') + '>' + esc(x.nombre_oficial) + '</option>').join('');
   const warn = id && !e.nombre_revisado ? avisoNombre(e.nombre_oficial) : [];
@@ -598,10 +602,18 @@ function abrirPersona(id){
 function pintarHorario(empId, jornada){
   const cont = $('eHorario');
   if (jornada !== 'MT'){ cont.innerHTML = '<div class="bloque"><div class="t">Horario</div><div class="ayuda">Tiempo completo: 9:00–18:00, lunes a viernes (regla general).</div></div>'; return; }
-  const h = empId && !horNuevo ? horarioDe(empId) : null;
-  const base = empId ? horarioDe(empId) : null;
+  const todos = empId ? D.horarios.filter(x => x.empleado_id === empId).sort((a, b) => a.vigente_desde.localeCompare(b.vigente_desde)) : [];
+  const vig = empId ? horarioDe(empId) : null;
+  const elegido = (horSel && todos.find(x => x.id === horSel)) || vig;
+  const h = empId && !horNuevo ? elegido : null;
+  const base = elegido;
   const dias = ['Lun','Mar','Mié','Jue','Vie'];
   let html = '<div class="bloque"><div class="t">Horario ' + (horNuevo ? '<span class="chip c-ok">periodo nuevo</span>' : h?.por_revisar ? '<span class="chip c-rev">por revisar</span>' : !h ? '<span class="chip c-rev">sin horario</span>' : '') + '</div>';
+  if (todos.length > 1 || (todos.length && horNuevo)){
+    html += '<div class="periodos">' + todos.map(x => { const et = x.id === vig?.id ? 'vigente' : x.vigente_desde > hoyISO() ? 'próximo' : 'anterior';
+      return '<button type="button" class="per' + (!horNuevo && x.id === h?.id ? ' on' : '') + '" data-per="' + x.id + '">' + esc(x.periodo || 'Sin nombre') + '<span>' + et + ' · desde ' + fechaMX(x.vigente_desde) + '</span></button>'; }).join('') +
+      (horNuevo ? '<button type="button" class="per on">Periodo nuevo<span>sin guardar</span></button>' : '') + '</div>';
+  }
   html += '<div class="dos"><div><label for="hPeriodo">Periodo</label><input class="f" id="hPeriodo" value="' + esc(horNuevo ? '' : h?.periodo || '') + '" placeholder="Ej. Semestre ago-dic"></div>' +
           '<div><label for="hDesde">Vigente desde</label><input class="f" id="hDesde" type="date" value="' + (horNuevo || !h ? hoyISO() : h.vigente_desde) + '"></div></div>';
   const ref = h || base;
@@ -634,6 +646,7 @@ function pintarHorario(empId, jornada){
     notaHorario(); };
   notaHorario();
   if ($('hNuevo')) $('hNuevo').onclick = () => { horNuevo = true; pintarHorario(empId, 'MT'); };
+  cont.querySelectorAll('[data-per]').forEach(b => b.onclick = () => { horNuevo = false; horSel = b.dataset.per; pintarHorario(empId, 'MT'); });
 }
 
 // ---- Selectores de hora (cada 30 min) ----
@@ -720,14 +733,16 @@ async function guardarPersona(id, nombreOk){
     await cargarCatalogos();
     if (!verificarHorario(empId, esperado)) throw new Error('el horario no quedó guardado en la base. Toma captura y avísale a Claude.');
     toast(id ? 'Cambios guardados.' : 'Persona dada de alta. Ahora asígnale un PIN temporal.');
-    if (location.hash === '#personas'){ vistaPersonas(); abrirPersona(empId); }
+    const futuro = esperado && hor.vigente_desde > hoyISO();
+    if (location.hash === '#personas'){ vistaPersonas(); abrirPersona(empId); if (esperado){ horSel = esperado.id; pintarHorario(empId, 'MT'); } }
+    if (futuro) toast('Guardado. Ese horario empieza el ' + fechaMX(hor.vigente_desde) + '; mientras, sigue el vigente.');
   } catch (err){
     toast('No se pudo guardar: ' + traducirError(err), true);
   } finally { if ($('eGuardar')) $('eGuardar').disabled = false; }
 }
 
 async function guardarHorario(empId, hor){
-  const actual = horNuevo ? null : horarioDe(empId);
+  const actual = horNuevo ? null : ((horSel && D.horarios.find(x => x.id === horSel)) || horarioDe(empId));
   if (!actual && hor.dias.every(d => !d.entrada)) return null; // no crear un horario vacio
   const porRevisar = actual ? (actual.por_revisar && !hor.revisado) : false;
   const cambio = !actual || actual.periodo !== hor.periodo || actual.vigente_desde !== hor.vigente_desde || porRevisar !== actual.por_revisar ||
