@@ -118,9 +118,14 @@ td input.f,td select.f{height:36px;font-size:16px}
 .dos{display:flex;gap:10px}.dos>div{flex:1;min-width:0}
 .bloque{margin-top:16px;padding-top:12px;border-top:1px solid var(--arena)}
 .bloque>.t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);display:flex;justify-content:space-between;align-items:center;gap:8px}
-.hor{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
-.hor label{margin:0 0 3px;text-align:center;font-size:11px}
-.hor input{padding:0 4px;text-align:center;font-size:16px}
+.dias{margin-top:6px}
+.dia{display:grid;grid-template-columns:34px 92px 1fr 12px 1fr;gap:6px;align-items:center;margin-top:8px}
+.dia .dn{font-size:12px;font-weight:600}
+.dia .a{font-size:11px;color:var(--sub);text-align:center}
+.tog{height:40px;border-radius:20px;border:1px solid var(--borde);background:var(--arena);color:var(--sub);font-size:13px;padding:0 8px}
+.tog.on{background:var(--verde-f);border-color:#a9d6b6;color:var(--verde);font-weight:600}
+.hs{height:40px;padding:0 24px 0 10px;background-position:right 8px center;border-radius:20px}
+.hs:disabled{opacity:.35}
 .ayuda{font-size:11px;color:var(--sub);margin-top:6px;line-height:1.5}
 .alerta{font-size:12px;margin-top:6px;padding:8px 10px;border-radius:8px;background:var(--rev-f);color:#8a6d1e;line-height:1.45}
 .alerta button{border:0;background:none;color:var(--cafe);text-decoration:underline;font-size:12px;padding:0 0 0 4px}
@@ -212,7 +217,7 @@ td input.f,td select.f{height:36px;font-size:16px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
-const VERSION = 'v0.2.1';
+const VERSION = 'v0.2.2';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 $('verEntrar').textContent = VERSION + ' · Fase 1';
@@ -599,23 +604,82 @@ function pintarHorario(empId, jornada){
   let html = '<div class="bloque"><div class="t">Horario ' + (horNuevo ? '<span class="chip c-ok">periodo nuevo</span>' : h?.por_revisar ? '<span class="chip c-rev">por revisar</span>' : !h ? '<span class="chip c-rev">sin horario</span>' : '') + '</div>';
   html += '<div class="dos"><div><label for="hPeriodo">Periodo</label><input class="f" id="hPeriodo" value="' + esc(horNuevo ? '' : h?.periodo || '') + '" placeholder="Ej. Semestre ago-dic"></div>' +
           '<div><label for="hDesde">Vigente desde</label><input class="f" id="hDesde" type="date" value="' + (horNuevo || !h ? hoyISO() : h.vigente_desde) + '"></div></div>';
-  html += '<div class="hor">' + dias.map((d, i) => '<div><label for="hD' + (i + 1) + '">' + d + '</label><input class="f" id="hD' + (i + 1) + '" value="' + esc(textoDia(h || base, i + 1)) + '" placeholder="9:00-14:00"></div>').join('') + '</div>';
-  html += '<div class="ayuda">Escribe “9:00-14:00”, o “-” si ese día no trabaja. Si el turno cruza la medianoche, escríbelo tal cual (“19:30-7:30”).</div>';
+  const ref = h || base;
+  const diasRef = [1, 2, 3, 4, 5].map(i => ref?.horario_dias?.find(x => x.dia === i));
+  const fuera = diasRef.some(d => d?.entrada && (!enRango(d.entrada) || !enRango(d.salida) || d.salida.slice(0, 5) <= d.entrada.slice(0, 5)));
+  html += '<label class="check"><input type="checkbox" id="hAmplio"' + (fuera ? ' checked' : '') + '> Otro horario (antes de las 8:00, después de las 20:00 o turno de noche)</label>';
+  html += '<div class="dias">' + dias.map((n, i) => { const d = diasRef[i], trabaja = !!d?.entrada;
+    return '<div class="dia"><span class="dn">' + n + '</span>' +
+      '<button type="button" class="tog' + (trabaja ? ' on' : '') + '" id="hT' + (i + 1) + '" aria-pressed="' + trabaja + '">' + (trabaja ? 'Trabaja' : 'Descansa') + '</button>' +
+      '<select class="f hs" id="hE' + (i + 1) + '" aria-label="Entrada ' + n + '"' + (trabaja ? '' : ' disabled') + '></select><span class="a">a</span>' +
+      '<select class="f hs" id="hS' + (i + 1) + '" aria-label="Salida ' + n + '"' + (trabaja ? '' : ' disabled') + '></select></div>'; }).join('') + '</div>';
+  html += '<div class="fila"><button class="btn l" type="button" id="hCopiar">Copiar el lunes a toda la semana</button></div>';
+  html += '<div class="ayuda" id="hNota">Elige a qué hora entra y sale cada día. “Descansa” = ese día no trabaja.</div>';
   if (h?.por_revisar) html += '<label class="check"><input type="checkbox" id="hRevisado"> Ya lo revisé, está correcto</label>';
   if (h && !horNuevo) html += '<div class="fila"><button class="btn l" type="button" id="hNuevo">+ Nuevo periodo (desde otra fecha)</button></div>';
   cont.innerHTML = html + '</div>';
+  const valores = diasRef.map(d => d?.entrada ? [d.entrada.slice(0, 5), d.salida.slice(0, 5)] : ['09:00', '14:00']);
+  llenarHoras(valores);
+  $('hAmplio').onchange = () => llenarHoras(leerSelects());
+  for (let i = 1; i <= 5; i++){
+    $('hT' + i).onclick = () => { const b = $('hT' + i), on = !b.classList.contains('on');
+      b.classList.toggle('on', on); b.textContent = on ? 'Trabaja' : 'Descansa'; b.setAttribute('aria-pressed', on);
+      $('hE' + i).disabled = $('hS' + i).disabled = !on; notaHorario(); };
+    $('hE' + i).onchange = $('hS' + i).onchange = notaHorario;
+  }
+  $('hCopiar').onclick = () => { const on = $('hT1').classList.contains('on');
+    for (let i = 2; i <= 5; i++){ $('hE' + i).value = $('hE1').value; $('hS' + i).value = $('hS1').value;
+      $('hT' + i).classList.toggle('on', on); $('hT' + i).textContent = on ? 'Trabaja' : 'Descansa';
+      $('hE' + i).disabled = $('hS' + i).disabled = !on; }
+    notaHorario(); };
+  notaHorario();
   if ($('hNuevo')) $('hNuevo').onclick = () => { horNuevo = true; pintarHorario(empId, 'MT'); };
 }
 
+// ---- Selectores de hora (cada 30 min) ----
+const HORA_MIN = '08:00', HORA_MAX = '20:00';
+const enRango = t => { const v = t.slice(0, 5); return v >= HORA_MIN && v <= HORA_MAX; };
+function opcionesHora(amplio){
+  const r = [];
+  for (let m = amplio ? 0 : 8 * 60; m <= (amplio ? 23 * 60 + 30 : 20 * 60); m += 30)
+    r.push(String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'));
+  return r;
+}
+function leerSelects(){ return [1, 2, 3, 4, 5].map(i => [$('hE' + i).value, $('hS' + i).value]); }
+function llenarHoras(valores){
+  const ops = opcionesHora($('hAmplio').checked);
+  const html = ops.map(v => '<option value="' + v + '">' + hhmm(v) + '</option>').join('');
+  for (let i = 1; i <= 5; i++){
+    [['hE', 0], ['hS', 1]].forEach(([k, j]) => {
+      const sel = $(k + i), v = valores[i - 1][j];
+      sel.innerHTML = html;
+      sel.value = ops.includes(v) ? v : (j ? HORA_MAX : HORA_MIN);
+    });
+  }
+  notaHorario();
+}
+function notaHorario(){
+  const n = $('hNota'); if (!n) return;
+  const malos = [], noche = [];
+  for (let i = 1; i <= 5; i++){
+    if (!$('hT' + i).classList.contains('on')) continue;
+    const e = $('hE' + i).value, s2 = $('hS' + i).value, dn = ['lunes','martes','miércoles','jueves','viernes'][i - 1];
+    if (e === s2 || (s2 < e && !$('hAmplio').checked)) malos.push(dn); else if (s2 < e) noche.push(dn);
+  }
+  n.innerHTML = malos.length ? '<span class="warn">⚠️ Revisa el ' + malos.join(', ') + ': la salida tiene que ser después de la entrada.</span>'
+    : noche.length ? 'Turno de noche el ' + noche.join(', ') + ': sale al día siguiente.'
+    : 'Elige a qué hora entra y sale cada día. “Descansa” = ese día no trabaja.';
+}
+
 function leerHorario(){
-  if (!$('hD1')) return null;
+  if (!$('hE1')) return null;
   const dias = [];
   for (let i = 1; i <= 5; i++){
-    const v = $('hD' + i).value.trim().replace(/\s/g, '').replace(/[–—]/g, '-');
-    if (v === '-' || v === ''){ dias.push({ dia: i, entrada: null, salida: null }); continue; }
-    const m = v.match(/^(\d{1,2}):?(\d{2})-(\d{1,2}):?(\d{2})$/);
-    if (!m || +m[1] > 23 || +m[3] > 23 || +m[2] > 59 || +m[4] > 59) throw new Error('Revisa el horario del ' + ['lunes','martes','miércoles','jueves','viernes'][i - 1] + ': escribe algo como 9:00-14:00 o “-”.');
-    dias.push({ dia: i, entrada: m[1].padStart(2, '0') + ':' + m[2], salida: m[3].padStart(2, '0') + ':' + m[4] });
+    if (!$('hT' + i).classList.contains('on')){ dias.push({ dia: i, entrada: null, salida: null }); continue; }
+    const e = $('hE' + i).value, sl = $('hS' + i).value, dn = ['lunes','martes','miércoles','jueves','viernes'][i - 1];
+    if (e === sl) throw new Error('El ' + dn + ' la entrada y la salida son iguales.');
+    if (sl < e && !$('hAmplio').checked) throw new Error('El ' + dn + ' la salida es antes que la entrada. Si es turno de noche, marca “Otro horario”.');
+    dias.push({ dia: i, entrada: e, salida: sl });
   }
   const desde = $('hDesde').value;
   if (!desde) throw new Error('Falta la fecha de “vigente desde”.');

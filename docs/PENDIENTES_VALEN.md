@@ -7,7 +7,7 @@
 - [ ] Mandarle a Claude **captura de la tabla que sale al final** (últimos 15 cambios): sirve para saber si
       el horario de anoche llegó a guardarse.
 
-## 2. Probar en la app (recargar con Ctrl+Shift+R; abajo debe decir v0.2.1 o más)
+## 2. Probar en la app (recargar con Ctrl+Shift+R; abajo debe decir v0.2.2 o más)
 - [ ] Cambiar un horario y guardar → debe decir "Cambios guardados" y quedarse el cambio.
       Si sale aviso rojo, captura y a Claude.
 - [ ] Personas: revisar avisos (3 nombres, 10 horarios, 2 sin horario). En Edgar "Estevez": si así es su
@@ -17,7 +17,7 @@
       debe pedir PIN nuevo.
 
 ## 3. Con Claude
-- [ ] Cambiar cómo se llena el horario: **selectores de hora** (entrada / salida por día) en vez de texto.
-      Rango base 8:00–20:00. Primero wireframe.
+- [x] Selectores de hora en el horario (hecho 22-oct, v0.2.2): cada 30 min, 8:00–20:00, "Otro horario"
+      abre 0:00–23:30 (turnos de noche). Probarlo en la compu después del SQL 005.
 - [ ] Arrancar **Fase 2 · Solicitar** (wireframe del formulario). Decisiones ya tomadas: B1-a, B10 separar,
       B8 sin límite, V2 naranja.

@@ -22,7 +22,7 @@
 - **B10** (22-oct) → **separar** el campo 3 en "Redacción para el formato" y "Etiqueta para el banco".
 - **B8** (22-oct) → **sin límite** de días hacia atrás por ahora; más adelante se revisa con Laura si quiere un tope.
 - **V2** (22-oct) → "Pedir cambios" en **naranja** `#fef0e6/#b06630` (comunica "algo falta o está mal"; el azul no).
-- **Horario en la ficha** (22-oct) → cambiar los campos de texto por **selectores de hora** (entrada y salida por día), rango base 8:00–20:00. Pendiente para el 23-oct (ver docs/PENDIENTES_VALEN.md).
+- **Horario en la ficha** (22-oct) → cambiar los campos de texto por **selectores de hora** (entrada y salida por día), cada **30 min**, rango base 8:00–20:00 + casilla **"Otro horario"** (0:00–23:30, turnos de noche). Hecho en v0.2.2.
 
 ## ANTES DE EMPEZAR
 
