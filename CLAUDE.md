@@ -67,14 +67,15 @@ de horas + bitácora**. Ahora se migra TODO a una **web app propia**.
 8. **Append-only para lo auditable**: movimientos de banco, decisiones, registro de cambios. Nunca
    se borra; se corrige con un movimiento de ajuste.
 9. **Lo que ya se imprimió y firmó queda congelado** (PDF aprobado por Laura, bitácora cerrada).
-10. **iPhone**: todo `input/select/textarea` con `font-size >= 16px` (evita el zoom al escribir),
-    `viewport` con `width=device-width, initial-scale=1`, nada de scroll horizontal, áreas táctiles
-    >= 44px. Probar en 390 px de ancho.
+10. **iPhone** (cambio 22-oct): campos de texto a **13–14 px** (Valen los quiere chicos). El zoom al escribir se
+    evita con `maximum-scale=1` en el `viewport` (iOS sigue dejando hacer zoom con dos dedos). Nada de scroll
+    horizontal de la PÁGINA; las **tablas sí se deslizan de lado dentro de su recuadro**, con la 1ª columna fija.
+    Áreas táctiles >= 44px donde se pueda. Probar en 390 px de ancho.
 11. **Ícono de la app**: cuadrado con **esquinas redondeadas**, **sin fondo transparente**, en tres
     formas: embebido en el HTML (favicon), **PNG** (incluye `apple-touch-icon` 180×180) e **ICO**.
     Más manifest de PWA (192 y 512). Diseño a aprobar por Valen antes.
-12. **Tipografía Alexandria** (Google Fonts). En tablas densas tamaño 7–8 (como sus Sheets), pero
-    los campos de captura siempre ≥16px (regla 10).
+12. **Tipografía Alexandria** (Google Fonts). En tablas densas tamaño 7–8 (como sus Sheets), y
+    los campos de captura 13–14 px (regla 10).
 13. Los textos de la UI (etiquetas, opciones) son libres de cambiar en el sistema nuevo porque las
     llaves serán enums. **Pero los textos que se IMPRIMEN en el PDF y las redacciones** salen
     exactas del 01_Especificacion §6 y 04_Formatos_PDF.
