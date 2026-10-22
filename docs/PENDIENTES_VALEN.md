@@ -23,7 +23,15 @@
 - [x] **Probar la Fase 2** (23-oct: PRUEBA-132420-40f llegó bien, cálculo y texto correctos; faltan más tipos) (Nueva solicitud): hacer 3–4 solicitudes de PRUEBA de distintos tipos (llegada tarde
       con uso de horas, falta de varios días, horas extras, olvidé checar). Revisar que el resumen y el texto del
       formato digan lo correcto. Ver que salgan en "Mis solicitudes". Probar "Para otra persona".
-- [ ] Siguiente: **Fase 3 · Bandejas** (jefe → Gaby → Laura, pedir cambios, corrección -R1, panel). Wireframe primero.
+- [x] Fase 3 · Bandejas: wireframe aprobado y construida (v0.4.0).
+
+## 4. Fase 3 (v0.4.0) · en la compu
+- [ ] Correr `sql/007_fase3_bandejas.sql` (SQL Editor → New query → pegar completo → Run). Al final sale 1 renglón con "si", "si", "true".
+- [ ] Recargar la app con Ctrl+Shift+R → abajo debe decir **v0.4.0 · Fase 3**.
+- [ ] Hacer una **Nueva solicitud de PRUEBA** → Mi bandeja → aprobarla como jefe → pestaña Gaby → editar la redacción y aprobar → pestaña Laura → aprobar (queda congelada).
+- [ ] Otra PRUEBA: pedir cambios con comentario → corregirla desde "Corregir una solicitud" (sale -R1 directo con Gaby; la original queda "Corregida").
+- [ ] Probar "Aprobar en lote" con 2 pruebas pendientes. Revisar el Panel general.
+- Nota: en las solicitudes reales no te salen botones (solo decides pruebas, decisión G4).
 
 ## Resultado 22-oct (tarde)
 - Diagnóstico SQL 005: el horario de la noche anterior nunca llegó a la base (la pantalla vieja lo perdía). Con v0.3.0 ya se guarda.

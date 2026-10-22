@@ -11,7 +11,7 @@
   se deslizan de lado con el nombre fijo, ficha de persona rediseñada en apartados (aprobada por Valen).
 - Valen trabaja con el modo **/adhd**: un paso por mensaje, plan antes de código, estado al inicio.
 - Redondeo confirmado (22-oct): al cuarto de hora **más cercano** (20 min → 15, 23 min → 30).
-- **Fase 3**: wireframe aprobado (23-oct, `docs/wireframes/fase3-bandejas.html`; en la app v0.3.3 las tarjetas de admin lo abren). Decisiones en 07 RESPONDIDAS. Siguiente: SQL 007 + pantallas reales.
+- **Fase 3 (bandejas)**: ✅ construida (v0.4.0), igual al wireframe aprobado (`docs/wireframes/fase3-bandejas.html`). `js/bandejas.js` (Mi bandeja con pestañas jefe/Gaby/Laura, lote, detalle con decidir/cambiar decisión/editar redacción, Panel general, Corregir -R1/-R2, contador y aviso de cambios en Inicio). SQL 007: `decidir`, `decidir_lote`, `editar_redaccion`, `corregir_solicitud`, `contar_pendientes`, `_recalcular_estado`, tabla `decision_eventos` (append-only); las PRUEBA solo las ve admin; Valen (`decide_solo_pruebas`) solo decide pruebas. Probado en Postgres local + navegador conectado a esa base. **Falta: Valen corre SQL 007 y prueba.**
 - Rama de trabajo actual: `claude/zen-wozniak-9vml4y` (la de esta sesión), se publica a `main`.
 - Pruebas locales: hay Postgres 16 en la máquina; `sql/` se prueba contra una imitación de Supabase
   (roles anon/authenticated, `auth.uid()` por `request.jwt.claim.sub`). Ver cómo en el historial de este chat.

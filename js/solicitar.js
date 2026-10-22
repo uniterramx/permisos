@@ -26,7 +26,7 @@ const ESTADOS = {
   nueva_espera_jefe: ['Nueva · espera jefe', '#fef6e4', '#a0872e'], espera_gaby: ['Espera Gaby', '#fef6e4', '#a0872e'],
   espera_laura: ['Espera Laura', '#fef6e4', '#a0872e'], cambios_solicitados: ['Cambios solicitados', '#fef0e6', '#b06630'],
   aprobada: ['Aprobada', '#eaf5e8', '#4a8c42'], rechazada: ['Rechazada', '#fce8e8', '#b04040'],
-  resuelta: ['Resuelta', '#e3eef7', '#37699e'], corregida: ['Pasó por corrección', '#f0eaf7', '#7a5aa0']
+  resuelta: ['Resuelta', '#e3eef7', '#37699e'], corregida: ['Corregida', '#f0eaf7', '#7a5aa0']
 };
 const puedeCapturar = () => (yo?.roles || []).some(r => r === 'admin' || r === 'altas');
 
@@ -178,7 +178,7 @@ const PAGINAS = {
     (W.otra ? '<label for="wArea">Área</label><select class="f" id="wArea">' + areaOpts(empPorId(W.para)?.area_id || D.areas[0]?.id) + '</select>' +
       '<label for="wPersona">Persona</label><select class="f" id="wPersona"></select>' : ''),
   tipo: () => preg('¿Qué pasó?', 'Una solicitud por cada variación. Si el mismo día llegaste tarde y saliste antes, son dos.') +
-    '<div class="tipos">' + TIPOS_FORM.map(([k, e, t]) => '<button type="button" class="tipo' + (W.tipo === k ? ' on' : '') + (k === 'correccion' ? ' pronto' : '') + '" data-tipo="' + k + '"' + (k === 'correccion' ? ' disabled' : '') + '><span class="e">' + e + '</span>' + t + (k === 'correccion' ? '<small>llega en la Fase 3</small>' : '') + '</button>').join('') + '</div>',
+    '<div class="tipos">' + TIPOS_FORM.map(([k, e, t]) => '<button type="button" class="tipo' + (W.tipo === k ? ' on' : '') + '" data-tipo="' + k + '"><span class="e">' + e + '</span>' + t + (k === 'correccion' ? '<small>cuando te piden cambios</small>' : '') + '</button>').join('') + '</div>',
   fecha: () => preg(W.tipo === 'ausencia' ? '¿Desde qué día faltas?' : '¿Qué día fue (o va a ser)?', 'Puedes registrar días pasados o futuros.') +
     '<input class="f" id="wFecha" type="date" value="' + W.fecha_inicio + '" style="max-width:240px"><div class="ayuda" id="wFechaNota"></div>',
   ultimo: () => preg('¿Último día que faltas?', 'Si es un solo día, déjalo igual. Sábados, domingos y días que no trabajas no se cuentan.') +
@@ -249,6 +249,7 @@ const ENLACES = {
     llenar();
   },
   tipo: () => $('vista').querySelectorAll('[data-tipo]').forEach(b => b.onclick = () => {
+    if (b.dataset.tipo === 'correccion'){ location.hash = 'corregir'; return; }
     if (W.tipo !== b.dataset.tipo){ W.tipo = b.dataset.tipo; resetDatos(); }
     siguiente();
   }),
@@ -342,7 +343,7 @@ function pintarListo(d){
 /* ================= Mis solicitudes ================= */
 async function vistaMias(){
   $('vista').innerHTML = '<div class="titulo"><h2>Mis solicitudes</h2><div class="sub">Las que pediste tú (y las que alguien capturó a tu nombre).</div></div><div class="carga">Cargando…</div>';
-  const { data, error } = await sb.from('solicitudes').select('id,folio,recibido_at,tipo,justificacion,fecha_inicio,fecha_fin,hora_ref,hora_fin,estado_global,etapa,mueve,horas_calculadas,redaccion,verificacion,es_prueba,capturado_por,empleado_id')
+  const { data, error } = await sb.from('solicitudes').select('id,folio,recibido_at,tipo,justificacion,fecha_inicio,fecha_fin,hora_ref,hora_fin,estado_global,etapa,mueve,horas_calculadas,redaccion,verificacion,es_prueba,capturado_por,empleado_id,corregida_por,decisiones(*)')
     .eq('empleado_id', yo.id).order('recibido_at', { ascending: false }).limit(200);
   if (error){ $('vista').querySelector('.carga').textContent = /solicitudes|PGRST/i.test(error.message) ? 'Falta correr el SQL 006 en Supabase.' : 'No pude cargar: ' + error.message; return; }
   const filas = (data || []).map(s => { const e = ESTADOS[s.estado_global] || [s.estado_global, '#eee', '#555'];
@@ -361,6 +362,7 @@ async function vistaMias(){
 }
 
 function verSolicitud(s){
+  const pedido = s.estado_global === 'cambios_solicitados' ? quienPidioCambios(s) : null;
   const e = ESTADOS[s.estado_global] || [s.estado_global, '#eee', '#555'];
   const fila = (a, b) => b ? '<div class="r"><span>' + a + '</span><b>' + b + '</b></div>' : '';
   $('panel').innerHTML = '<div class="cab"><div><h3>' + esc(s.folio) + '</h3><div class="sub">' + esc(TIPO_TXT[s.tipo] || s.tipo) + '</div></div><button class="x" type="button" id="xPanel" aria-label="Cerrar">✕</button></div>' +
@@ -370,9 +372,12 @@ function verSolicitud(s){
     fila('Justificación', s.justificacion ? esc(JUST_TXT[s.justificacion]) : '') +
     fila('Banco', s.mueve !== 'no' && +s.horas_calculadas ? bancoTxt({ mueve: s.mueve, horas: +s.horas_calculadas }, true) + ' <span class="peq">(se aplica al aprobar tu jefe)</span>' : '') +
     fila('Verificación', esc(s.verificacion || '')) + '</div>' +
-    '<div class="peq" style="margin-top:12px">Texto de tu formato:</div><div class="red">' + esc(s.redaccion) + '</div>';
+    (pedido ? '<div class="alerta">' + esc(pedido.quien) + ' pidió: “' + esc(pedido.com) + '”</div>' : '') +
+    '<div class="peq" style="margin-top:12px">Texto de tu formato:</div><div class="red">' + esc(s.redaccion) + '</div>' +
+    (!s.corregida_por ? '<button class="btn' + (pedido ? '' : ' l') + '" type="button" id="mCorr" style="margin-top:16px">✏️ Corregir esta solicitud</button>' : '');
   $('panel').classList.remove('oculto'); $('vista').classList.add('con-panel');
   $('xPanel').onclick = cerrarPanel;
+  if ($('mCorr')) $('mCorr').onclick = () => { corregirFolio = s.folio; location.hash = 'corregir'; };
 }
 
 // Registrar las vistas en el enrutador de index.html
