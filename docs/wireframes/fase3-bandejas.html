@@ -1,0 +1,539 @@
+<title>Bandejas Permisos UT</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23efeae3'/%3E%3Crect x='34' y='44' width='112' height='100' rx='14' fill='%23fff' stroke='%235a4d3e' stroke-width='7'/%3E%3Cpath d='M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z' fill='%235a4d3e'/%3E%3Cpath d='M66 108l16 16 32-34' fill='none' stroke='%2338761D' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* Layout: la app real (barra arriba, cuerpo con tarjetas y tablas tipo Sheets, panel lateral a la derecha). Un solo tema claro, a proposito: es la paleta calida aprobada. */
+:root{
+  --cafe:#5a4d3e; --crema:#f8f6f3; --arena:#efeae3; --borde:#e2ddd6; --sub:#9a8e7f; --cero:#c4bdb1;
+  --linea:#ECE4DF; --enc:#D9D7CE; --alt:#faf9f7; --blanco:#fff;
+  --verde-f:#C6E7D0; --verde:#38761D;
+  --pend-f:#fef6e4; --pend:#a0872e; --apr-f:#eaf5e8; --apr:#4a8c42; --rech-f:#fce8e8; --rech:#b04040;
+  --camb-f:#fef0e6; --camb:#b06630; --res-f:#e3eef7; --res:#37699e; --ppc-f:#f0eaf7; --ppc:#7a5aa0;
+  --wf:#fff7d6; --wf-b:#e8d68a;
+  --letra:Alexandria,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--crema);color:var(--cafe);font-family:var(--letra)}
+body{margin:0;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--crema)}
+button,input,select,textarea{font-family:inherit;font-size:14px;color:var(--cafe)}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cafe);outline-offset:1px}
+.gut{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+/* Tira del wireframe (no existe en la app) */
+.wf{background:var(--wf);border-bottom:1px solid var(--wf-b);font-size:11.5px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding-block:7px}
+.wf b{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
+.wf .sep{flex:1}
+.wf button{border:1px solid var(--wf-b);background:var(--blanco);border-radius:14px;padding:4px 10px;font-size:11.5px;min-height:28px}
+.wf button.on{background:var(--cafe);color:var(--blanco);border-color:var(--cafe)}
+.wf select{height:28px;border:1px solid var(--wf-b);border-radius:14px;background:var(--blanco);font-size:12px;padding:0 8px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:10px;padding-block:10px;border-bottom:1px solid var(--borde);background:var(--crema)}
+.marca{display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;font-size:15px;font-weight:700}
+.marca svg{width:30px;height:30px}
+.crumb{flex:1;font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vcomo{font-size:11px;background:var(--pend-f);color:var(--pend);border-radius:10px;padding:3px 9px;white-space:nowrap}
+.av{width:40px;height:40px;border-radius:50%;background:var(--arena);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cuerpo{padding-block:0 30px;max-width:1400px}
+.hola{padding:20px 0 4px}.hola h1{font-size:24px;margin:0}
+.sub{font-size:13px;color:var(--sub)}
+.secc{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.card{position:relative;background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:14px;min-height:96px;text-align:left;font-size:13px;color:var(--cafe)}
+.card .e{font-size:22px;line-height:1}.card b{display:block;margin-top:8px;font-size:13px}.card span{font-size:11px;color:var(--sub)}
+.card.hi{background:var(--verde-f);border-color:#a9d6b6}.card.hi b{color:var(--verde)}
+.card.pronto{opacity:.5;cursor:default}
+.card.va:hover{box-shadow:0 4px 14px rgba(90,77,62,.12)}
+.badge{position:absolute;top:10px;right:10px;background:var(--camb);color:var(--blanco);font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px}
+.desg{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.desg i{font-style:normal;font-size:10.5px;background:var(--blanco);border-radius:8px;padding:1px 7px;color:var(--verde)}
+.aviso-c{background:var(--camb-f);border:1px solid #f2d2b8;color:var(--camb);border-radius:12px;padding:12px 14px;font-size:13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.aviso-c div{flex:1;min-width:200px;line-height:1.5}.aviso-c b{color:var(--cafe)}
+
+.btn{height:40px;border:0;background:var(--cafe);color:var(--blanco);border-radius:10px;font-weight:600;padding:0 16px;font-size:14px;white-space:nowrap}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.l{background:var(--blanco);color:var(--cafe);border:1px solid var(--borde);font-weight:400}
+.btn.chico{height:34px;font-size:13px;padding:0 12px}
+.btn.apr{background:var(--apr)}.btn.camb{background:var(--camb)}.btn.rech{background:var(--rech)}
+.btn.res{background:var(--blanco);color:var(--res);border:1px solid #bcd3e8;font-weight:600}
+.f{width:100%;height:36px;border:1px solid var(--borde);background:var(--blanco);border-radius:9px;padding:0 11px;font-size:13.5px;outline:none;-webkit-appearance:none;appearance:none}
+.f:focus{border-color:var(--cafe)}
+select.f{background:var(--blanco) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a4d3e'/%3E%3C/svg%3E") no-repeat right 12px center;padding-right:30px}
+.ta{height:auto;padding:9px 11px;line-height:1.45;resize:vertical;min-height:64px}
+.lbl{display:block;font-size:11px;color:var(--sub);margin:12px 0 5px}
+
+/* Pestañas de bandeja */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.tab{border:1px solid var(--borde);background:var(--blanco);border-radius:20px;padding:0 14px;height:38px;font-size:13px;display:flex;align-items:center;gap:8px}
+.tab.on{background:var(--cafe);color:var(--blanco);border-color:var(--cafe);font-weight:600}
+.tab em{font-style:normal;font-size:11px;font-weight:700;background:var(--camb);color:var(--blanco);border-radius:9px;padding:1px 7px}
+.tab.on em{background:var(--blanco);color:var(--camb)}
+
+/* Tarjetas de tablero */
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
+.stat{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:10px 12px;text-align:left}
+.stat span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub)}
+.stat b{display:block;font-size:24px;line-height:1.2;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat b.z{color:var(--cero)}
+.stat.on{border:2px solid var(--cafe);padding:9px 11px}
+.stat .pt{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px}
+
+.barra{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
+.barra .f{width:auto;height:34px;font-size:13px}
+.barra .buscar{flex:1 1 200px;max-width:280px}
+.seg{display:flex;background:var(--arena);border-radius:8px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:6px;font-size:12.5px;color:var(--sub);padding:0 10px;height:28px}
+.seg button.on{background:var(--blanco);color:var(--cafe);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.esp{flex:1}
+
+/* Barra de lote */
+.lote{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--verde-f);border:1px solid #a9d6b6;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:13px;color:var(--verde)}
+.lote .esp{flex:1}
+.lote .lnk{color:var(--verde)}
+.conf{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px;line-height:1.5;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.conf div{flex:1;min-width:220px}
+.lnk{border:0;background:none;color:var(--cafe);text-decoration:underline;font-size:12px;padding:0}
+
+/* Tablas estilo Sheets: Alexandria 8 pt aprox, filas de 42 px */
+.tabla-w{border:1px solid var(--linea);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--blanco)}
+table{border-collapse:collapse;width:100%;font-size:11px;font-variant-numeric:tabular-nums}
+th{background:var(--enc);text-align:left;font-weight:700;padding:0 10px;height:34px;border-bottom:1px solid var(--linea);border-right:1px solid var(--linea);white-space:nowrap;position:sticky;top:0}
+th.acc{background:var(--verde-f)}
+td{height:42px;padding:0 10px;border-bottom:1px solid var(--linea);border-right:1px solid var(--linea);white-space:nowrap;background:var(--blanco)}
+tbody tr:nth-child(even) td{background:var(--alt)}
+th:first-child,td:first-child{position:sticky;left:0;z-index:1;min-width:200px;box-shadow:1px 0 0 var(--linea)}
+th:first-child{z-index:3}
+tbody tr{cursor:pointer}tbody tr:hover td{background:#f3f1ec}
+tbody tr.sel td{background:#eef6f0!important}
+td .nm{display:flex;align-items:center;gap:8px}
+td .nm small{display:block;font-size:9.5px;color:var(--sub);font-weight:400}
+td .nm b{font-weight:600}
+td input[type=checkbox]{width:16px;height:16px;margin:0;accent-color:var(--verde);flex:none}
+td .ck0{width:16px;flex:none}
+td.num{text-align:right}
+.pos{color:#37699e}.neg{color:#a56a3f}.cero{color:var(--cero)}
+td.corta{max-width:240px;overflow:hidden;text-overflow:ellipsis}
+td.inact{color:var(--cero)}
+tr.corr td{color:var(--sub)}
+
+.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap}
+.d-pend{background:var(--pend-f);color:var(--pend)}.d-apr{background:var(--apr-f);color:var(--apr)}
+.d-rech{background:var(--rech-f);color:var(--rech)}.d-camb{background:var(--camb-f);color:var(--camb)}
+.d-res{background:var(--res-f);color:var(--res)}.d-ppc{background:var(--ppc-f);color:var(--ppc)}
+.d-na{color:var(--cero);font-weight:400}
+.a1{background:#e8eef5;color:#4a6484}.a2{background:#ece9f3;color:#635a7e}.a3{background:#e4efee;color:#40706a}.a4{background:#f0eae0;color:#7d6a4d}.a5{background:#f2eaee;color:#7d5a68}
+.vacio{padding:24px;text-align:center;color:var(--sub);font-size:13px}
+
+/* Resumen por persona */
+details.pp{margin-top:16px}
+details.pp summary{cursor:pointer;font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;padding:6px 0}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--arena);width:140px}
+.bar i{display:block;height:100%}
+
+/* Panel lateral de detalle */
+.velo{position:fixed;inset:0;z-index:9;background:rgba(90,77,62,.18)}
+.panel{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);z-index:10;background:var(--crema);overflow-y:auto;padding:16px 18px 0;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-right:max(18px,env(safe-area-inset-right,0px));box-shadow:-8px 0 30px rgba(90,77,62,.15);display:flex;flex-direction:column}
+.pcab{display:flex;align-items:flex-start;gap:10px}
+.pcab div{flex:1;min-width:0}
+.pcab h3{margin:0;font-size:17px;line-height:1.25}
+.x{border:0;background:var(--arena);border-radius:50%;width:40px;height:40px;font-size:18px;flex:none}
+.fsec{background:var(--blanco);border:1px solid var(--borde);border-radius:12px;padding:12px 14px;margin-top:10px}
+.fst{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);margin-bottom:6px}
+.fst .esp{flex:1}
+.r{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #f3f1ec;font-size:12.5px}.r:last-child{border-bottom:0}
+.r span{color:var(--sub);flex:none}.r b{text-align:right;font-weight:600;min-width:0}
+.red{font-family:'Times New Roman',Times,serif;font-style:italic;font-size:14px;background:var(--alt);border-radius:8px;padding:10px 12px;line-height:1.5}
+.peq{font-size:11px;color:var(--sub);line-height:1.5;margin-top:6px}
+.paso{display:grid;grid-template-columns:18px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid #f3f1ec;font-size:12.5px}
+.paso:last-child{border-bottom:0}
+.paso .pt{width:12px;height:12px;border-radius:50%;margin-top:3px;border:2px solid var(--borde);background:var(--blanco)}
+.paso .pt.ok{background:var(--apr);border-color:var(--apr)}.paso .pt.pe{background:var(--pend-f);border-color:var(--pend)}
+.paso .pt.no{background:var(--rech);border-color:var(--rech)}.paso .pt.ca{background:var(--camb);border-color:var(--camb)}
+.paso .pt.rs{background:var(--res);border-color:var(--res)}.paso .pt.pc{background:var(--ppc);border-color:var(--ppc)}
+.paso .q{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.paso .c{font-size:12px;color:var(--cafe);background:var(--alt);border-radius:6px;padding:5px 8px;margin-top:5px}
+.paso small{color:var(--sub);font-size:11px}
+.alerta{font-size:12px;margin-top:10px;padding:9px 11px;border-radius:9px;line-height:1.5}
+.alerta.am{background:var(--pend-f);color:#8a6d1e}
+.alerta.mo{background:var(--ppc-f);color:var(--ppc)}
+.alerta.ve{background:var(--apr-f);color:var(--apr)}
+.alerta .fila{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.ppie{position:sticky;bottom:0;margin:14px -18px 0;margin-right:calc(-1 * max(18px,env(safe-area-inset-right,0px)));padding:12px 18px calc(14px + env(safe-area-inset-bottom,0px));background:var(--crema);border-top:1px solid var(--borde);margin-top:auto}
+.ppie .bts{display:flex;flex-wrap:wrap;gap:8px}
+.ppie .bts .btn{flex:1 1 auto}
+.ppie .lbl{margin-top:0}
+.oblig{color:var(--camb);font-size:11px}
+
+/* Corregir (paso a paso) */
+.wiz{max-width:640px}
+.prog{display:flex;gap:4px;margin:18px 0 6px}.prog i{flex:1;height:5px;border-radius:3px;background:var(--borde)}.prog i.on{background:var(--cafe)}
+.pn{font-size:11px;color:var(--sub)}
+.wcard{background:var(--blanco);border:1px solid var(--borde);border-radius:14px;padding:20px 18px;margin-top:12px}
+.qq{font-size:20px;font-weight:700;margin:0 0 4px;line-height:1.3;text-wrap:balance}.qs{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.5}
+.wnav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.wnav .btn{min-width:120px}
+.opc{display:flex;flex-direction:column;gap:8px}
+.op{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--borde);background:var(--blanco);border-radius:12px;padding:10px 12px;font-size:13px;min-height:52px}
+.op.on{border:2px solid var(--cafe);padding:9px 11px}
+.op div{flex:1;min-width:0}.op small{display:block;font-size:11px;color:var(--sub)}
+.wchips{display:flex;flex-wrap:wrap;gap:8px}
+.wchip{border:1px solid var(--borde);background:var(--blanco);border-radius:22px;padding:9px 14px;font-size:13.5px;min-height:44px}
+.wchip.on{background:var(--cafe);color:var(--blanco);border-color:var(--cafe)}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.confirma{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin:16px 0 0;background:var(--pend-f);border:1px solid #f0dfb0;border-radius:10px;padding:12px;line-height:1.5;cursor:pointer}
+.confirma input{width:20px;height:20px;margin:0;flex:none;accent-color:var(--verde)}
+.folio{font-size:24px;font-weight:700;margin:4px 0}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:var(--cafe);color:var(--blanco);padding:12px 18px;border-radius:12px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.2);max-width:90vw}
+.nota{border:1px dashed var(--wf-b);background:var(--wf);border-radius:8px;padding:7px 10px;font-size:11.5px;line-height:1.45;margin-top:10px;color:#6b5a1e}
+.nota b{font-weight:700}
+.ver{text-align:center;font-size:10px;color:var(--cero);padding:20px 0 10px}
+
+@media (max-width:760px){
+  .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid{grid-template-columns:1fr 1fr}
+  .crumb{display:none}
+  th:first-child,td:first-child{min-width:150px}
+  .dos{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){.panel{animation:entra .18s ease-out}@keyframes entra{from{transform:translateX(24px)}}}
+</style>
+
+<div class="wf gut" role="region" aria-label="Controles del wireframe">
+  <b>Wireframe · Fase 3</b><span>datos de prueba, nada se guarda</span>
+  <span class="sep"></span>
+  <span>Pantalla:</span>
+  <button data-ir="inicio" id="wf-inicio">Inicio</button>
+  <button data-ir="bandeja" id="wf-bandeja">Mi bandeja</button>
+  <button data-ir="panel" id="wf-panel">Panel general</button>
+  <button data-ir="corregir" id="wf-corregir">Corregir (-R1)</button>
+  <label for="vercomo" style="margin-left:6px">Ver como:</label>
+  <select id="vercomo">
+    <option value="valen">Valen (todo)</option>
+    <option value="raul">Raúl (jefe Taller)</option>
+    <option value="laura">Laura (jefa + formatos)</option>
+    <option value="gaby">Gaby (filtro)</option>
+    <option value="emp">Andrea (empleada)</option>
+  </select>
+</div>
+
+<header class="top gut">
+  <button class="marca" data-ir="inicio" id="marca"><svg viewBox="0 0 180 180" aria-hidden="true"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>Permisos UT</button>
+  <div class="crumb" id="crumb"></div>
+  <span class="vcomo" id="vcomo"></span>
+  <div class="av" id="av"></div>
+</header>
+
+<main class="cuerpo gut" id="cuerpo"></main>
+<div class="ver gut">v0.4.0 · wireframe</div>
+<div id="capa"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+const AREAS={T:{n:'Taller de Proyectos',c:'a1',jefe:'Raúl'},S:{n:'Secretaría Técnica',c:'a2',jefe:'Max'},A:{n:'Administración',c:'a3',jefe:'Laura'},G:{n:'Gestión Inmobiliaria',c:'a4',jefe:'Laura'},I:{n:'Intendencia',c:'a5',jefe:'Laura'}};
+const DEC={pend:'Pendiente',apr:'Aprobado',rech:'Rechazado',camb:'Pedir cambios',res:'Resuelto',ppc:'Pasó por corrección',na:'—'};
+const EST={eJ:['Nueva - espera jefe','d-pend'],eG:['Espera Gaby','d-pend'],eL:['Espera Laura','d-pend'],camb:['Cambios solicitados','d-camb'],apro:['Aprobada','d-apr'],rech:['Rechazada','d-rech'],corr:['Corregida','d-ppc']};
+const ETAPA={jefe:'Jefe',gaby:'Gaby',laura:'Laura'};
+const ROLES={
+  valen:{nombre:'Valentina',ini:'VMM',etapas:['jefe','gaby','laura'],areas:'TSAGI',etiqueta:'Ver como: Todo'},
+  raul:{nombre:'Raúl',ini:'REMC',etapas:['jefe'],areas:'T',etiqueta:'Ver como: Jefe'},
+  laura:{nombre:'Laura',ini:'LZTM',etapas:['jefe','laura'],areas:'AGI',etiqueta:'Ver como: Laura'},
+  gaby:{nombre:'Gaby',ini:'GTB',etapas:['gaby'],areas:'',etiqueta:'Ver como: Gaby'},
+  emp:{nombre:'Andrea',ini:'ANRA',etapas:[],areas:'',etiqueta:'Ver como: Empleado'}
+};
+const d=(v,por,at,com)=>({v,por,at,com});
+let S=[
+ {f:'F-ANRA-2026-0014',emp:'Andrea Nefertary Rubio Ayala',ar:'T',tipo:'Llegada tarde',just:'Uso de horas',dias:'23/10/2026',hor:'9:00 a 18:00',hecho:'Llegó 9:40',h:-0.75,rec:'23/10 09:52',act:'23/10 09:52',mot:'Tráfico en López Mateos',proy:'',red:'Variación de horario con cargo al banco de horas acumuladas. Mi horario oficial es de 9:00 a 18:00 h; este día entré a las 09:40 h. Apliqué 0.75 h de mi tiempo acumulado.',d:{jefe:d('pend')}},
+ {f:'F-JAGG-2026-0009',emp:'Jaime Antonio Guzmán Gutiérrez',ar:'T',tipo:'Horas extras',just:'',dias:'21/10/2026',hor:'9:00 a 18:00',hecho:'18:00 a 20:00',h:2,rec:'22/10 08:10',act:'22/10 08:10',mot:'',proy:'Edificio Lagos de Moreno',red:'Trabajo fuera de horario oficial en proyecto Edificio Lagos de Moreno. Mi horario oficial es de 9:00 a 18:00 h; este día trabajé de 18:00 a 20:00 h. Generé 2 h de tiempo adicional.',d:{jefe:d('pend')}},
+ {f:'F-LAMC-2026-0021',emp:'Luis Alonso Muñoz Casas',ar:'T',tipo:'Salida anticipada',just:'Asunto personal',dias:'22/10/2026',hor:'9:00 a 18:00',hecho:'Salió 16:00',h:null,rec:'22/10 15:41',act:'22/10 15:41',mot:'Cita en el SAT',proy:'',red:'Cita en el SAT para trámite fiscal.',d:{jefe:d('pend')}},
+ {f:'F-DMPB-2026-0007',emp:'Diego Misael Pimentel Becerra',ar:'T',tipo:'Ausencia',just:'Comisión',dias:'20/10 – 21/10/2026',hor:'9:00 a 18:00',hecho:'2 días',h:null,rec:'19/10 17:02',act:'21/10 12:30',mot:'',proy:'CUCEI',red:'Atención a comisión / reunión externa — CUCEI.',d:{jefe:d('apr','Raúl','21/10 12:30',''),gaby:d('pend')}},
+ {f:'F-REMC-2026-0004',emp:'Raúl Edilberto Martínez Carrazco',ar:'T',tipo:'Ausencia',just:'A cuenta de vacaciones',dias:'27/10 – 28/10/2026',hor:'9:00 a 18:00',hecho:'2 días',h:null,rec:'22/10 11:15',act:'22/10 11:15',mot:'',proy:'',red:'Ausencia a cuenta de días de vacaciones.',esJefe:true,d:{jefe:d('na','','','Firma Pável pendiente'),gaby:d('pend')}},
+ {f:'F-MFB-2026-0011',emp:'Mariana Flores Ballesteros',ar:'S',tipo:'Omisión de checado',just:'',dias:'19/10/2026',hor:'9:00 a 18:00',hecho:'Entrada',h:null,rec:'19/10 10:05',act:'22/10 13:20',mot:'',proy:'',red:'Omisión de checado de entrada.',d:{jefe:d('apr','Max','20/10 09:12',''),gaby:d('apr','Gaby','22/10 13:20',''),laura:d('pend')}},
+ {f:'F-KYGS-2026-0006',emp:'Karla Yadira Gomez Salcido',ar:'A',tipo:'Cambio de horario',just:'',dias:'18/10/2026',hor:'19:30 a 7:30',hecho:'20:30 a 8:30',h:0,rec:'18/10 08:40',act:'21/10 16:02',mot:'Cubrió turno de compañero',proy:'',red:'Variación de horario: jornada recorrida de 20:30 a 08:30. Cubrió turno de compañero.',d:{jefe:d('apr','Laura','20/10 10:00',''),gaby:d('res','Gaby','21/10 16:02','Ya lo vi con ella'),laura:d('pend')}},
+ {f:'F-AOS-2026-0005',emp:'Andrés Orta Santana',ar:'A',tipo:'Llegada tarde',just:'Reposición de horas',dias:'22/10/2026',hor:'9:00 a 18:00',hecho:'Llegó 10:00',h:-1,rec:'22/10 10:12',act:'22/10 10:12',mot:'',proy:'',red:'Variación de horario con compromiso de reposición de las horas correspondientes.',d:{jefe:d('pend')}},
+ {f:'F-JAHO-2026-0003',emp:'Julia Alejandra Hernández Ortiz',ar:'G',tipo:'Ausencia',just:'Home office',dias:'17/10/2026',hor:'9:00 a 14:00',hecho:'1 día',h:null,rec:'16/10 18:20',act:'21/10 12:00',mot:'',proy:'',red:'Trabajo en modalidad home office autorizado por mi jefe directo.',d:{jefe:d('apr','Laura','17/10 09:00',''),gaby:d('apr','Gaby','20/10 11:00',''),laura:d('apr','Laura','21/10 12:00','')}},
+ {f:'F-MISN-2026-0002',emp:'María Isabel Soto Nuñez',ar:'I',tipo:'Omisión de checado',just:'',dias:'15/10/2026',hor:'7:00 a 15:00',hecho:'Salida',h:null,rec:'16/10 07:30',act:'16/10 12:00',mot:'',proy:'',red:'Omisión de checado de salida.',d:{jefe:d('rech','Laura','16/10 12:00','Ese día saliste a las 12, no a las 15')}},
+ {f:'F-OPC-2026-0012',emp:'Omar Peñaloza Chávez',ar:'T',tipo:'Llegada tarde',just:'Uso de horas',dias:'20/10/2026',hor:'9:00 a 18:00',hecho:'Llegó 9:30',h:-0.5,rec:'20/10 09:45',act:'21/10 10:30',mot:'',proy:'',red:'Variación de horario con cargo al banco de horas acumuladas. Mi horario oficial es de 9:00 a 18:00 h; este día entré a las 09:30 h. Apliqué 0.5 h de mi tiempo acumulado.',corregidaPor:'F-OPC-2026-0012-R1',d:{jefe:d('camb','Raúl','20/10 13:00','Llegaste 10:15, no 9:30')}},
+ {f:'F-OPC-2026-0012-R1',emp:'Omar Peñaloza Chávez',ar:'T',tipo:'Llegada tarde',just:'Uso de horas',dias:'20/10/2026',hor:'9:00 a 18:00',hecho:'Llegó 10:15',h:-1.25,rec:'21/10 10:30',act:'21/10 10:30',mot:'Corrección de F-OPC-2026-0012: la hora de llegada',proy:'',red:'Variación de horario con cargo al banco de horas acumuladas. Mi horario oficial es de 9:00 a 18:00 h; este día entré a las 10:15 h. Apliqué 1.25 h de mi tiempo acumulado.',corrigeA:'F-OPC-2026-0012',d:{jefe:d('ppc','','21/10 10:30','Corrección de F-OPC-2026-0012 — ya está con Gaby'),gaby:d('pend')}},
+ {f:'F-ANRA-2026-0013',emp:'Andrea Nefertary Rubio Ayala',ar:'T',tipo:'Horas extras',just:'',dias:'16/10/2026',hor:'9:00 a 18:00',hecho:'18:00 a 19:30',h:1.5,rec:'17/10 09:00',act:'21/10 09:40',mot:'',proy:'',red:'Trabajo fuera de horario oficial en proyecto. Mi horario oficial es de 9:00 a 18:00 h; este día trabajé de 18:00 a 19:30 h. Generé 1.5 h de tiempo adicional.',d:{jefe:d('apr','Raúl','17/10 12:00',''),gaby:d('camb','Gaby','21/10 09:40','Falta el proyecto en el que trabajaste')}}
+];
+let rol='valen',pant='inicio',tab=null,filtro='pend',buscar='',fArea='',fEst='',marcadas=new Set(),abierta=null,confLote=false,cambio=false,editRed=false;
+let W={paso:0,folio:'',que:'',cambia:new Set(),nueva:{},ok:false};
+const $=s=>document.querySelector(s);
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const corto=n=>n.split(' ')[0];
+const ini=n=>n.split(' ').filter(p=>p.length>2||p==='Du').slice(0,3).map(p=>p[0]).join('');
+const chipD=v=>`<span class="chip d-${v||'na'}">${DEC[v||'na']}</span>`;
+const horas=h=>h==null?'<span class="cero">—</span>':h===0?'<span class="cero">0</span>':`<span class="${h>0?'pos':'neg'}">${h>0?'+':'−'}${Math.abs(h)} h</span>`;
+
+function estado(s){
+  if(s.corregidaPor)return'corr';
+  const {jefe:j,gaby:g,laura:l}=s.d;
+  if(l){if(l.v==='apr'||l.v==='res')return'apro';if(l.v==='rech')return'rech';if(l.v==='camb')return'camb';return'eL'}
+  if(g){if(g.v==='rech')return'rech';if(g.v==='camb')return'camb';return'eG'}
+  if(j.v==='rech')return'rech';if(j.v==='camb')return'camb';return'eJ';
+}
+function conQuien(s){const e=estado(s);return e==='eJ'?AREAS[s.ar].jefe:e==='eG'?'Gaby':e==='eL'?'Laura':'—'}
+function filasEtapa(st){
+  const R=ROLES[rol];
+  return S.filter(s=>{
+    if(st==='jefe')return s.d.jefe&&s.d.jefe.v!=='na'&&R.areas.includes(s.ar);
+    if(st==='gaby')return s.d.gaby||(s.d.jefe.v==='camb');
+    if(st==='laura')return !!s.d.laura;
+  });
+}
+const miDec=(s,st)=>s.d[st]?s.d[st].v:(st==='gaby'&&s.d.jefe.v==='camb'?'na':'na');
+const esPend=(s,st)=>miDec(s,st)==='pend'&&!s.corregidaPor;
+function pendientes(st){return filasEtapa(st).filter(s=>esPend(s,st)).length}
+
+function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(e._t);e._t=setTimeout(()=>e.hidden=true,2600)}
+function ir(p){pant=p;abierta=null;confLote=false;if(p==='corregir'){W={paso:0,folio:'',que:'',cambia:new Set(),nueva:{},ok:false}}pintar();window.scrollTo(0,0)}
+
+function pintar(){
+  const R=ROLES[rol];
+  document.querySelectorAll('.wf [data-ir]').forEach(b=>b.classList.toggle('on',b.dataset.ir===pant));
+  $('#av').textContent=R.ini.slice(0,2);
+  $('#vcomo').textContent=R.etiqueta;
+  $('#crumb').textContent={inicio:'Inicio',bandeja:'Inicio › Mi bandeja',panel:'Inicio › Panel general',corregir:'Inicio › Corregir una solicitud'}[pant];
+  $('#cuerpo').innerHTML={inicio:vInicio,bandeja:vBandeja,panel:vPanel,corregir:vCorregir}[pant]();
+  pintarPanel();
+}
+
+/* ---------- INICIO ---------- */
+function vInicio(){
+  const R=ROLES[rol];
+  const tot=R.etapas.reduce((a,st)=>a+pendientes(st),0);
+  const desg=R.etapas.map(st=>`<i>${st==='jefe'?'Jefe':ETAPA[st]} ${pendientes(st)}</i>`).join('');
+  const mias=S.filter(s=>corto(s.emp)===R.nombre&&estado(s)==='camb');
+  let h=`<div class="hola"><h1>Hola, ${R.nombre}</h1><div class="sub">Jueves 23 de octubre</div></div>`;
+  h+=mias.map(s=>{const st=s.d.laura&&s.d.laura.v==='camb'?'laura':s.d.gaby&&s.d.gaby.v==='camb'?'gaby':'jefe';const x=s.d[st];
+    return `<div class="aviso-c"><div><b>Te pidieron cambios en ${s.f}</b> (${s.tipo.toLowerCase()}, ${s.dias})<br>${esc(x.por)}: “${esc(x.com)}”</div><button class="btn chico camb" data-corr="${s.f}">Corregir</button></div>`}).join('');
+  h+=`<div class="secc">Lo de diario</div><div class="grid">`;
+  if(R.etapas.length)h+=`<button class="card hi va" data-ir="bandeja">${tot?`<span class="badge">${tot}</span>`:''}<div class="e">📥</div><b>Mi bandeja</b><span>${tot?tot+' por decidir':'Nada pendiente'}</span>${R.etapas.length>1?`<div class="desg">${desg}</div>`:''}</button>`;
+  h+=`<button class="card va"><div class="e">📝</div><b>Nueva solicitud</b><span>Llegada tarde, falta, horas extra…</span></button>`;
+  h+=`<button class="card va" data-ir="corregir"><div class="e">✏️</div><b>Corregir una solicitud</b><span>Cuando te piden cambios</span></button>`;
+  h+=`<button class="card va"><div class="e">📄</div><b>Mis solicitudes</b><span>Dónde va cada una</span></button>`;
+  if(rol!=='emp')h+=`<button class="card va" data-ir="panel"><div class="e">🗂️</div><b>Panel general</b><span>Todas las solicitudes en vivo</span></button>`;
+  h+=`</div>`;
+  if(rol==='valen'||rol==='gaby')h+=`<div class="secc">Administración</div><div class="grid"><button class="card pronto"><div class="e">👥</div><b>Personas y PINs</b><span>Ya existe</span></button><button class="card pronto"><div class="e">📐</div><b>Proyectos</b><span>Ya existe</span></button><button class="card pronto"><div class="e">🏢</div><b>Áreas y jefes</b><span>Ya existe</span></button></div>`;
+  h+=`<div class="nota"><b>Contador:</b> el número naranja de “Mi bandeja” es la suma de lo que te toca decidir. Si tienes varias etapas (Laura, Valen), abajo sale el desglose. Cambia “Ver como” arriba para ver cada rol.</div>`;
+  return h;
+}
+
+/* ---------- BANDEJA ---------- */
+function vBandeja(){
+  const R=ROLES[rol];
+  if(!R.etapas.length)return `<div class="vacio">Andrea no tiene bandeja: solo pide permisos. Cambia “Ver como”.</div>`;
+  if(!tab||!R.etapas.includes(tab))tab=R.etapas[0];
+  const nomTab=st=>st==='jefe'?(rol==='raul'?'Taller de Proyectos':rol==='laura'?'Como jefa':'Jefes'):st==='gaby'?'Gaby · filtro':(rol==='laura'?'Formatos (aprobación final)':'Laura · formatos');
+  let h=`<div class="hola"><h1>Mi bandeja</h1><div class="sub">${tab==='jefe'?'Autorizas el permiso. Si apruebas, pasa con Gaby.':tab==='gaby'?'Revisas que esté bien llenada. Si apruebas, pasa con Laura.':'Aprobación final. Al aprobar queda congelada y (en la Fase 5) sale el PDF.'}</div></div>`;
+  if(R.etapas.length>1)h+=`<div class="tabs" role="tablist">${R.etapas.map(st=>`<button class="tab ${st===tab?'on':''}" data-tab="${st}" role="tab">${nomTab(st)}${pendientes(st)?`<em>${pendientes(st)}</em>`:''}</button>`).join('')}</div>`;
+  const todas=filasEtapa(tab);
+  const cuenta=v=>todas.filter(s=>v.includes(miDec(s,tab))&&!s.corregidaPor).length;
+  const st5=[['tot','Total',todas.length,'var(--cafe)'],['apr','Aprobadas',cuenta(['apr','res','ppc'])+todas.filter(s=>s.corregidaPor).length,'var(--apr)'],['pend','Pendientes',cuenta(['pend']),'var(--pend)'],['camb','Pedir cambios',todas.filter(s=>!s.corregidaPor&&(miDec(s,tab)==='camb'||(tab==='gaby'&&s.d.jefe.v==='camb'))).length,'var(--camb)'],['rech','Rechazadas',cuenta(['rech']),'var(--rech)']];
+  h+=`<div class="stats">${st5.map(([k,t,n,c])=>`<button class="stat ${filtro===k?'on':''}" data-filtro="${k}"><span><i class="pt" style="background:${c}"></i>${t}</span><b class="${n?'':'z'}">${n}</b></button>`).join('')}</div>`;
+  let filas=todas.filter(s=>{
+    const v=miDec(s,tab);
+    if(filtro==='pend'&&!esPend(s,tab))return false;
+    if(filtro==='apr'&&!(['apr','res','ppc'].includes(v)||s.corregidaPor))return false;
+    if(filtro==='camb'&&!(v==='camb'||(tab==='gaby'&&s.d.jefe.v==='camb')))return false;
+    if(filtro==='rech'&&v!=='rech')return false;
+    if(buscar&&!norm(s.emp+' '+s.f).includes(norm(buscar)))return false;
+    return true;
+  });
+  filas.sort((a,b)=>esPend(b,tab)-esPend(a,tab));
+  h+=`<div class="barra"><input class="f buscar" id="buscar" placeholder="Buscar persona o folio" value="${esc(buscar)}">
+    <span class="esp"></span><span class="sub" style="font-size:12px">Toca una fila para ver el detalle</span></div>`;
+  const pend=filas.filter(s=>esPend(s,tab));
+  const marc=pend.filter(s=>marcadas.has(s.f));
+  if(pend.length){
+    if(confLote)h+=`<div class="conf"><div>Vas a <b>aprobar ${marc.length}</b>: ${marc.map(s=>corto(s.emp)+' ('+s.tipo.toLowerCase()+')').join(', ')}. ${tab==='jefe'?'Pasan con Gaby.':tab==='gaby'?'Pasan con Laura.':'Quedan congeladas.'}</div><button class="btn chico apr" id="loteSi">Sí, aprobar ${marc.length}</button><button class="btn chico l" id="loteNo">Cancelar</button></div>`;
+    else h+=`<div class="lote"><span><b>${marc.length} de ${pend.length}</b> pendientes marcadas</span><button class="lnk" id="todas">${marc.length===pend.length?'Desmarcar todas':'Marcar todas'}</button><span class="esp"></span><button class="btn chico apr" id="lote" ${marc.length?'':'disabled'}>Aprobar ${marc.length} marcadas</button></div>`;
+  }
+  const prev=tab==='gaby'?['jefe']:tab==='laura'?['jefe','gaby']:[];
+  h+=`<div class="tabla-w"><table><thead><tr><th>Empleado · folio</th><th>Recibido</th><th>Área</th><th>Tipo</th><th>Justificación</th><th>Día(s)</th><th>Horario oficial</th><th>Qué pasó</th><th>Horas</th>${prev.map(p=>`<th>Decisión ${p==='jefe'?'jefe':'Gaby'}</th>`).join('')}<th class="acc">Decisión</th><th class="acc">Comentario</th></tr></thead><tbody>`;
+  h+=filas.map(s=>{
+    const p=esPend(s,tab),v=miDec(s,tab),dc=s.d[tab];
+    const cell=s.corregidaPor?`<span class="chip d-ppc">Corregida → ${s.corregidaPor.slice(-8)}</span>`:(tab==='gaby'&&!s.d.gaby&&s.d.jefe.v==='camb')?`<span class="chip d-camb">Cambios (jefe)</span>`:chipD(v);
+    return `<tr data-abre="${s.f}" class="${abierta===s.f?'sel':''} ${s.corregidaPor?'corr':''}"><td><div class="nm">${p?`<input type="checkbox" data-marca="${s.f}" ${marcadas.has(s.f)?'checked':''} aria-label="Marcar ${s.f}">`:'<span class="ck0"></span>'}<div><b>${esc(s.emp.split(' ').slice(0,1).join(' ')+' '+s.emp.split(' ').slice(-2,-1))}</b><small>${s.f}</small></div></div></td>
+    <td>${s.rec}</td><td><span class="chip ${AREAS[s.ar].c}">${AREAS[s.ar].n}</span></td><td>${s.tipo}</td><td class="${s.just?'':'inact'}">${s.just||'—'}</td><td>${s.dias}</td><td>${s.hor}</td><td>${s.hecho}</td><td class="num">${horas(s.h)}</td>
+    ${prev.map(pp=>`<td>${s.d[pp]?chipD(s.d[pp].v):chipD('na')}</td>`).join('')}
+    <td>${cell}</td><td class="corta ${dc&&dc.com?'':'inact'}">${esc(dc&&dc.com||(s.esJefe&&tab==='gaby'?'Firma Pável pendiente':'—'))}</td></tr>`}).join('')||`<tr><td colspan="12" class="vacio" style="position:static">Nada por aquí con este filtro.</td></tr>`;
+  h+=`</tbody></table></div>`;
+  // resumen por persona
+  const per={};todas.forEach(s=>{const k=s.emp;per[k]=per[k]||{t:0,a:0,p:0,c:0,r:0};const v=miDec(s,tab);per[k].t++;if(s.corregidaPor||['apr','res','ppc'].includes(v))per[k].a++;else if(v==='pend')per[k].p++;else if(v==='camb'||(tab==='gaby'&&s.d.jefe.v==='camb'))per[k].c++;else if(v==='rech')per[k].r++});
+  h+=`<details class="pp" open><summary>Resumen por persona</summary><div class="tabla-w"><table><thead><tr><th>Persona</th><th>Total</th><th>Aprob.</th><th>Pend.</th><th>Cambios</th><th>Rech.</th><th>Estado</th></tr></thead><tbody>${Object.entries(per).map(([n,x])=>`<tr><td>${esc(n)}</td>${[x.t,x.a,x.p,x.c,x.r].map(v=>`<td class="num ${v?'':'cero'}">${v}</td>`).join('')}<td><div class="bar">${[[x.a,'var(--apr)'],[x.p,'var(--pend)'],[x.c,'var(--camb)'],[x.r,'var(--rech)']].map(([v,c])=>v?`<i style="width:${v/x.t*100}%;background:${c}"></i>`:'').join('')}</div></td></tr>`).join('')}</tbody></table></div></details>`;
+  h+=`<div class="nota"><b>Lote (F4a):</b> al abrir, todas las pendientes ya vienen marcadas; desmarca las que quieras revisar con calma. <b>Pendientes</b> es el filtro de arriba que viene puesto; toca “Total” para ver todo.</div>`;
+  return h;
+}
+const norm=t=>String(t).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+
+/* ---------- PANEL LATERAL ---------- */
+function pintarPanel(){
+  const c=$('#capa');
+  if(!abierta){c.innerHTML='';return}
+  const s=S.find(x=>x.f===abierta);const st=pant==='bandeja'?tab:null;
+  const v=st?miDec(s,st):null,p=st&&esPend(s,st);
+  const congel=s.d.laura&&s.d.laura.v==='apr';
+  const puedeEditar=st&&(st==='gaby'||st==='laura')&&!congel&&!s.corregidaPor;
+  let h=`<div class="velo" data-cerrar="1"></div><aside class="panel" role="dialog" aria-label="Detalle de ${s.f}"><div class="pcab"><div><h3>${esc(s.emp)}</h3><div class="sub">${s.f} · <span class="chip ${EST[estado(s)][1]}">${EST[estado(s)][0]}</span></div></div><button class="x" data-cerrar="1" aria-label="Cerrar">×</button></div>`;
+  if(congel)h+=`<div class="alerta ve"><b>Congelada.</b> Laura ya la aprobó. Para cambiar algo, el empleado hace “Corregir una solicitud”.</div>`;
+  if(s.corregidaPor)h+=`<div class="alerta mo"><b>Corregida.</b> Continúa en ${s.corregidaPor}. Ya no avanza.</div>`;
+  if(s.corrigeA)h+=`<div class="alerta mo">Es la corrección de <b>${s.corrigeA}</b>. No pasó por el jefe: entró directo con Gaby.</div>`;
+  h+=`<div class="fsec"><div class="fst">Qué pide</div>
+    <div class="r"><span>Área</span><b><span class="chip ${AREAS[s.ar].c}">${AREAS[s.ar].n}</span></b></div>
+    <div class="r"><span>Tipo</span><b>${s.tipo}${s.just?' · '+s.just:''}</b></div>
+    <div class="r"><span>Día(s)</span><b>${s.dias}</b></div>
+    <div class="r"><span>Horario oficial</span><b>${s.hor}</b></div>
+    <div class="r"><span>Qué pasó</span><b>${s.hecho}</b></div>
+    <div class="r"><span>Horas al banco</span><b>${horas(s.h)}</b></div>
+    ${s.proy?`<div class="r"><span>Proyecto</span><b>${s.proy}</b></div>`:''}
+    ${s.mot?`<div class="r"><span>Motivo / detalle</span><b>${esc(s.mot)}</b></div>`:''}
+    <div class="r"><span>Recibido</span><b>${s.rec}</b></div></div>`;
+  h+=`<div class="fsec"><div class="fst">Redacción para el formato<span class="esp"></span>${puedeEditar&&!editRed?`<button class="lnk" id="editRed">Editar</button>`:''}</div>
+    ${editRed&&puedeEditar?`<textarea class="f ta" id="redTxt" style="font-size:13.5px">${esc(s.red)}</textarea><div class="fila" style="display:flex;gap:8px;margin-top:8px"><button class="btn chico" id="redOk">Guardar redacción</button><button class="btn chico l" id="redNo">Cancelar</button></div><div class="peq">Queda registrado quién la cambió y cómo decía antes.</div>`
+    :`<div class="red">${esc(s.red)}</div>${s.redPor?`<div class="peq">Editada por ${s.redPor}. Antes decía: “${esc(s.redAntes)}”</div>`:''}`}</div>`;
+  h+=`<div class="fsec"><div class="fst">Recorrido</div>${['jefe','gaby','laura'].map(e=>{const x=s.d[e];const who=e==='jefe'?(s.esJefe?'Jefe (se salta)':'Jefe · '+AREAS[s.ar].jefe):ETAPA[e];
+    if(!x)return `<div class="paso"><i class="pt"></i><div class="q"><b>${who}</b><small>todavía no le llega</small></div></div>`;
+    const cl={apr:'ok',pend:'pe',rech:'no',camb:'ca',res:'rs',ppc:'pc',na:''}[x.v];
+    return `<div class="paso"><i class="pt ${cl}"></i><div><div class="q"><b>${who}</b>${chipD(x.v)}${x.por?`<small>${x.por} · ${x.at}</small>`:''}</div>${x.com?`<div class="c">${esc(x.com)}</div>`:''}</div></div>`}).join('')}</div>`;
+  // acciones
+  if(st&&!congel&&!s.corregidaPor&&v!=='na'&&v!=='ppc'){
+    const sig=st==='jefe'?'gaby':st==='gaby'?'laura':null;
+    const avanzo=!p&&sig&&s.d[sig];
+    if(p||cambio){
+      h+=`<div class="ppie">${avanzo?`<div class="alerta am" style="margin:0 0 10px">Ya decidiste <b>${DEC[v]}</b> y pasó con ${ETAPA[sig]}. Si la cambias, ${ETAPA[sig]} verá el cambio y le sale de pendientes. ¿Seguro?</div>`:''}
+      <label class="lbl" for="com">Comentario <span class="oblig">(obligatorio para Pedir cambios y Rechazar)</span></label><textarea class="f ta" id="com" style="min-height:48px" placeholder="Ej.: falta el proyecto"></textarea>
+      <div class="bts" style="margin-top:10px"><button class="btn apr" data-dec="apr">Aprobar</button><button class="btn camb" data-dec="camb">Pedir cambios</button><button class="btn rech" data-dec="rech">Rechazar</button><button class="btn res chico" data-dec="res" title="Cerrar como hecho sin tocar banco ni PDF">Resuelto</button></div>
+      ${cambio?`<button class="lnk" id="noCambio" style="margin-top:8px">No cambiar nada</button>`:''}</div>`;
+    }else{
+      h+=`<div class="ppie"><div class="sub" style="font-size:12px">Tu decisión: ${chipD(v)} <button class="lnk" id="cambiar" style="margin-left:8px">Cambiar decisión</button></div></div>`;
+    }
+  }
+  h+=`<div style="height:12px"></div></aside>`;
+  c.innerHTML=h;
+}
+
+function decidir(dec){
+  const s=S.find(x=>x.f===abierta),st=tab,com=($('#com')?.value||'').trim();
+  if((dec==='camb'||dec==='rech')&&!com){toast('Escribe el comentario: el empleado necesita saber qué cambiar');$('#com').focus();return}
+  aplicar(s,st,dec,com);
+  cambio=false;marcadas.delete(s.f);
+  toast(`${s.f}: ${DEC[dec]}${dec==='apr'?(st==='jefe'?' · pasó con Gaby':st==='gaby'?' · pasó con Laura':' · quedó congelada'):''}`);
+  pintar();
+}
+function aplicar(s,st,dec,com){
+  const R=ROLES[rol];
+  s.d[st]=d(dec,R.nombre==='Valentina'?'Valen':R.nombre,'23/10 '+new Date().toTimeString().slice(0,5),com);
+  s.act='23/10 '+new Date().toTimeString().slice(0,5);
+  const sig=st==='jefe'?'gaby':st==='gaby'?'laura':null;
+  if(sig){
+    if(dec==='apr')s.d[sig]=s.d[sig]&&s.d[sig].v!=='res'?s.d[sig]:d('pend');
+    else if(dec==='res')s.d[sig]=d('res');
+    else{delete s.d[sig];if(sig==='gaby')delete s.d.laura}
+  }
+}
+
+/* ---------- PANEL GENERAL ---------- */
+function vPanel(){
+  if(rol==='emp')return `<div class="vacio">El panel general no lo ve el empleado (propuesta). Cambia “Ver como”.</div>`;
+  const cnt=k=>S.filter(s=>estado(s)===k).length;
+  let h=`<div class="hola"><h1>Panel general</h1><div class="sub">Todas las solicitudes, desde que se envían. Pensado para Laura.</div></div>`;
+  const tarjetas=[['','Total',S.length,'var(--cafe)'],['proc','En proceso',cnt('eJ')+cnt('eG')+cnt('eL'),'var(--pend)'],['camb','Cambios solicitados',cnt('camb'),'var(--camb)'],['apro','Aprobadas',cnt('apro'),'var(--apr)'],['rech','Rechazadas',cnt('rech'),'var(--rech)']];
+  h+=`<div class="stats">${tarjetas.map(([k,t,n,c])=>`<button class="stat ${fEst===k?'on':''}" data-fest="${k}"><span><i class="pt" style="background:${c}"></i>${t}</span><b class="${n?'':'z'}">${n}</b></button>`).join('')}</div>`;
+  h+=`<div class="barra"><input class="f buscar" id="buscar" placeholder="Buscar persona o folio" value="${esc(buscar)}"><select class="f" id="farea"><option value="">Todas las áreas</option>${Object.entries(AREAS).map(([k,a])=>`<option value="${k}" ${fArea===k?'selected':''}>${a.n}</option>`).join('')}</select></div>`;
+  const filas=S.filter(s=>{const e=estado(s);
+    if(fArea&&s.ar!==fArea)return false;
+    if(fEst==='proc'&&!['eJ','eG','eL'].includes(e))return false;
+    if(fEst&&fEst!=='proc'&&e!==fEst)return false;
+    if(buscar&&!norm(s.emp+' '+s.f).includes(norm(buscar)))return false;return true});
+  h+=`<div class="tabla-w"><table><thead><tr><th>Empleado · folio</th><th>Recibido</th><th>Área</th><th>Tipo</th><th>Justificación</th><th>Día(s)</th><th>Horario</th><th>Estado</th><th>Con quién</th><th>Motivo / detalle</th><th>Proyecto</th><th>Última actualización</th></tr></thead><tbody>`;
+  h+=filas.map(s=>{const e=estado(s);return `<tr data-abre="${s.f}" class="${abierta===s.f?'sel':''}"><td><div class="nm"><div><b>${esc(s.emp.split(' ')[0]+' '+s.emp.split(' ').slice(-2,-1))}</b><small>${s.f}</small></div></div></td><td>${s.rec}</td><td class="${AREAS[s.ar].c}">${AREAS[s.ar].n}</td><td>${s.tipo}</td><td class="${s.just?'':'inact'}">${s.just||'—'}</td><td>${s.dias}</td><td>${s.hor}</td><td><span class="chip ${EST[e][1]}">${EST[e][0]}</span></td><td>${conQuien(s)}</td><td class="corta ${s.mot?'':'inact'}">${esc(s.mot||'—')}</td><td class="${s.proy?'':'inact'}">${s.proy||'—'}</td><td>${s.act}</td></tr>`}).join('')||`<tr><td colspan="12" class="vacio" style="position:static">Nada con este filtro.</td></tr>`;
+  h+=`</tbody></table></div><div class="nota"><b>Solo se ve, no se decide aquí.</b> Tocar una fila abre el detalle (sin botones). El área va con su color de fondo (paleta fría, para que no se confunda con el estado). La redacción no sale en la tabla.</div>`;
+  return h;
+}
+
+/* ---------- CORREGIR (-R1) ---------- */
+const PASOS=['¿Qué solicitud corriges?','¿Qué te pidieron cambiar?','¿Qué cambia?','Revisa y envía'];
+function misCorregibles(){const R=ROLES[rol];const yo=rol==='emp'?'Andrea':null;
+  return S.filter(s=>!s.corregidaPor&&!s.corrigeA&&(yo?corto(s.emp)===yo:true)&&!(s.d.laura&&s.d.laura.v==='apr')).sort((a,b)=>(estado(b)==='camb')-(estado(a)==='camb')).slice(0,rol==='emp'?9:6)}
+function vCorregir(){
+  const p=W.paso;let h=`<div class="wiz"><div class="prog">${PASOS.map((_,i)=>`<i class="${i<=p?'on':''}"></i>`).join('')}</div><div class="pn">Paso ${p+1} de ${PASOS.length}</div><div class="wcard"><div class="qq">${PASOS[p]}</div>`;
+  const s=S.find(x=>x.f===W.folio);
+  if(p===0){
+    h+=`<div class="qs">Primero salen las que tienen cambios pedidos. Si no aparece, escribe el folio.</div><div class="opc">${misCorregibles().map(x=>{const e=estado(x);return `<button class="op ${W.folio===x.f?'on':''}" data-wf="${x.f}"><div><b>${x.f}</b><small>${rol==='emp'?'':esc(corto(x.emp))+' · '}${x.tipo} · ${x.dias}</small></div><span class="chip ${EST[e][1]}">${EST[e][0]}</span></button>`}).join('')}</div>
+    <label class="lbl" for="folioTxt">O escribe el folio</label><input class="f" id="folioTxt" placeholder="F-ANRA-2026-0013" value="${esc(W.folio)}" style="max-width:280px">
+    ${rol!=='emp'?'<div class="nota">Valen y Gaby pueden corregir a nombre de otra persona (queda registrado quién capturó). Andrea solo ve las suyas.</div>':''}`;
+  }else if(p===1){
+    const pc=['laura','gaby','jefe'].map(e=>s.d[e]).find(x=>x&&x.v==='camb');
+    h+=`<div class="qs">Se hereda todo lo de <b>${s.f}</b>. Aquí solo dices qué te pidieron.</div>${pc?`<div class="alerta am" style="margin:0 0 12px">${esc(pc.por)} te pidió: “${esc(pc.com)}”</div>`:''}<textarea class="f ta" id="que" placeholder="Ej.: faltaba el proyecto">${esc(W.que)}</textarea>`;
+  }else if(p===2){
+    const ops=[['fecha','Fecha'],['entrada','Hora de entrada / inicio'],['salida','Hora de salida / fin'],['proy','Proyecto'],['red','Texto del formato']];
+    h+=`<div class="qs">Elige solo lo que cambia. Lo demás se queda igual. Si cambias fecha u horas, se recalculan las horas y la redacción.</div><div class="wchips">${ops.map(([k,t])=>`<button class="wchip ${W.cambia.has(k)?'on':''}" data-wc="${k}">${t}</button>`).join('')}</div>`;
+    if(W.cambia.size)h+=`<div class="dos" style="margin-top:6px">${W.cambia.has('fecha')?`<div><label class="lbl" for="nf">Nueva fecha</label><input class="f" id="nf" type="date" value="2026-10-16"></div>`:''}${W.cambia.has('entrada')?`<div><label class="lbl" for="ne">Nueva hora de inicio</label><select class="f" id="ne"><option>18:00</option><option>18:05</option></select></div>`:''}${W.cambia.has('salida')?`<div><label class="lbl" for="ns">Nueva hora de fin</label><select class="f" id="ns"><option>19:30</option><option>19:35</option></select></div>`:''}${W.cambia.has('proy')?`<div><label class="lbl" for="np">Proyecto</label><select class="f" id="np"><option>Edificio Lagos de Moreno</option><option>CUCEI</option></select></div>`:''}</div>${W.cambia.has('red')?`<label class="lbl" for="nr">Nuevo texto del formato</label><textarea class="f ta" id="nr" placeholder="Si lo llenas, este texto gana sobre la redacción automática"></textarea>`:''}`;
+    h+=`<div class="alerta am">¿El error es el <b>tipo</b> o la <b>justificación</b>? Eso no se corrige: pide que la rechacen y haz una nueva.</div>`;
+  }else{
+    h+=`<div class="qs">Así se va a ir:</div><div class="r"><span>Folio nuevo</span><b>${s.f}-R1</b></div><div class="r"><span>Corrige a</span><b>${s.f}</b></div><div class="r"><span>Qué cambió</span><b>${esc(W.que||'—')}</b></div><div class="r"><span>Cambios</span><b>${[...W.cambia].map(k=>({fecha:'fecha',entrada:'hora de inicio',salida:'hora de fin',proy:'proyecto',red:'texto'})[k]).join(', ')||'ninguno'}</b></div><div class="r"><span>Va con</span><b>Gaby directo (tu jefe la ve como “Pasó por corrección”)</b></div>
+    <div class="red" style="margin-top:12px">${esc(s.red.replace('en proyecto.','en proyecto Edificio Lagos de Moreno.'))}</div>
+    <label class="confirma"><input type="checkbox" id="okv" ${W.ok?'checked':''}><span>Confirmo que la información es verídica. Después de enviar no se edita; si algo sale mal, se vuelve a corregir (-R2).</span></label>`;
+  }
+  h+=`<div class="wnav">${p?`<button class="btn l" id="wAtras">Atrás</button>`:'<span></span>'}<button class="btn" id="wSig" ${p===0&&!W.folio||p===1&&!W.que.trim()||p===3&&!W.ok?'disabled':''}>${p===3?'Enviar corrección':'Siguiente'}</button></div></div>`;
+  h+=`<div class="nota"><b>F3a:</b> al enviar, la original queda “Corregida → continúa en …-R1” y sale de los pendientes de todos.</div></div>`;
+  return h;
+}
+function enviarR1(){
+  const s=S.find(x=>x.f===W.folio);const n=s.f+'-R1';
+  const r={...s,f:n,rec:'23/10 '+new Date().toTimeString().slice(0,5),act:'23/10',mot:'Corrección de '+s.f+': '+W.que,corrigeA:s.f,corregidaPor:null,
+    proy:W.cambia.has('proy')?'Edificio Lagos de Moreno':s.proy,red:s.red.replace('en proyecto.','en proyecto Edificio Lagos de Moreno.'),
+    d:{jefe:d('ppc','','23/10','Corrección de '+s.f+' — ya está con Gaby'),gaby:d('pend')}};
+  s.corregidaPor=n;S.splice(S.indexOf(s)+1,0,r);
+  toast(n+' enviada · va con Gaby');ir('inicio');
+}
+
+/* ---------- EVENTOS ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,[data-abre],[data-cerrar],input[type=checkbox]');if(!t)return;
+  if(t.matches('input[data-marca]')){e.stopPropagation();t.checked?marcadas.add(t.dataset.marca):marcadas.delete(t.dataset.marca);pintar();return}
+  if(t.dataset.ir){ir(t.dataset.ir);return}
+  if(t.dataset.tab){tab=t.dataset.tab;filtro='pend';preMarcar();pintar();return}
+  if(t.dataset.filtro){filtro=t.dataset.filtro;pintar();return}
+  if(t.dataset.fest!==undefined){fEst=t.dataset.fest;pintar();return}
+  if(t.dataset.abre){abierta=t.dataset.abre;cambio=false;editRed=false;pintar();return}
+  if(t.dataset.cerrar){abierta=null;pintar();return}
+  if(t.dataset.dec){decidir(t.dataset.dec);return}
+  if(t.dataset.corr){ir('corregir');W.folio=t.dataset.corr;W.paso=1;pintar();return}
+  if(t.dataset.wf){W.folio=t.dataset.wf;pintar();return}
+  if(t.dataset.wc){W.cambia.has(t.dataset.wc)?W.cambia.delete(t.dataset.wc):W.cambia.add(t.dataset.wc);pintar();return}
+  switch(t.id){
+    case 'cambiar':cambio=true;pintarPanel();break;
+    case 'noCambio':cambio=false;pintarPanel();break;
+    case 'editRed':editRed=true;pintarPanel();break;
+    case 'redNo':editRed=false;pintarPanel();break;
+    case 'redOk':{const s=S.find(x=>x.f===abierta);const nv=$('#redTxt').value.trim();if(nv&&nv!==s.red){s.redAntes=s.red;s.red=nv;s.redPor=(rol==='valen'?'Valen':ROLES[rol].nombre)+' el 23/10'}editRed=false;toast('Redacción guardada');pintarPanel();break}
+    case 'todas':{const pend=filasEtapa(tab).filter(s=>esPend(s,tab));const all=pend.every(s=>marcadas.has(s.f));pend.forEach(s=>all?marcadas.delete(s.f):marcadas.add(s.f));pintar();break}
+    case 'lote':confLote=true;pintar();break;
+    case 'loteNo':confLote=false;pintar();break;
+    case 'loteSi':{const m=filasEtapa(tab).filter(s=>esPend(s,tab)&&marcadas.has(s.f));m.forEach(s=>aplicar(s,tab,'apr',''));marcadas.clear();confLote=false;toast(`${m.length} aprobadas`);pintar();break}
+    case 'wAtras':W.paso--;pintar();break;
+    case 'wSig':if(W.paso===3)enviarR1();else{W.paso++;pintar()}break;
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='buscar'){buscar=e.target.value;const pos=e.target.selectionStart;pintar();const b=$('#buscar');b.focus();b.setSelectionRange(pos,pos)}
+  if(e.target.id==='que'){W.que=e.target.value;$('#wSig').disabled=!W.que.trim()}
+  if(e.target.id==='folioTxt'){const v=e.target.value.trim().toUpperCase().replace(/\s/g,'');W.folio=S.some(s=>s.f===v)?v:'';$('#wSig').disabled=!W.folio}
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='vercomo'){rol=e.target.value;tab=null;filtro='pend';preMarcar();if(rol==='emp'&&(pant==='bandeja'||pant==='panel'))pant='inicio';ir(pant)}
+  if(e.target.id==='farea'){fArea=e.target.value;pintar()}
+  if(e.target.id==='okv'){W.ok=e.target.checked;$('#wSig').disabled=!W.ok}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&abierta){abierta=null;pintar()}});
+function preMarcar(){marcadas.clear();const R=ROLES[rol];const st=tab||R.etapas[0];if(st)filasEtapa(st).filter(s=>esPend(s,st)).forEach(s=>marcadas.add(s.f))}
+preMarcar();pintar();
+</script>
