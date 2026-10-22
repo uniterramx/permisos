@@ -176,10 +176,10 @@ function filasBandeja(){
       (miPend ? '<input type="checkbox" data-marca="' + s.id + '"' + (B.marcadas.has(s.id) ? ' checked' : '') + ' aria-label="Marcar ' + esc(s.folio) + '">' : '<span class="ck0"></span>') +
       '<div><b>' + esc(nomTabla(e)) + '</b><small>' + esc(s.folio) + chipPrueba(s) + '</small></div></div></td>' +
       '<td>' + cuando(s.recibido_at) + '</td><td><span class="chip ' + areaClase(s.area_id) + '">' + esc(areaPorId(s.area_id)?.nombre || '') + '</span></td>' +
-      '<td>' + esc(TIPO_TXT[s.tipo] || s.tipo) + '</td><td class="' + (s.justificacion ? '' : 'inact') + '">' + (s.justificacion ? esc(JUST_TXT[s.justificacion]) : '—') + '</td>' +
+      '<td class="media">' + esc(TIPO_TXT[s.tipo] || s.tipo) + '</td><td class="media' + (s.justificacion ? '' : ' inact') + '">' + (s.justificacion ? esc(JUST_TXT[s.justificacion]) : '—') + '</td>' +
       '<td>' + diasTxt(s) + '</td><td>' + horTxt(s) + '</td><td>' + esc(queHecho(s)) + '</td><td class="num">' + horasTxt(s) + '</td>' +
       prev.map(p => '<td>' + chipDec(decDe(s, p)) + '</td>').join('') +
-      '<td>' + celda + '</td><td class="corta' + (com ? '' : ' inact') + '">' + esc(com || '—') + '</td></tr>';
+      '<td>' + celda + '</td><td class="larga' + (com ? '' : ' inact') + '"><div class="clamp" title="' + esc(com) + '">' + esc(com || '—') + '</div></td></tr>';
   }).join('') : '<tr><td colspan="13" class="vacio">' + (B.filtro === 'pend' ? 'No tienes pendientes. 🎉' : 'Nada con este filtro.') + '</td></tr>';
   // Resumen por persona: sigue el mismo filtro
   const per = new Map();
@@ -322,9 +322,9 @@ function filasPanelGral(){
     const det = detalleTxt(s), pr = proyTxt(s);
     return '<tr class="clic' + (B.abierta === s.id ? ' sel' : '') + '" data-id="' + s.id + '"><td><div class="nm"><div><b>' + esc(nomTabla(empPorId(s.empleado_id))) + '</b><small>' + esc(s.folio) + chipPrueba(s) + '</small></div></div></td>' +
       '<td>' + cuando(s.recibido_at) + '</td><td class="' + areaClase(s.area_id) + '">' + esc(areaPorId(s.area_id)?.nombre || '') + '</td>' +
-      '<td>' + esc(TIPO_TXT[s.tipo] || s.tipo) + '</td><td class="' + (s.justificacion ? '' : 'inact') + '">' + (s.justificacion ? esc(JUST_TXT[s.justificacion]) : '—') + '</td>' +
+      '<td class="media">' + esc(TIPO_TXT[s.tipo] || s.tipo) + '</td><td class="media' + (s.justificacion ? '' : ' inact') + '">' + (s.justificacion ? esc(JUST_TXT[s.justificacion]) : '—') + '</td>' +
       '<td>' + diasTxt(s) + '</td><td>' + horTxt(s) + '</td><td>' + chipEst(s) + '</td><td>' + esc(conQuien(s)) + '</td>' +
-      '<td class="corta' + (det ? '' : ' inact') + '">' + esc(det || '—') + '</td><td class="' + (pr ? '' : 'inact') + '">' + esc(pr || '—') + '</td><td>' + cuando(s.actualizado_at) + '</td></tr>';
+      '<td class="larga' + (det ? '' : ' inact') + '"><div class="clamp" title="' + esc(det) + '">' + esc(det || '—') + '</div></td><td class="media' + (pr ? '' : ' inact') + '"><div class="clamp">' + esc(pr || '—') + '</div></td><td>' + cuando(s.actualizado_at) + '</td></tr>';
   }).join('') : '<tr><td colspan="12" class="vacio">Nada con este filtro.</td></tr>';
   $('gFilas').querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => abrirDetalle(tr.dataset.id, null));
 }
