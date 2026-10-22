@@ -1,0 +1,369 @@
+<title>Banco de horas UT</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23efeae3'/%3E%3Crect x='34' y='44' width='112' height='100' rx='14' fill='%23fff' stroke='%235a4d3e' stroke-width='7'/%3E%3Cpath d='M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z' fill='%235a4d3e'/%3E%3Cpath d='M66 108l16 16 32-34' fill='none' stroke='%2338761D' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* Layout: la app real (barra arriba, cuerpo con tarjetas y tablas tipo Sheets, panel lateral a la derecha). Un solo tema claro, a proposito: es la paleta calida aprobada. */
+:root{
+  --cafe:#5a4d3e; --crema:#f8f6f3; --arena:#efeae3; --borde:#e2ddd6; --sub:#9a8e7f; --cero:#c4bdb1;
+  --linea:#ECE4DF; --enc:#D9D7CE; --alt:#faf9f7; --blanco:#fff;
+  --verde-f:#C6E7D0; --verde:#38761D;
+  --pend-f:#fef6e4; --pend:#a0872e; --apr-f:#eaf5e8; --apr:#4a8c42; --rech-f:#fce8e8; --rech:#b04040;
+  --camb-f:#fef0e6; --camb:#b06630; --res-f:#e3eef7; --res:#37699e; --ppc-f:#f0eaf7; --ppc:#7a5aa0;
+  --wf:#fff7d6; --wf-b:#e8d68a;
+  --letra:Alexandria,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--crema);color:var(--cafe);font-family:var(--letra)}
+body{margin:0;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--crema)}
+button,input,select,textarea{font-family:inherit;font-size:14px;color:var(--cafe)}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--cafe);outline-offset:1px}
+.gut{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+
+/* Tira del wireframe (no existe en la app) */
+.wf{background:var(--wf);border-bottom:1px solid var(--wf-b);font-size:11.5px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding-block:7px}
+.wf b{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:10px}
+.wf .sep{flex:1}
+.wf button{border:1px solid var(--wf-b);background:var(--blanco);border-radius:14px;padding:4px 10px;font-size:11.5px;min-height:28px}
+.wf button.on{background:var(--cafe);color:var(--blanco);border-color:var(--cafe)}
+.wf select{height:28px;border:1px solid var(--wf-b);border-radius:14px;background:var(--blanco);font-size:12px;padding:0 8px}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:10px;padding-block:10px;border-bottom:1px solid var(--borde);background:var(--crema)}
+.marca{display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;font-size:15px;font-weight:700}
+.marca svg{width:30px;height:30px}
+.crumb{flex:1;font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vcomo{font-size:11px;background:var(--pend-f);color:var(--pend);border-radius:10px;padding:3px 9px;white-space:nowrap}
+.av{width:40px;height:40px;border-radius:50%;background:var(--arena);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cuerpo{padding-block:0 30px;max-width:1400px}
+.hola{padding:20px 0 4px}.hola h1{font-size:24px;margin:0}
+.sub{font-size:13px;color:var(--sub)}
+.secc{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.card{position:relative;background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:14px;min-height:96px;text-align:left;font-size:13px;color:var(--cafe)}
+.card .e{font-size:22px;line-height:1}.card b{display:block;margin-top:8px;font-size:13px}.card span{font-size:11px;color:var(--sub)}
+.card.hi{background:var(--verde-f);border-color:#a9d6b6}.card.hi b{color:var(--verde)}
+.card.pronto{opacity:.5;cursor:default}
+.card.va:hover{box-shadow:0 4px 14px rgba(90,77,62,.12)}
+.badge{position:absolute;top:10px;right:10px;background:var(--camb);color:var(--blanco);font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px}
+.desg{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.desg i{font-style:normal;font-size:10.5px;background:var(--blanco);border-radius:8px;padding:1px 7px;color:var(--verde)}
+.aviso-c{background:var(--camb-f);border:1px solid #f2d2b8;color:var(--camb);border-radius:12px;padding:12px 14px;font-size:13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.aviso-c div{flex:1;min-width:200px;line-height:1.5}.aviso-c b{color:var(--cafe)}
+
+.btn{height:40px;border:0;background:var(--cafe);color:var(--blanco);border-radius:10px;font-weight:600;padding:0 16px;font-size:14px;white-space:nowrap}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.l{background:var(--blanco);color:var(--cafe);border:1px solid var(--borde);font-weight:400}
+.btn.chico{height:34px;font-size:13px;padding:0 12px}
+.btn.apr{background:var(--apr)}.btn.camb{background:var(--camb)}.btn.rech{background:var(--rech)}
+.btn.res{background:var(--blanco);color:var(--res);border:1px solid #bcd3e8;font-weight:600}
+.f{width:100%;height:36px;border:1px solid var(--borde);background:var(--blanco);border-radius:9px;padding:0 11px;font-size:13.5px;outline:none;-webkit-appearance:none;appearance:none}
+.f:focus{border-color:var(--cafe)}
+select.f{background:var(--blanco) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a4d3e'/%3E%3C/svg%3E") no-repeat right 12px center;padding-right:30px}
+.ta{height:auto;padding:9px 11px;line-height:1.45;resize:vertical;min-height:64px}
+.lbl{display:block;font-size:11px;color:var(--sub);margin:12px 0 5px}
+
+/* Pestañas de bandeja */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.tab{border:1px solid var(--borde);background:var(--blanco);border-radius:20px;padding:0 14px;height:38px;font-size:13px;display:flex;align-items:center;gap:8px}
+.tab.on{background:var(--cafe);color:var(--blanco);border-color:var(--cafe);font-weight:600}
+.tab em{font-style:normal;font-size:11px;font-weight:700;background:var(--camb);color:var(--blanco);border-radius:9px;padding:1px 7px}
+.tab.on em{background:var(--blanco);color:var(--camb)}
+
+/* Tarjetas de tablero */
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:14px}
+.stat{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:10px 12px;text-align:left}
+.stat span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub)}
+.stat b{display:block;font-size:24px;line-height:1.2;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat b.z{color:var(--cero)}
+.stat.on{border:2px solid var(--cafe);padding:9px 11px}
+.stat .pt{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px}
+
+.barra{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
+.barra .f{width:auto;height:34px;font-size:13px}
+.barra .buscar{flex:1 1 200px;max-width:280px}
+.seg{display:flex;background:var(--arena);border-radius:8px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:6px;font-size:12.5px;color:var(--sub);padding:0 10px;height:28px}
+.seg button.on{background:var(--blanco);color:var(--cafe);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.esp{flex:1}
+
+/* Barra de lote */
+.lote{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:var(--verde-f);border:1px solid #a9d6b6;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:13px;color:var(--verde)}
+.lote .esp{flex:1}
+.lote .lnk{color:var(--verde)}
+.conf{background:var(--blanco);border:1px solid var(--borde);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px;line-height:1.5;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.conf div{flex:1;min-width:220px}
+.lnk{border:0;background:none;color:var(--cafe);text-decoration:underline;font-size:12px;padding:0}
+
+/* Tablas estilo Sheets: Alexandria 8 pt aprox, filas de 42 px */
+.tabla-w{border:1px solid var(--linea);border-radius:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--blanco)}
+table{border-collapse:collapse;width:100%;font-size:11px;font-variant-numeric:tabular-nums}
+th{background:var(--enc);text-align:left;font-weight:700;padding:0 10px;height:34px;border-bottom:1px solid var(--linea);border-right:1px solid var(--linea);white-space:nowrap;position:sticky;top:0}
+th.acc{background:var(--verde-f)}
+td{height:42px;padding:0 10px;border-bottom:1px solid var(--linea);border-right:1px solid var(--linea);white-space:nowrap;background:var(--blanco)}
+tbody tr:nth-child(even) td{background:var(--alt)}
+th:first-child,td:first-child{position:sticky;left:0;z-index:1;min-width:200px;box-shadow:1px 0 0 var(--linea)}
+th:first-child{z-index:3}
+tbody tr{cursor:pointer}tbody tr:hover td{background:#f3f1ec}
+tbody tr.sel td{background:#eef6f0!important}
+td .nm{display:flex;align-items:center;gap:8px}
+td .nm small{display:block;font-size:9.5px;color:var(--sub);font-weight:400}
+td .nm b{font-weight:600}
+td input[type=checkbox]{width:16px;height:16px;margin:0;accent-color:var(--verde);flex:none}
+td .ck0{width:16px;flex:none}
+td.num{text-align:right}
+.pos{color:#37699e}.neg{color:#a56a3f}.cero{color:var(--cero)}
+td.corta{max-width:240px;overflow:hidden;text-overflow:ellipsis}
+td.inact{color:var(--cero)}
+tr.corr td{color:var(--sub)}
+
+.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;white-space:nowrap}
+.d-pend{background:var(--pend-f);color:var(--pend)}.d-apr{background:var(--apr-f);color:var(--apr)}
+.d-rech{background:var(--rech-f);color:var(--rech)}.d-camb{background:var(--camb-f);color:var(--camb)}
+.d-res{background:var(--res-f);color:var(--res)}.d-ppc{background:var(--ppc-f);color:var(--ppc)}
+.d-na{color:var(--cero);font-weight:400}
+.a1,tbody tr td.a1{background:#e8eef5;color:#4a6484}.a2,tbody tr td.a2{background:#ece9f3;color:#635a7e}.a3,tbody tr td.a3{background:#e4efee;color:#40706a}.a4,tbody tr td.a4{background:#f0eae0;color:#7d6a4d}.a5,tbody tr td.a5{background:#f2eaee;color:#7d5a68}
+.bloques{display:flex;flex-direction:column}.bloques>.stats{order:1}.o-res{order:2}.o-tab{order:3}
+table.mini{width:auto}.o-res .tabla-w{display:inline-block;max-width:100%;vertical-align:top}
+@media (max-width:760px){.o-res{order:4}}
+.vacio{padding:24px;text-align:center;color:var(--sub);font-size:13px}
+
+/* Resumen por persona */
+details.pp{margin-top:16px}
+details.pp summary{cursor:pointer;font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;padding:6px 0}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--arena);width:140px}
+.bar i{display:block;height:100%}
+
+/* Panel lateral de detalle */
+.velo{position:fixed;inset:0;z-index:9;background:rgba(90,77,62,.18)}
+.panel{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);z-index:10;background:var(--crema);overflow-y:auto;padding:16px 18px 0;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-right:max(18px,env(safe-area-inset-right,0px));box-shadow:-8px 0 30px rgba(90,77,62,.15);display:flex;flex-direction:column}
+.pcab{display:flex;align-items:flex-start;gap:10px}
+.pcab div{flex:1;min-width:0}
+.pcab h3{margin:0;font-size:17px;line-height:1.25}
+.x{border:0;background:var(--arena);border-radius:50%;width:40px;height:40px;font-size:18px;flex:none}
+.fsec{background:var(--blanco);border:1px solid var(--borde);border-radius:12px;padding:12px 14px;margin-top:10px}
+.fst{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);margin-bottom:6px}
+.fst .esp{flex:1}
+.r{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #f3f1ec;font-size:12.5px}.r:last-child{border-bottom:0}
+.r span{color:var(--sub);flex:none}.r b{text-align:right;font-weight:600;min-width:0}
+.red{font-family:'Times New Roman',Times,serif;font-style:italic;font-size:14px;background:var(--alt);border-radius:8px;padding:10px 12px;line-height:1.5}
+.peq{font-size:11px;color:var(--sub);line-height:1.5;margin-top:6px}
+.paso{display:grid;grid-template-columns:18px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid #f3f1ec;font-size:12.5px}
+.paso:last-child{border-bottom:0}
+.paso .pt{width:12px;height:12px;border-radius:50%;margin-top:3px;border:2px solid var(--borde);background:var(--blanco)}
+.paso .pt.ok{background:var(--apr);border-color:var(--apr)}.paso .pt.pe{background:var(--pend-f);border-color:var(--pend)}
+.paso .pt.no{background:var(--rech);border-color:var(--rech)}.paso .pt.ca{background:var(--camb);border-color:var(--camb)}
+.paso .pt.rs{background:var(--res);border-color:var(--res)}.paso .pt.pc{background:var(--ppc);border-color:var(--ppc)}
+.paso .q{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.paso .c{font-size:12px;color:var(--cafe);background:var(--alt);border-radius:6px;padding:5px 8px;margin-top:5px}
+.paso small{color:var(--sub);font-size:11px}
+.alerta{font-size:12px;margin-top:10px;padding:9px 11px;border-radius:9px;line-height:1.5}
+.alerta.am{background:var(--pend-f);color:#8a6d1e}
+.alerta.mo{background:var(--ppc-f);color:var(--ppc)}
+.alerta.ve{background:var(--apr-f);color:var(--apr)}
+.alerta .fila{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.ppie{position:sticky;bottom:0;margin:14px -18px 0;margin-right:calc(-1 * max(18px,env(safe-area-inset-right,0px)));padding:12px 18px calc(14px + env(safe-area-inset-bottom,0px));background:var(--crema);border-top:1px solid var(--borde);margin-top:auto}
+.ppie .bts{display:flex;flex-wrap:wrap;gap:8px}
+.ppie .bts .btn{flex:1 1 auto}
+.ppie .lbl{margin-top:0}
+.oblig{color:var(--camb);font-size:11px}
+
+/* Corregir (paso a paso) */
+.wiz{max-width:640px}
+.prog{display:flex;gap:4px;margin:18px 0 6px}.prog i{flex:1;height:5px;border-radius:3px;background:var(--borde)}.prog i.on{background:var(--cafe)}
+.pn{font-size:11px;color:var(--sub)}
+.wcard{background:var(--blanco);border:1px solid var(--borde);border-radius:14px;padding:20px 18px;margin-top:12px}
+.qq{font-size:20px;font-weight:700;margin:0 0 4px;line-height:1.3;text-wrap:balance}.qs{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.5}
+.wnav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.wnav .btn{min-width:120px}
+.opc{display:flex;flex-direction:column;gap:8px}
+.op{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--borde);background:var(--blanco);border-radius:12px;padding:10px 12px;font-size:13px;min-height:52px}
+.op.on{border:2px solid var(--cafe);padding:9px 11px}
+.op div{flex:1;min-width:0}.op small{display:block;font-size:11px;color:var(--sub)}
+.wchips{display:flex;flex-wrap:wrap;gap:8px}
+.wchip{border:1px solid var(--borde);background:var(--blanco);border-radius:22px;padding:9px 14px;font-size:13.5px;min-height:44px}
+.wchip.on{background:var(--cafe);color:var(--blanco);border-color:var(--cafe)}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.confirma{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin:16px 0 0;background:var(--pend-f);border:1px solid #f0dfb0;border-radius:10px;padding:12px;line-height:1.5;cursor:pointer}
+.confirma input{width:20px;height:20px;margin:0;flex:none;accent-color:var(--verde)}
+.folio{font-size:24px;font-weight:700;margin:4px 0}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:var(--cafe);color:var(--blanco);padding:12px 18px;border-radius:12px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.2);max-width:90vw}
+.nota{border:1px dashed var(--wf-b);background:var(--wf);border-radius:8px;padding:7px 10px;font-size:11.5px;line-height:1.45;margin-top:10px;color:#6b5a1e}
+.nota b{font-weight:700}
+.ver{text-align:center;font-size:10px;color:var(--cero);padding:20px 0 10px}
+
+@media (max-width:760px){
+  .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid{grid-template-columns:1fr 1fr}
+  .crumb{display:none}
+  th:first-child,td:first-child{min-width:150px}
+  .dos{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){.panel{animation:entra .18s ease-out}@keyframes entra{from{transform:translateX(24px)}}}
+
+/* ---- Fase 4: banco ---- */
+.ppie{padding-right:max(18px,env(safe-area-inset-right,0px))}.ppie .bts .btn{padding:0 10px;min-width:0}
+.saldo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.big{background:var(--blanco);border:1px solid var(--borde);border-radius:12px;padding:12px 14px}
+.big span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub)}
+.big b{display:block;font-size:28px;line-height:1.15;margin-top:2px;font-variant-numeric:tabular-nums}
+.big small{font-size:11px;color:var(--sub)}
+.big.hi{background:var(--arena)}
+.rep .big{border-color:#d9cdea}.rep .big span{color:#6b4a94}
+.reph{display:flex;align-items:center;gap:8px;margin:18px 0 0;font-size:11px;color:#6b4a94;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.zero{color:var(--cero)!important}.neg-t{color:#a56a3f}.pos-t{color:#37699e}
+.tipo-mv{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.m-dep{background:var(--apr-f);color:var(--apr)}.m-ret{background:var(--rech-f);color:var(--rech)}.m-aj{background:var(--arena);color:var(--cafe)}
+.m-rev{background:#f3f1ec;color:var(--sub)}.m-deu{background:#f5e4d8;color:#a56a3f}.m-rep{background:#e3edf6;color:#37699e}.m-ini{background:var(--res-f);color:var(--res)}
+th.rp{background:#ece5f5;color:#6b4a94}
+tr.anul td{color:var(--cero);text-decoration:line-through}
+tr.anul td:first-child,tr.anul td:last-child{text-decoration:none}
+.formaj{background:var(--blanco);border:1px solid var(--borde);border-radius:12px;padding:12px 14px;margin-top:10px}
+.g3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px}
+.segm{display:flex;background:var(--arena);border-radius:8px;padding:3px;gap:2px}
+.segm button{flex:1;border:0;background:none;border-radius:6px;font-size:12.5px;color:var(--sub);height:30px}
+.segm button.on{background:var(--blanco);color:var(--cafe);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.queda{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:6px 0;border-bottom:1px solid #f3f1ec}
+.queda:last-child{border-bottom:0}
+@media (max-width:760px){.saldo{grid-template-columns:repeat(3,minmax(0,1fr))}.big b{font-size:22px}.g3{grid-template-columns:1fr}}
+</style>
+
+<div class="wf gut" role="region" aria-label="Controles del wireframe">
+  <a href="../../" style="color:inherit;font-weight:600">← Volver a la app</a><b>Wireframe · Fase 4</b><span>datos de ejemplo, nada se guarda</span>
+  <span class="sep"></span><span>Pantalla:</span>
+  <button data-ir="inicio" id="wf-inicio">Inicio</button>
+  <button data-ir="mibanco" id="wf-mibanco">Mi banco de horas</button>
+  <button data-ir="banco" id="wf-banco">Banco de horas (todos)</button>
+  <button data-ir="aprobar" id="wf-aprobar">Aprobar (jefe)</button>
+  <label for="vercomo" style="margin-left:6px">Ver como:</label>
+  <select id="vercomo"><option value="emp">Andrea (empleada)</option><option value="raul">Raúl (jefe Taller)</option><option value="gaby">Gaby</option><option value="laura">Laura</option></select>
+</div>
+<header class="top gut">
+  <button class="marca" data-ir="inicio"><svg viewBox="0 0 180 180" aria-hidden="true"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>Permisos UT</button>
+  <div class="crumb" id="crumb"></div><div class="av" id="av"></div>
+</header>
+<main class="cuerpo gut" id="cuerpo"></main>
+<div class="ver gut">v0.5.0 · wireframe</div>
+<div id="capa"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+const GENTE={ANRA:['Andrea Nefertary Rubio Ayala','T'],JAGG:['Jaime Antonio Guzmán Gutiérrez','T'],LAMC:['Luis Alonso Muñoz Casas','T'],AEGF:['Adrián Everardo Gómez Facio','T'],MFB:['Mariana Flores Ballesteros','S'],AOS:['Andrés Orta Santana','A'],JAHO:['Julia Alejandra Hernández Ortiz','G'],MISN:['María Isabel Soto Nuñez','I']};
+const AREAS={T:['Taller de Proyectos','a1'],S:['Secretaría Técnica','a2'],A:['Administración','a3'],G:['Gestión Inmobiliaria','a4'],I:['Intendencia','a5']};
+// tipo: ini (saldo inicial), dep, ret, aj (ajuste Gaby), rev (reverso automatico), deu (deuda reposicion), rep (repuso)
+const MV=[
+ ['ANRA','01/11/2026','—','ini','Saldo inicial (lo da Gaby)',3],
+ ['ANRA','03/11/2026','F-ANRA-2026-0013','dep','Edificio Lagos de Moreno',1.5],
+ ['ANRA','05/11/2026','F-ANRA-2026-0014','ret','Uso de horas acumuladas',-0.75],
+ ['ANRA','06/11/2026','F-ANRA-2026-0014','rev','Reverso: se corrigió en F-ANRA-2026-0014-R1',0.75],
+ ['ANRA','06/11/2026','F-ANRA-2026-0014-R1','ret','Uso de horas acumuladas',-1.25],
+ ['ANRA','07/11/2026','F-ANRA-2026-0015','deu','Reposición de horas',-1],
+ ['ANRA','10/11/2026','F-ANRA-2026-0016','rep','Reposición de horas',0.5],
+ ['JAGG','01/11/2026','—','ini','Saldo inicial (lo da Gaby)',6.5],
+ ['JAGG','04/11/2026','F-JAGG-2026-0009','dep','Edificio Lagos de Moreno',2],
+ ['LAMC','01/11/2026','—','ini','Saldo inicial (lo da Gaby)',0],
+ ['LAMC','05/11/2026','F-LAMC-2026-0021','ret','Asunto personal',-2],
+ ['AEGF','01/11/2026','—','ini','Saldo inicial (lo da Gaby)',12],
+ ['MFB','01/11/2026','—','ini','Saldo inicial (lo da Gaby)',1],
+ ['AOS','01/11/2026','—','ini','Saldo inicial (lo da Gaby)',0],
+ ['AOS','04/11/2026','F-AOS-2026-0005','deu','Reposición de horas',-1],
+ ['AOS','08/11/2026','—','aj','Ajuste de Gaby: horas que repuso el sábado',1,'rep'],
+ ['JAHO','01/11/2026','—','ini','Saldo inicial (lo da Gaby)',2.5],
+ ['MISN','01/11/2026','—','ini','Saldo inicial (lo da Gaby)',0]
+];
+const TXT={ini:'Saldo inicial',dep:'Depósito',ret:'Retiro',aj:'Ajuste',rev:'Reverso',deu:'Debe',rep:'Repuso'};
+const CL={ini:'m-ini',dep:'m-dep',ret:'m-ret',aj:'m-aj',rev:'m-rev',deu:'m-deu',rep:'m-rep'};
+const esRep=m=>m[3]==='deu'||m[3]==='rep'||m[6]==='rep';
+const ROLES={emp:{n:'Andrea',ini:'AN',quien:'ANRA'},raul:{n:'Raúl',ini:'RE',areas:'T'},gaby:{n:'Gaby',ini:'GT',areas:'TSAGI',ajusta:true},laura:{n:'Laura',ini:'LZ',areas:'TSAGI'}};
+let rol='emp',pant='inicio',ver='banco',persona=null,orden='nombre',horasAjuste=false,ajTipo='banco';
+const $=s=>document.querySelector(s);
+const esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fh=n=>(Math.round(n*100)/100).toString().replace('.',',').replace(',','.');
+const num=(n,cl)=>n?`<span class="${cl||''}">${n>0&&cl?'+':''}${n<0?'−':''}${fh(Math.abs(n))} h</span>`:'<span class="zero">0</span>';
+const sgn=n=>n?`<span class="${n>0?'pos':'neg'}">${n>0?'+':'−'}${fh(Math.abs(n))} h</span>`:'<span class="zero">0</span>';
+function resumen(k){const m=MV.filter(x=>x[0]===k);const b=m.filter(x=>!esRep(x)),r=m.filter(esRep);
+  const dep=b.filter(x=>x[5]>0).reduce((a,x)=>a+x[5],0),ret=-b.filter(x=>x[5]<0).reduce((a,x)=>a+x[5],0);
+  const debe=-r.filter(x=>x[5]<0).reduce((a,x)=>a+x[5],0),rep=r.filter(x=>x[5]>0).reduce((a,x)=>a+x[5],0);
+  return {dep,ret,saldo:dep-ret,debe,rep,pend:debe-rep,ult:m.length?m[m.length-1][1]:'—'}}
+function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(e._t);e._t=setTimeout(()=>e.hidden=true,2600)}
+function ir(p){pant=p;persona=null;pintar();scrollTo(0,0)}
+function pintar(){
+  const R=ROLES[rol];if(rol==='emp'&&pant==='banco')pant='mibanco';
+  document.querySelectorAll('.wf [data-ir]').forEach(b=>b.classList.toggle('on',b.dataset.ir===pant));
+  $('#av').textContent=R.ini;
+  $('#crumb').textContent={inicio:'Inicio',mibanco:'Inicio › Mi banco de horas',banco:'Inicio › Banco de horas',aprobar:'Inicio › Mi bandeja'}[pant];
+  $('#cuerpo').innerHTML={inicio:vInicio,mibanco:()=>vPersona('ANRA',true),banco:vBanco,aprobar:vAprobar}[pant]();
+  pintarPanel();
+}
+function vInicio(){
+  const r=resumen('ANRA');
+  let h=`<div class="hola"><h1>Hola, ${ROLES[rol].n}</h1><div class="sub">Lunes 10 de noviembre</div></div><div class="secc">Para todos</div><div class="grid">
+  <button class="card va"><div class="e">📝</div><b>Nueva solicitud</b><span>diario</span></button>
+  <button class="card hi va" data-ir="mibanco"><div class="e">⏱️</div><b>Mi banco de horas</b><span>Saldo ${fh(r.saldo)} h${r.pend>0?' · debes reponer '+fh(r.pend)+' h':''}</span></button>
+  <button class="card va"><div class="e">📂</div><b>Mis solicitudes</b><span>estado y folios</span></button>
+  <button class="card va"><div class="e">✏️</div><b>Corregir una solicitud</b><span>cuando te piden cambios</span></button></div>`;
+  if(rol!=='emp')h+=`<div class="secc">Para quien valida</div><div class="grid"><button class="card va" data-ir="aprobar"><div class="e">✅</div><b>Mi bandeja</b><span>pendientes de decidir</span></button><button class="card va"><div class="e">📊</div><b>Panel general</b><span>todas, en vivo</span></button><button class="card va" data-ir="banco"><div class="e">🏦</div><b>Banco de horas</b><span>${rol==='raul'?'tu área':'todos'}: saldos y reposición</span></button></div>`;
+  h+=`<div class="nota"><b>Inicio:</b> la tarjeta “Mi banco de horas” ya trae tu saldo y, si debes reponer, cuánto. Quien valida tiene además “Banco de horas” con toda su gente.</div>`;
+  return h;
+}
+function vPersona(k,mio){
+  const [nom,ar]=GENTE[k],r=resumen(k);
+  const lista=MV.filter(x=>x[0]===k&&(ver==='banco'?!esRep(x):esRep(x)));
+  let acc=0;
+  let h=`<div class="hola">${mio?'':'<button class="lnk" data-ir="banco">← Banco de horas</button>'}<h1>${mio?'Mi banco de horas':esc(nom)}</h1><div class="sub">${mio?esc(nom)+' · ':''}<span class="chip ${AREAS[ar][1]}">${AREAS[ar][0]}</span></div></div>`;
+  h+=`<div class="saldo"><div class="big hi"><span>Saldo</span><b class="${r.saldo<0?'neg-t':''}">${r.saldo<0?'−':''}${fh(Math.abs(r.saldo))} h</b><small>disponible</small></div><div class="big"><span>Depósitos</span><b class="${r.dep?'':'zero'}">${fh(r.dep)} h</b><small>horas extra + saldo inicial</small></div><div class="big"><span>Retiros</span><b class="${r.ret?'':'zero'}">${fh(r.ret)} h</b><small>uso de horas</small></div></div>`;
+  h+=`<div class="reph">Reposición de horas <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--sub)">· aparte: no toca tu banco</span></div><div class="saldo rep"><div class="big"><span>Debe</span><b class="${r.debe?'neg-t':'zero'}">${fh(r.debe)} h</b></div><div class="big"><span>Repuesto</span><b class="${r.rep?'pos-t':'zero'}">${fh(r.rep)} h</b></div><div class="big"><span>Pendiente</span><b class="${r.pend>0?'neg-t':r.pend<0?'pos-t':'zero'}">${fh(r.pend)} h</b><small>${r.pend>0?'te falta reponer':r.pend<0?'repusiste de más':'al corriente'}</small></div></div>`;
+  h+=`<div class="barra"><div class="segm" style="min-width:260px"><button class="${ver==='banco'?'on':''}" data-ver="banco">Movimientos del banco</button><button class="${ver==='rep'?'on':''}" data-ver="rep">Reposición</button></div><span class="esp"></span>${!mio&&ROLES[rol].ajusta?'<button class="btn chico" id="ajBtn">+ Ajuste a mano</button>':''}</div>`;
+  if(!mio&&ROLES[rol].ajusta&&horasAjuste)h+=`<div class="formaj"><div class="fst">Ajuste a mano · queda registrado que lo hizo Gaby</div><div class="g3"><div><label class="lbl">¿Dónde?</label><div class="segm"><button class="${ajTipo==='banco'?'on':''}" data-aj="banco">Banco</button><button class="${ajTipo==='rep'?'on':''}" data-aj="rep">Reposición</button></div></div><div><label class="lbl" for="ajH">Horas (+ suma, − resta)</label><input class="f" id="ajH" value="+1" inputmode="decimal"></div></div><label class="lbl" for="ajM">Motivo (obligatorio)</label><input class="f" id="ajM" placeholder="Ej.: horas que repuso el sábado 8"><div style="display:flex;gap:8px;margin-top:10px"><button class="btn chico" id="ajOk">Guardar ajuste</button><button class="btn chico l" id="ajNo">Cancelar</button></div></div>`;
+  h+=`<div class="tabla-w" style="margin-top:4px"><table><thead><tr><th>Fecha</th><th>Folio</th><th>Movimiento</th><th>Referencia</th><th class="${ver==='rep'?'rp':''}">Horas</th><th class="${ver==='rep'?'rp':''}">${ver==='rep'?'Pendiente':'Saldo'}</th>${ver==='banco'?'<th>Bitácora</th>':''}</tr></thead><tbody>`;
+  h+=lista.map(m=>{acc+=ver==='rep'?-m[5]:m[5];const anul=MV.some(x=>x[0]===k&&x[3]==='rev'&&x[2]===m[2])&&m[3]!=='rev';
+    return `<tr class="${anul?'anul':''}"><td>${m[1]}</td><td>${esc(m[2])}</td><td><span class="tipo-mv ${CL[m[3]]}">${TXT[m[3]]}</span></td><td>${esc(m[4])}</td><td class="num">${sgn(m[5])}</td><td class="num"><b>${fh(acc)} h</b></td>${ver==='banco'?`<td class="inact">${m[3]==='ini'?'—':'activa'}</td>`:''}</tr>`}).join('')||`<tr><td colspan="7" class="vacio" style="position:static">Sin movimientos.</td></tr>`;
+  h+=`</tbody></table></div><div class="nota"><b>Cómo se lee:</b> cada aprobación del jefe deja un renglón; nada se borra. Si se corrige una solicitud, el renglón original sale tachado y abajo aparecen su <b>reverso</b> y el movimiento nuevo (B2). La columna Bitácora se llena en la Fase 5 (cada 15 movimientos se imprime una).${ver==='rep'?' En Reposición el pendiente sube con lo que debes y baja con lo que repones.':''}</div>`;
+  return h;
+}
+function vBanco(){
+  const R=ROLES[rol];const ks=Object.keys(GENTE).filter(k=>R.areas.includes(GENTE[k][1]));
+  const filas=ks.map(k=>[k,resumen(k)]).sort((a,b)=>orden==='saldo'?a[1].saldo-b[1].saldo:orden==='pend'?b[1].pend-a[1].pend:GENTE[a[0]][0].localeCompare(GENTE[b[0]][0],'es'));
+  const neg=filas.filter(f=>f[1].saldo<0).length,deben=filas.filter(f=>f[1].pend>0).length;
+  let h=`<div class="hola"><h1>Banco de horas</h1><div class="sub">${rol==='raul'?'Tu área: Taller de Proyectos':'Todas las áreas'} · toca una persona para ver sus movimientos</div></div>`;
+  h+=`<div class="stats"><div class="stat"><span>Personas</span><b>${filas.length}</b></div><div class="stat"><span>Horas en el banco</span><b>${fh(filas.reduce((a,f)=>a+f[1].saldo,0))}</b></div><div class="stat"><span>En negativo</span><b class="${neg?'':'z'}" style="${neg?'color:#a56a3f':''}">${neg}</b></div><div class="stat"><span>Deben reponer</span><b class="${deben?'':'z'}" style="${deben?'color:#6b4a94':''}">${deben}</b></div><div class="stat"><span>Horas por reponer</span><b>${fh(filas.reduce((a,f)=>a+Math.max(0,f[1].pend),0))}</b></div></div>`;
+  h+=`<div class="barra"><input class="f buscar" placeholder="Buscar persona…"><select class="f" id="orden"><option value="nombre" ${orden==='nombre'?'selected':''}>Ordenar por nombre</option><option value="saldo" ${orden==='saldo'?'selected':''}>Saldo más bajo primero</option><option value="pend" ${orden==='pend'?'selected':''}>Más pendiente de reponer</option></select></div>`;
+  h+=`<div class="tabla-w"><table><thead><tr><th>Persona</th><th>Área</th><th>Depósitos</th><th>Retiros</th><th>Saldo</th><th class="rp">Debe</th><th class="rp">Repuesto</th><th class="rp">Pendiente</th><th>Último movimiento</th></tr></thead><tbody>`;
+  h+=filas.map(([k,r])=>`<tr data-p="${k}"><td><b>${esc(GENTE[k][0])}</b></td><td class="${AREAS[GENTE[k][1]][1]}">${AREAS[GENTE[k][1]][0]}</td><td class="num">${num(r.dep)}</td><td class="num">${num(r.ret)}</td><td class="num"><b class="${r.saldo<0?'neg-t':''}">${r.saldo?(r.saldo<0?'−':'')+fh(Math.abs(r.saldo))+' h':'<span class="zero">0</span>'}</b></td><td class="num">${r.debe?'<span class="neg-t">'+fh(r.debe)+' h</span>':'<span class="zero">0</span>'}</td><td class="num">${r.rep?'<span class="pos-t">'+fh(r.rep)+' h</span>':'<span class="zero">0</span>'}</td><td class="num">${r.pend?'<b class="'+(r.pend>0?'neg-t':'pos-t')+'">'+fh(r.pend)+' h</b>':'<span class="zero">0</span>'}</td><td>${r.ult}</td></tr>`).join('');
+  h+=`</tbody></table></div><div class="nota"><b>Paleta:</b> banco en café; reposición con encabezado morado y números azul (repuso) / terracota (debe), a propósito sin verde ni rojo. Ceros en gris. ${R.ajusta?'Gaby ve el botón “+ Ajuste a mano” dentro de cada persona.':'Solo Gaby puede hacer ajustes a mano.'}</div>`;
+  return h;
+}
+function vAprobar(){
+  return `<div class="hola"><h1>Mi bandeja</h1><div class="sub">Así se ve el detalle cuando el jefe va a aprobar algo que mueve el banco.</div></div><div class="nota">Abre el detalle a la derecha (ya está abierto). Prueba “Cambiar horas”.</div>`;
+}
+function pintarPanel(){
+  const c=$('#capa');
+  if(pant!=='aprobar'){c.innerHTML='';return}
+  const saldo=resumen('LAMC').saldo,h0=-2,hh=horasAjuste?-1.5:h0,queda=saldo+hh;
+  c.innerHTML=`<aside class="panel" role="dialog" aria-label="Detalle"><div class="pcab"><div><h3>Luis Alonso Muñoz Casas</h3><div class="sub">F-LAMC-2026-0022 · <span class="chip d-pend">Nueva - espera jefe</span></div></div></div>
+  <div class="fsec"><div class="fst">Qué pide</div><div class="r"><span>Tipo</span><b>Salida anticipada · Uso de horas acumuladas</b></div><div class="r"><span>Día</span><b>11/11/2026</b></div><div class="r"><span>Qué pasó</span><b>Salió 16:00 (horario 9:00 a 18:00)</b></div></div>
+  <div class="fsec"><div class="fst">Banco de horas<span class="esp"></span>${horasAjuste?'':'<button class="lnk" id="chH">Cambiar horas</button>'}</div>
+   ${horasAjuste?`<div class="g3"><div><label class="lbl" for="nh">Horas que se descuentan</label><input class="f" id="nh" value="1.5" inputmode="decimal"></div><div><label class="lbl" for="nm">¿Por qué? (obligatorio)</label><input class="f" id="nm" value="Repuso media hora en la comida"></div></div><div class="peq">El cálculo daba 2 h. Queda registrado que Raúl lo cambió a 1.5 h.</div>`:''}
+   <div class="queda"><span class="sub">Saldo hoy</span><b class="${saldo<0?'neg-t':''}">${saldo<0?'−':''}${fh(Math.abs(saldo))} h</b></div><div class="queda"><span class="sub">Esta solicitud</span><b>${sgn(hh)}</b></div><div class="queda"><span class="sub">Queda en</span><b class="${queda<0?'neg-t':''}">${queda<0?'−':''}${fh(Math.abs(queda))} h</b></div>
+   ${queda<0?`<div class="alerta am">Con esta solicitud su saldo queda en <b>−${fh(Math.abs(queda))} h</b>. Puedes aprobarla igual (B4a).</div>`:''}</div>
+  <div class="ppie"><div class="bts"><button class="btn apr" id="apr">Aprobar</button><button class="btn camb">Pedir cambios</button><button class="btn rech">Rechazar</button><button class="btn res chico">Resuelto</button></div></div></aside>`;
+}
+document.addEventListener('click',e=>{const t=e.target.closest('button,[data-p]');if(!t)return;
+  if(t.dataset.ir){ir(t.dataset.ir);return}
+  if(t.dataset.ver){ver=t.dataset.ver;pintar();return}
+  if(t.dataset.p){pant='banco';$('#cuerpo').innerHTML=vPersona(t.dataset.p,false);persona=t.dataset.p;scrollTo(0,0);return}
+  if(t.dataset.aj){ajTipo=t.dataset.aj;$('#cuerpo').innerHTML=vPersona(persona,false);return}
+  if(t.id==='ajBtn'){horasAjuste=true;$('#cuerpo').innerHTML=vPersona(persona,false);return}
+  if(t.id==='ajNo'||t.id==='ajOk'){horasAjuste=false;$('#cuerpo').innerHTML=vPersona(persona,false);if(t.id==='ajOk')toast('Ajuste guardado (de ejemplo)');return}
+  if(t.id==='chH'){horasAjuste=true;pintarPanel();return}
+  if(t.id==='apr'){toast('Aprobada: se descuentan '+(horasAjuste?'1.5':'2')+' h del banco de Luis');horasAjuste=false;return}
+});
+document.addEventListener('change',e=>{if(e.target.id==='vercomo'){rol=e.target.value;horasAjuste=false;ir(rol==='emp'&&pant==='banco'?'mibanco':pant)}if(e.target.id==='orden'){orden=e.target.value;pintar()}});
+{const h=location.hash.slice(1);if(['mibanco','banco','aprobar'].includes(h))pant=h}
+pintar();
+</script>
