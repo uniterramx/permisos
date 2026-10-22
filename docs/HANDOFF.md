@@ -7,6 +7,10 @@
 - **Fase 2 (solicitar)**: ✅ construida (v0.3.0): formulario paso a paso, cálculos (`js/calculos.js`, 39 tests en
   `tests/calculos.test.js`), redondeo a 15 min, folios, ruteo inicial, modo PRUEBA, "Mis solicitudes". SQL 006.
   Corrección (-R1) se hace en la Fase 3. **Falta: Valen corre SQL 005 y 006 y prueba.**
+- **Ajustes 22-oct (v0.3.1–0.3.2)**: campos de 13–14 px (zoom de iPhone apagado con `maximum-scale=1`), tablas que
+  se deslizan de lado con el nombre fijo, ficha de persona rediseñada en apartados (aprobada por Valen).
+- Valen trabaja con el modo **/adhd**: un paso por mensaje, plan antes de código, estado al inicio.
+- Pendiente de preguntar: redondeo al cuarto MÁS CERCANO (20 min → 15) o siempre HACIA ARRIBA (20 → 30).
 - Siguiente: **Fase 3 · Bandejas**. Wireframe primero.
 - Pruebas locales: hay Postgres 16 en la máquina; `sql/` se prueba contra una imitación de Supabase
   (roles anon/authenticated, `auth.uid()` por `request.jwt.claim.sub`). Ver cómo en el historial de este chat.
