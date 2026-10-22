@@ -30,6 +30,10 @@
 
 - **B5 redondeo** (22-oct) → al **cuarto de hora más cercano** (15 min), ya no a la hora completa. Ej.: 1 h 40 min → 1.75 h; 08:30–09:00 → 0.5 h. Confirmado: MÁS CERCANO (no siempre hacia arriba).
 
+- **Fase 3 · wireframe** (23-oct) → aprobado (`docs/wireframes/fase3-bandejas.html`). F1a: una decisión se puede cambiar después de avanzar, con confirmación; se congela cuando Laura aprueba. F2a: Gaby y Laura pueden editar SOLO la redacción y queda registrado quién y cómo decía antes. F3a: al entrar la -R1, la original queda "Corregida → continúa en …-R1" y sale de pendientes. F4a: lote con las pendientes ya marcadas.
+- **G1–G5** (23-oct) → comentario obligatorio en Pedir cambios y Rechazar · la bandeja abre en Pendientes con botón Pendientes/Todas · Gaby sigue viendo lo que el jefe mandó a cambios ("Cambios (jefe)", sin acción) para avisar · Panel general solo para quien aprueba · "Resuelto" como botón chico junto a los otros. Área con su color en todas las filas (sin alternado). Resumen por persona sigue el filtro; arriba en compu, abajo en celular.
+- **G4 privacidad** (23-oct) → Laura nunca debe poder saber que Valen tiene todos los accesos: en ninguna pantalla se muestra quién más puede ver algo. Valen **solo decide sobre solicitudes de PRUEBA** (así nunca sale "Aprobado por Valen" en una real). Gaby sí puede ver los roles de Valen en Personas (no hace falta esconderlos).
+
 ## ANTES DE EMPEZAR
 
 **M2. ¿El sistema de Google se sigue usando?** Lo último es del 28-ago; hay 2 en Raúl, 33 en Gaby y 18

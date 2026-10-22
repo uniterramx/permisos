@@ -11,7 +11,8 @@
   se deslizan de lado con el nombre fijo, ficha de persona rediseñada en apartados (aprobada por Valen).
 - Valen trabaja con el modo **/adhd**: un paso por mensaje, plan antes de código, estado al inicio.
 - Redondeo confirmado (22-oct): al cuarto de hora **más cercano** (20 min → 15, 23 min → 30).
-- Siguiente: **Fase 3 · Bandejas**. Wireframe primero.
+- **Fase 3**: wireframe aprobado (23-oct, `docs/wireframes/fase3-bandejas.html`; en la app v0.3.3 las tarjetas de admin lo abren). Decisiones en 07 RESPONDIDAS. Siguiente: SQL 007 + pantallas reales.
+- Rama de trabajo actual: `claude/zen-wozniak-9vml4y` (la de esta sesión), se publica a `main`.
 - Pruebas locales: hay Postgres 16 en la máquina; `sql/` se prueba contra una imitación de Supabase
   (roles anon/authenticated, `auth.uid()` por `request.jwt.claim.sub`). Ver cómo en el historial de este chat.
 
@@ -28,7 +29,7 @@
 - Solo se migran catálogos; solicitudes viejas NO. Saldos iniciales (banco, reposición, vacaciones) los da Gaby.
 - **Todos entran con PIN** (6 dígitos, bloqueo a los 5 intentos). PIN temporal lo asignan Valen/Gaby y la
   persona lo cambia al entrar. No acepta PINs fáciles.
-- App **primero de computadora**, luego celular. Paleta cálida (V1-a). Alexandria. Inputs ≥16 px.
+- App **primero de computadora**, luego celular. Paleta cálida (V1-a). Alexandria. Campos de 13–14 px (zoom apagado con maximum-scale=1).
 - Catálogos se editan en la app (Sheets quedan en el pasado). Nombres tal cual + aviso si parecen sin acento;
   puestos sí se corrigen. Horarios MT cargados "por revisar", editables por periodo con fecha.
 - Ruteo/firmas raras (Wario, Max) se cargaron tal cual, sin avisos.
