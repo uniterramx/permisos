@@ -62,24 +62,25 @@ create policy bitacoras_leer on public.bitacoras for select to authenticated usi
 create or replace function public._siguiente_bitacora(p_emp uuid, p_prueba boolean)
 returns json language plpgsql stable security definer set search_path = public as $$
 declare
-  v_ini text; v_anio int; v_n int; v_prev public.bitacoras%rowtype; v_folio text; v_primero timestamptz;
+  v_ini text; v_anio int; v_n int; v_prev numeric; v_folio text; v_primero timestamptz;
 begin
-  select iniciales into v_ini from public.empleados where id = p_emp;
-  select min(registrado_at) into v_primero from public.movimientos
-   where empleado_id = p_emp and cuenta = 'banco' and bitacora_id is null and es_prueba = p_prueba;
+  v_ini := (select iniciales from public.empleados where id = p_emp);
+  v_primero := (select min(registrado_at) from public.movimientos
+   where empleado_id = p_emp and cuenta = 'banco' and bitacora_id is null and es_prueba = p_prueba);
   v_anio := extract(year from coalesce(v_primero, now()) at time zone 'America/Mexico_City');
-  select * into v_prev from public.bitacoras where empleado_id = p_emp and es_prueba = p_prueba
-   order by cerrada_at desc, folio desc limit 1;
+  -- saldo con que cerro la anterior (null si no hay anterior)
+  v_prev := (select saldo_final from public.bitacoras where empleado_id = p_emp and es_prueba = p_prueba
+   order by cerrada_at desc, folio desc limit 1);
   if p_prueba then
-    select count(*) + 1 into v_n from public.bitacoras where empleado_id = p_emp and es_prueba;
+    v_n := (select count(*) + 1 from public.bitacoras where empleado_id = p_emp and es_prueba);
     v_folio := 'PRUEBA-B-' || v_ini || '-' || lpad(v_n::text, 2, '0');
   else
-    select coalesce(max(substring(folio from '-([0-9]+)$')::int), 0) + 1 into v_n
-      from public.bitacoras where empleado_id = p_emp and anio = v_anio and not es_prueba;
+    v_n := (select coalesce(max(substring(folio from '-([0-9]+)$')::int), 0) + 1
+      from public.bitacoras where empleado_id = p_emp and anio = v_anio and not es_prueba);
     v_folio := 'B-' || v_ini || '-' || v_anio || '-' || lpad(v_n::text, 4, '0');
   end if;
   return json_build_object('folio', v_folio, 'anio', v_anio,
-    'saldo_anterior', case when v_prev.id is null or v_prev.saldo_final = 0 then null else v_prev.saldo_final end);
+    'saldo_anterior', case when v_prev is null or v_prev = 0 then null else v_prev end);
 end $$;
 
 -- Lo que la app necesita para imprimir la bitacora activa (folio provisional, año, saldo anterior)
@@ -99,25 +100,27 @@ end $$;
 create or replace function public._cerrar_bitacora(p_emp uuid, p_prueba boolean, p_motivo public.motivo_cierre)
 returns public.bitacoras language plpgsql security definer set search_path = public as $$
 declare
-  v_sig json; v_n int; v_suma numeric; v_ant numeric; b public.bitacoras%rowtype; v_emp text; g record;
+  v_sig json; v_n int; v_suma numeric; v_ant numeric; b public.bitacoras%rowtype; v_emp text; g record; v_id uuid := gen_random_uuid();
 begin
   perform pg_advisory_xact_lock(hashtext('bitacora-' || p_emp::text || p_prueba::text));
-  select count(*), coalesce(sum(horas), 0) into v_n, v_suma from public.movimientos
-   where empleado_id = p_emp and cuenta = 'banco' and bitacora_id is null and es_prueba = p_prueba;
+  v_n := (select count(*) from public.movimientos
+   where empleado_id = p_emp and cuenta = 'banco' and bitacora_id is null and es_prueba = p_prueba);
+  v_suma := (select coalesce(sum(horas), 0) from public.movimientos
+   where empleado_id = p_emp and cuenta = 'banco' and bitacora_id is null and es_prueba = p_prueba);
   if p_motivo = '15_movimientos' and v_n < 15 then return null; end if;  -- otra transaccion ya la cerro
   if v_n = 0 then raise exception 'No hay movimientos nuevos para cerrar la bitacora'; end if;
   v_sig := public._siguiente_bitacora(p_emp, p_prueba);
   v_ant := nullif(v_sig->>'saldo_anterior', '')::numeric;
-  insert into public.bitacoras (folio, empleado_id, anio, es_prueba, saldo_anterior, saldo_final, movimientos, motivo, cerrada_por)
-  values (v_sig->>'folio', p_emp, (v_sig->>'anio')::int, p_prueba, v_ant, coalesce(v_ant, 0) + v_suma, v_n, p_motivo, public.mi_empleado_id())
-  returning * into b;
+  insert into public.bitacoras (id, folio, empleado_id, anio, es_prueba, saldo_anterior, saldo_final, movimientos, motivo, cerrada_por)
+  values (v_id, v_sig->>'folio', p_emp, (v_sig->>'anio')::int, p_prueba, v_ant, coalesce(v_ant, 0) + v_suma, v_n, p_motivo, public.mi_empleado_id());
+  b := (select x from public.bitacoras x where x.id = v_id);
   perform set_config('ut.estampando', '1', true);
   update public.movimientos set bitacora_id = b.id
    where empleado_id = p_emp and cuenta = 'banco' and bitacora_id is null and es_prueba = p_prueba;
   perform set_config('ut.estampando', '', true);
   -- Al cerrarse sola: aviso a Gaby para imprimirla y recoger la firma (P6). La de prueba: aviso a quien la cerro.
   if p_motivo = '15_movimientos' then
-    select coalesce(nombre_corto, nombre_oficial) into v_emp from public.empleados where id = p_emp;
+    v_emp := (select coalesce(nombre_corto, nombre_oficial) from public.empleados where id = p_emp);
     if p_prueba then
       if public.mi_empleado_id() is not null then
         insert into public.avisos (para, texto, es_prueba, bitacora_id)
@@ -223,24 +226,26 @@ create policy "pdfs borrar pruebas" on storage.objects for delete to authenticat
 -- Registrar un PDF ya subido (el tamaño se toma de Storage)
 create or replace function public.registrar_pdf(p_tipo text, p_id uuid, p_con_logo boolean)
 returns json language plpgsql security definer set search_path = public as $$
-declare v_folio text; v_prueba boolean; v_ruta text; v_bytes int; v_doc bigint;
+declare v_folio text; v_prueba boolean; v_ruta text; v_bytes int; v_nuevo boolean;
 begin
   if p_tipo = 'solicitud' then
-    select folio, es_prueba into v_folio, v_prueba from public.solicitudes where id = p_id;
+    v_folio := (select folio from public.solicitudes where id = p_id);
+    v_prueba := (select es_prueba from public.solicitudes where id = p_id);
   elsif p_tipo = 'bitacora' then
-    select folio, es_prueba into v_folio, v_prueba from public.bitacoras where id = p_id;
+    v_folio := (select folio from public.bitacoras where id = p_id);
+    v_prueba := (select es_prueba from public.bitacoras where id = p_id);
   else raise exception 'Tipo de PDF no valido'; end if;
   if v_folio is null then raise exception 'No encontre ese folio'; end if;
   v_ruta := public._ruta_pdf(p_tipo, v_folio, v_prueba);
   if not public.puedo_subir_pdf(v_ruta) then raise exception 'No puedes guardar el PDF de %', v_folio; end if;
-  select (metadata->>'size')::int into v_bytes from storage.objects where bucket_id = 'pdfs' and name = v_ruta;
+  v_bytes := (select (metadata->>'size')::int from storage.objects where bucket_id = 'pdfs' and name = v_ruta);
   if v_bytes is null then raise exception 'El PDF de % no llego a Storage', v_folio; end if;
+  v_nuevo := not exists (select 1 from public.documentos where ruta = v_ruta);
   insert into public.documentos (tipo, solicitud_id, bitacora_id, ruta, bytes, con_logo, es_prueba, generado_por)
   values (p_tipo, case when p_tipo = 'solicitud' then p_id end, case when p_tipo = 'bitacora' then p_id end,
           v_ruta, v_bytes, coalesce(p_con_logo, false), v_prueba, public.mi_empleado_id())
-  on conflict (ruta) do nothing
-  returning id into v_doc;
-  return json_build_object('ruta', v_ruta, 'nuevo', v_doc is not null);
+  on conflict (ruta) do nothing;
+  return json_build_object('ruta', v_ruta, 'nuevo', v_nuevo);
 end $$;
 
 -- Espacio usado en Storage (plan gratis: 1 GB). Lo ven Gaby, Laura y admin.
@@ -259,10 +264,10 @@ returns json language plpgsql security definer set search_path = public as $$
 declare v_sol int; v_mov int; v_bit int; v_doc int;
 begin
   if not public.tengo_rol('admin') then raise exception 'Solo un administrador puede borrar pruebas'; end if;
-  select count(*) into v_sol from public.solicitudes where es_prueba;
-  select count(*) into v_mov from public.movimientos where es_prueba;
-  select count(*) into v_bit from public.bitacoras where es_prueba;
-  select count(*) into v_doc from public.documentos where es_prueba;
+  v_sol := (select count(*) from public.solicitudes where es_prueba);
+  v_mov := (select count(*) from public.movimientos where es_prueba);
+  v_bit := (select count(*) from public.bitacoras where es_prueba);
+  v_doc := (select count(*) from public.documentos where es_prueba);
   if not p_confirmar then return json_build_object('solicitudes', v_sol, 'movimientos', v_mov, 'bitacoras', v_bit, 'pdfs', v_doc, 'borrado', false); end if;
   perform set_config('ut.borrando_pruebas', '1', true);
   delete from public.documentos where es_prueba;
