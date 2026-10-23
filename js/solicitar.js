@@ -72,14 +72,42 @@ function calcW(){
   return { s, r: Calc.calcular(empW(), horariosW(), s) };
 }
 
-/* ================= Opciones de hora (cada 5 min) ================= */
-function opcHoras(sel){
-  let h = '';
-  for (let m = 0; m < 24 * 60; m += 5){
-    const v = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
-    h += '<option value="' + v + '"' + (v === sel ? ' selected' : '') + '>' + hhmm(v) + '</option>';
-  }
-  return h;
+/* ================= Rueda de hora (como la del iPhone): horas 0-23 y minutos de 5 en 5 ================= */
+// Se usa como un campo: tiene .value ("HH:MM") y avisa con el evento "change".
+const R_ALTO = 36;
+const R_HORAS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+const R_MINS = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'));
+function ruedaHora(id, valor){
+  const [h, m] = redondea5(valor || '09:00').split(':');
+  const col = (p, vals, sel) => '<div class="rcol" data-parte="' + p + '" tabindex="0" aria-label="' + (p === 'h' ? 'Hora' : 'Minutos') + '"><div class="rpad"></div>' +
+    vals.map(v => '<div class="ri' + (v === sel ? ' on' : '') + '" data-v="' + v + '">' + v + '</div>').join('') + '<div class="rpad"></div></div>';
+  return '<div class="rueda" id="' + id + '" data-valor="' + h + ':' + m + '" role="group">' + col('h', R_HORAS, h) + '<span class="rsep">:</span>' + col('m', R_MINS, m) + '</div>';
+}
+function activarRuedas(raiz){
+  raiz.querySelectorAll('.rueda').forEach(r => {
+    if (r._lista) return; r._lista = true;
+    Object.defineProperty(r, 'value', { get: () => r.dataset.valor });
+    r.querySelectorAll('.rcol').forEach(c => {
+      const items = [...c.querySelectorAll('.ri')], parte = c.dataset.parte;
+      const idx = () => Math.max(0, Math.min(items.length - 1, Math.round(c.scrollTop / R_ALTO)));
+      const marcar = i => items.forEach((x, j) => x.classList.toggle('on', j === i));
+      c.scrollTop = Math.max(0, items.findIndex(x => x.classList.contains('on'))) * R_ALTO;
+      let t;
+      const fijar = () => {
+        const i = idx(); marcar(i);
+        const [h, m] = r.dataset.valor.split(':');
+        const nv = parte === 'h' ? items[i].dataset.v + ':' + m : h + ':' + items[i].dataset.v;
+        if (nv !== r.dataset.valor){ r.dataset.valor = nv; r.dispatchEvent(new Event('change')); }
+      };
+      c.addEventListener('scroll', () => { marcar(idx()); clearTimeout(t); t = setTimeout(fijar, 120); });
+      items.forEach((x, j) => x.onclick = () => c.scrollTo({ top: j * R_ALTO, behavior: 'smooth' }));
+      c.onkeydown = e => {
+        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+        e.preventDefault();
+        c.scrollTo({ top: Math.max(0, Math.min(items.length - 1, idx() + (e.key === 'ArrowDown' ? 1 : -1))) * R_ALTO, behavior: 'smooth' });
+      };
+    });
+  });
 }
 const redondea5 = t => { const m = Calc.aMin(t); const r = Math.round(m / 5) * 5 % (24 * 60); return String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(r % 60).padStart(2, '0'); };
 
@@ -107,6 +135,7 @@ function pintarPaso(){
   if ($('wAtras')) $('wAtras').onclick = () => { paso--; pintarPaso(); };
   if ($('wSig')) $('wSig').onclick = siguiente;
   if ($('wEnviar')) $('wEnviar').onclick = enviar;
+  activarRuedas($('vista'));
   ENLACES[k]?.();
   window.scrollTo(0, 0);
 }
@@ -187,15 +216,15 @@ const PAGINAS = {
     W.hora_ref = W.hora_ref || (of ? (ll ? of.entrada : of.salida) : '09:00');
     return preg(ll ? '¿A qué hora llegaste o vas a llegar?' : '¿A qué hora saliste o vas a salir?',
       of ? 'Tu ' + (ll ? 'entrada' : 'salida') + ' oficial ese día es a las ' + hhmm(ll ? of.entrada : of.salida) + '.' : 'Ese día no tienes horario oficial.') +
-      '<select class="f" id="wHora" style="max-width:200px">' + opcHoras(redondea5(W.hora_ref)) + '</select><div class="ayuda">De 5 en 5 minutos.</div>'; },
+      ruedaHora('wHora', W.hora_ref) + '<div class="ayuda">Desliza (o toca) la hora y los minutos.</div>'; },
   rango: () => { const of = ofDia();
     if (!W.hora_ref) W.hora_ref = W.tipo === 'cambio_horario' ? (of?.entrada || '09:00') : (of?.salida || '18:00');
     if (!W.hora_fin) W.hora_fin = W.tipo === 'cambio_horario' ? (of?.salida || '18:00') : redondea5(Calc.HHMM(String((Calc.aMin(W.hora_ref) + 120) % 1440 / 60 | 0) + ':' + String((Calc.aMin(W.hora_ref) + 120) % 60)));
     const q = { horas_extras: ['¿De qué hora a qué hora trabajaste?', 'Puedes poner solo el bloque extra (18:00 a 20:00) o tu jornada completa (7:00 a 20:00): el sistema descuenta tu horario oficial. En sábado y domingo todo cuenta.'],
       cambio_horario: ['¿A qué hora entraste y saliste ese día?', of ? 'Tu horario oficial ese día es de ' + hhmm(of.entrada) + ' a ' + hhmm(of.salida) + '.' : ''],
       reposicion: ['¿De qué hora a qué hora repusiste?', 'Solo cuenta lo que quede fuera de tu horario oficial.'] }[W.tipo];
-    return preg(q[0], q[1]) + '<div class="rango"><div><label for="wIni">De</label><select class="f" id="wIni">' + opcHoras(redondea5(W.hora_ref)) + '</select></div>' +
-      '<span>a</span><div><label for="wFin">A</label><select class="f" id="wFin">' + opcHoras(redondea5(W.hora_fin)) + '</select></div></div><div class="ayuda" id="wRangoNota"></div>'; },
+    return preg(q[0], q[1]) + '<div class="rango"><div><label>De</label>' + ruedaHora('wIni', W.hora_ref) + '</div>' +
+      '<span>a</span><div><label>A</label>' + ruedaHora('wFin', W.hora_fin) + '</div></div><div class="ayuda" id="wRangoNota"></div>'; },
   just: () => preg('¿Por qué?', 'Elige la justificación que más se acerque.') + chips(JUSTS, W.justificacion, 'just'),
   proyecto: () => preg('¿En qué proyecto trabajaste?') + '<select class="f" id="wProy"><option value="">Elige un proyecto…</option>' +
     D.proyectos.filter(p => p.activo).map(p => '<option value="' + p.id + '"' + (p.id === W.proyecto_id ? ' selected' : '') + '>' + esc(p.nombre_corto) + '</option>').join('') + '</select>',

@@ -203,7 +203,14 @@ td input.f,td select.f{height:34px;font-size:13px}
 .wchips{display:flex;flex-wrap:wrap;gap:8px}
 .wchip{border:1px solid var(--borde);background:#fff;border-radius:22px;padding:10px 14px;font-size:14px;min-height:44px;color:var(--cafe)}
 .wchip.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
-.rango{display:flex;align-items:flex-end;gap:10px}.rango>div{flex:1;max-width:180px}.rango>span{padding-bottom:12px;color:var(--sub)}
+.rueda{position:relative;display:inline-flex;align-items:center;gap:2px;height:180px;background:#fff;border:1px solid var(--borde);border-radius:12px;padding:0 10px;user-select:none;-webkit-user-select:none}
+.rueda::before{content:'';position:absolute;left:6px;right:6px;top:71px;height:36px;background:var(--arena);border-radius:8px}
+.rcol{position:relative;height:178px;width:52px;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none;outline:none;
+  -webkit-mask-image:linear-gradient(transparent,#000 35%,#000 65%,transparent);mask-image:linear-gradient(transparent,#000 35%,#000 65%,transparent)}
+.rcol::-webkit-scrollbar{display:none}.rcol:focus-visible{background:var(--crema);border-radius:8px}
+.rpad{height:71px}.ri{height:36px;line-height:36px;text-align:center;scroll-snap-align:center;font-size:18px;color:var(--sub);cursor:pointer}
+.ri.on{color:var(--cafe);font-weight:700}.rsep{position:relative;font-size:18px;font-weight:700}
+.rango{display:flex;align-items:flex-end;gap:10px}.rango>div{flex:1;max-width:180px}.rango>span{padding-bottom:80px;color:var(--sub)}
 .ta{height:auto;padding:10px 12px;line-height:1.45;resize:vertical}
 .tag{font-size:10px;background:var(--arena);border-radius:8px;padding:2px 7px;margin-left:4px;color:var(--sub)}
 .res{background:#fff;border:1px solid var(--borde);border-radius:14px;padding:16px 18px;font-size:12.5px;line-height:1.5}
@@ -405,7 +412,7 @@ table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.6.0';
+const VERSION = 'v0.6.1';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 $('verEntrar').textContent = VERSION + ' · Fase 5';

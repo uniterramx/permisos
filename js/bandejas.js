@@ -1,6 +1,6 @@
 // Permisos UT · bandejas.js
 // Fase 3: Mi bandeja (jefe -> Gaby -> Laura), Panel general, Corregir una solicitud (-R1) y contador de pendientes.
-// Usa lo global de index.html (sb, D, yo, $, esc, toast, ...) y de solicitar.js (TIPO_TXT, JUST_TXT, opcHoras, ...).
+// Usa lo global de index.html (sb, D, yo, $, esc, toast, ...) y de solicitar.js (TIPO_TXT, JUST_TXT, ruedaHora, ...).
 
 /* ================= Catalogos ================= */
 const ETAPAS = ['jefe', 'gaby', 'laura'];
@@ -413,9 +413,9 @@ function pintarCorregir(){
     let g = '';
     if (C.cambia.has('fecha')) g += campo(o.tipo === 'ausencia' ? 'Nuevo primer día' : 'Nueva fecha', '<input class="f" type="date" id="cv_fecha" value="' + (v.fecha || '') + '">');
     if (C.cambia.has('ultimo')) g += campo('Nuevo último día', '<input class="f" type="date" id="cv_ultimo" value="' + (v.ultimo || '') + '">');
-    if (C.cambia.has('hora')) g += campo('Nueva hora', '<select class="f" id="cv_hora">' + opcHoras(v.hora) + '</select>');
-    if (C.cambia.has('inicio')) g += campo('Nueva hora de inicio', '<select class="f" id="cv_inicio">' + opcHoras(v.inicio) + '</select>');
-    if (C.cambia.has('fin')) g += campo('Nueva hora de fin', '<select class="f" id="cv_fin">' + opcHoras(v.fin) + '</select>');
+    if (C.cambia.has('hora')) g += campo('Nueva hora', ruedaHora('cv_hora', v.hora));
+    if (C.cambia.has('inicio')) g += campo('Nueva hora de inicio', ruedaHora('cv_inicio', v.inicio));
+    if (C.cambia.has('fin')) g += campo('Nueva hora de fin', ruedaHora('cv_fin', v.fin));
     if (C.cambia.has('proyecto')) g += campo('Proyecto', '<select class="f" id="cv_proyecto"><option value="">—</option>' + D.proyectos.filter(x => x.activo).map(x => '<option value="' + x.id + '"' + (x.id === v.proyecto ? ' selected' : '') + '>' + esc(x.nombre_corto) + '</option>').join('') + '</select>');
     if (g) h += '<div class="g2" style="margin-top:6px">' + g + '</div>';
     if (C.cambia.has('texto')) h += '<label class="fl" for="cv_texto">Nuevo texto del formato</label><textarea class="f ta" id="cv_texto" rows="3" placeholder="Si lo llenas, este texto gana sobre la redacción automática">' + esc(v.texto || '') + '</textarea>';
@@ -444,6 +444,7 @@ function pintarCorregir(){
     else { C.cambia.add(k); const ini = { fecha: o.fecha_inicio, ultimo: o.fecha_fin, hora: o.hora_ref?.slice(0, 5), inicio: o.hora_ref?.slice(0, 5), fin: o.hora_fin?.slice(0, 5), proyecto: o.proyecto_id || '', texto: o.redaccion }; if (C.v[k] == null) C.v[k] = ini[k] || ''; }
     pintarCorregir();
   });
+  activarRuedas($('vista'));
   ['fecha', 'ultimo', 'hora', 'inicio', 'fin', 'proyecto', 'texto'].forEach(k => { const el = $('cv_' + k); if (el) el.oninput = el.onchange = () => { C.v[k] = el.value; }; });
   if ($('cOk')) $('cOk').onchange = e => { C.ok = e.target.checked; };
   if ($('cAtras')) $('cAtras').onclick = () => { C.paso--; pintarCorregir(); };
