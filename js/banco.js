@@ -114,6 +114,7 @@ function pintarPersona(empId, mio){
       '<div class="fila"><button class="btn chico" type="button" id="kAjOk">Guardar ajuste</button><button class="btn chico l" type="button" id="kAjNo">Cancelar</button></div>' +
       '<div class="ayuda">' + (BK.ajCuenta === 'reposicion' ? 'En reposición: + es lo que repuso, − es lo que debe.' : 'En el banco: + suma horas a su saldo, − le resta.') + '</div></div>';
   }
+  if (BK.ver === 'banco') h += '<div id="kBit"><div class="ayuda">Cargando bitácora…</div></div>';
   const lista = movs.filter(m => (BK.ver === 'banco') === (m.cuenta === 'banco'));
   let acc = 0;
   h += '<div class="tabla-w"><table class="angosta"><thead><tr><th>Fecha</th><th>Folio</th><th>Movimiento</th><th>Referencia</th>' +
@@ -122,11 +123,12 @@ function pintarPersona(empId, mio){
     acc += BK.ver === 'rep' ? -m.horas : +m.horas;
     return '<tr class="' + (r.anulados.has(m.id) ? 'anul' : '') + '"><td>' + fechaCorta(m.registrado_at) + '</td><td>' + esc(m.folio_ref || '—') + (m.es_prueba ? ' <span class="chip c-rev">prueba</span>' : '') + '</td>' +
       '<td><span class="tipo-mv ' + MOV_CL[m.tipo] + '">' + MOV_TXT[m.tipo] + '</span></td><td>' + esc(m.referencia || '') + '</td>' +
-      '<td class="num">' + hSigno(+m.horas) + '</td><td class="num"><b>' + hTxt(acc) + '</b></td>' + (BK.ver === 'banco' ? '<td class="inact">' + (m.bitacora_id ? 'impresa' : 'activa') + '</td>' : '') + '</tr>';
+      '<td class="num">' + hSigno(+m.horas) + '</td><td class="num"><b>' + hTxt(acc) + '</b></td>' + (BK.ver === 'banco' ? '<td class="inact" data-bit="' + (m.bitacora_id || '') + '">' + (m.bitacora_id ? 'cerrada' : 'activa') + '</td>' : '') + '</tr>';
   }).join('') : '<tr><td colspan="7" class="vacio">Sin movimientos todavía.</td></tr>';
-  h += '</tbody></table></div><div class="ayuda" style="margin-top:8px">Nada se borra: si se corrige o se cambia una decisión, el renglón original sale tachado y abajo su reverso.' + (BK.ver === 'banco' ? ' La bitácora se imprime en la Fase 5.' : '') + '</div>';
+  h += '</tbody></table></div><div class="ayuda" style="margin-top:8px">Nada se borra: si se corrige o se cambia una decisión, el renglón original sale tachado y abajo su reverso.' + '</div>';
   h += '<div class="ver">' + VERSION + '</div>';
   $('vista').innerHTML = h;
+  if (BK.ver === 'banco') pintarBitacorasPersona(empId, mio).catch(err => { if ($('kBit')) $('kBit').innerHTML = '<div class="ayuda">' + esc(errDoc(err)) + '</div>'; });
   if ($('kVolver')) $('kVolver').onclick = () => { BK.persona = null; pintarBancos(); };
   $('vista').querySelectorAll('[data-kver]').forEach(b => b.onclick = () => { BK.ver = b.dataset.kver; pintarPersona(empId, mio); });
   if ($('kAj')) $('kAj').onclick = () => { BK.ajuste = true; BK.ajCuenta = BK.ver === 'rep' ? 'reposicion' : 'banco'; pintarPersona(empId, mio); };
@@ -206,7 +208,9 @@ async function pintarAvisosInicio(){
   const { data, error } = await sb.from('avisos').select('*').is('visto_at', null).order('id');
   if (error || !data?.length){ caja.innerHTML = ''; return; }
   caja.innerHTML = data.map(a => '<div class="aviso-c info"><div><b>Aviso</b>' + (a.es_prueba ? ' <span class="chip c-rev">prueba</span>' : '') + '<br>' + esc(a.texto) + '</div>' +
+    (a.bitacora_id ? '<button class="btn chico" type="button" data-avbit="' + a.bitacora_id + '">📄 Bitácora</button>' : '') +
     '<button class="btn chico l" type="button" data-visto="' + a.id + '">Entendido</button></div>').join('');
+  caja.querySelectorAll('[data-avbit]').forEach(b => b.onclick = () => descargarBitacora(null, b.dataset.avbit, false, b));
   caja.querySelectorAll('[data-visto]').forEach(b => b.onclick = async () => {
     b.disabled = true;
     const r = await sb.rpc('aviso_visto', { p_id: +b.dataset.visto });
@@ -220,9 +224,10 @@ async function vistaPruebas(){
   $('vista').innerHTML = '<div class="titulo"><h2>Pruebas</h2><div class="sub">Folios PRUEBA y los movimientos del banco que hicieron. Solo tú los ves.</div></div><div class="carga">Contando…</div>';
   const { data, error } = await sb.rpc('borrar_pruebas', { p_confirmar: false });
   if (error){ $('vista').querySelector('.carga').textContent = errBanco(error); return; }
-  const n = data.solicitudes + data.movimientos;
+  const n = data.solicitudes + data.movimientos + (data.bitacoras || 0) + (data.pdfs || 0);
   $('vista').querySelector('.carga').outerHTML = '<div class="formaj" style="max-width:520px"><div class="lista">' +
-    '<div class="r"><span>Solicitudes de prueba</span><b>' + data.solicitudes + '</b></div><div class="r"><span>Movimientos de prueba en el banco</span><b>' + data.movimientos + '</b></div></div>' +
+    '<div class="r"><span>Solicitudes de prueba</span><b>' + data.solicitudes + '</b></div><div class="r"><span>Movimientos de prueba en el banco</span><b>' + data.movimientos + '</b></div>' +
+    (data.bitacoras != null ? '<div class="r"><span>Bitácoras de prueba</span><b>' + data.bitacoras + '</b></div><div class="r"><span>PDF de prueba guardados</span><b>' + data.pdfs + '</b></div>' : '') + '</div>' +
     (n ? '<div id="pzConf"><button class="btn rech" type="button" id="pzBorrar" style="margin-top:12px">Borrar todas las pruebas</button></div>' : '<div class="ayuda">No hay pruebas que borrar.</div>') +
     '<div class="ayuda">Lo real no se toca: solo se borra lo que está marcado como prueba.</div></div>';
   if ($('pzBorrar')) $('pzBorrar').onclick = () => {
@@ -231,6 +236,9 @@ async function vistaPruebas(){
     $('pzNo').onclick = vistaPruebas;
     $('pzSi').onclick = async () => {
       $('pzSi').disabled = true;
+      // primero los archivos de prueba en Storage (la base solo borra sus registros)
+      const docs = await sb.from('documentos').select('ruta').eq('es_prueba', true);
+      if (docs.data?.length) await sb.storage.from('pdfs').remove(docs.data.map(d => d.ruta));
       const r = await sb.rpc('borrar_pruebas', { p_confirmar: true });
       if (r.error){ $('pzSi').disabled = false; return toast(errBanco(r.error), true); }
       toast('Listo: se borraron ' + r.data.solicitudes + ' solicitudes y ' + r.data.movimientos + ' movimientos de prueba.');

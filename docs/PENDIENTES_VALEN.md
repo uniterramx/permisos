@@ -46,3 +46,10 @@
 - [ ] Correr también `sql/009_rechazo_regresa_horas.sql` (después del 008). Al final: "si", "si". App v0.5.1.
 - [ ] PRUEBA aprobada por jefe y Gaby → Laura la rechaza con comentario → debe salir el reverso y un aviso en tu Inicio.
 - [ ] Al terminar: Inicio → Administración → 🧪 Pruebas → Borrar todas las pruebas.
+
+## 6. Fase 5 (v0.6.0) · PDFs y bitácoras
+- [ ] Correr `sql/010_fase5_pdfs_bitacoras.sql` (SQL Editor → New query → pegar completo → Run). Al final: "si", "si", "si".
+- [ ] Recargar con Ctrl+Shift+R → abajo **v0.6.0 · Fase 5**.
+- [ ] PRUEBA aprobada por jefe, Gaby y Laura → al aprobar Laura sale "PDF guardado" → abrirla y "📄 Descargar PDF".
+- [ ] Banco de horas → una persona → bloque "Bitácora": PDF de la activa; "Cerrar ahora" (la tuya queda de prueba) → PDF de la cerrada.
+- [ ] Inicio → 📁 PDF guardados (espacio usado). Al terminar: 🧪 Pruebas → Borrar (también borra bitácoras y PDF de prueba).

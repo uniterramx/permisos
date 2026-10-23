@@ -14,7 +14,7 @@ const EST_PANEL = { nueva_espera_jefe: ['Nueva - espera jefe', 'd-pend'], espera
   rechazada: ['Rechazada', 'd-rech'], resuelta: ['Resuelta', 'd-res'], corregida: ['Corregida', 'd-ppc'] };
 const TAB_TXT = { jefe: 'Aprobación del jefe', gaby: 'Filtro (Gaby)', laura: 'Aprobación final (Laura)' };
 const TAB_SUB = { jefe: 'Autorizas el permiso. Si apruebas, pasa con Gaby.', gaby: 'Revisas que esté bien llenada. Si apruebas, pasa con Laura.',
-  laura: 'Aprobación final. Al aprobar queda congelada (en la Fase 5 sale el PDF).' };
+  laura: 'Aprobación final. Al aprobar queda congelada y se guarda su PDF.' };
 const SIGUE = { jefe: 'Pasan con Gaby.', gaby: 'Pasan con Laura.', laura: 'Quedan congeladas.' };
 
 const chipDec = v => '<span class="chip ' + (DEC_CL[v] || 'd-na') + '">' + (DEC_TXT[v] || '—') + '</span>';
@@ -202,6 +202,7 @@ function filasBandeja(){
     const { data, error } = await sb.rpc('decidir_lote', { p_ids: marc.map(s => s.id), p_etapa: st });
     if (error){ B.conf = false; toast('No se aprobó ninguna: ' + errTxt(error), true); return recargarBandeja(); }
     toast(data.aprobadas + ' aprobada' + (data.aprobadas === 1 ? '' : 's') + '. ' + SIGUE[st]);
+    if (st === 'laura') guardarSolicitudesAprobadas(marc.map(s => s.id));
     recargarBandeja();
   };
 }
@@ -224,7 +225,8 @@ function abrirDetalle(id, st, lista){
   const editable = st && ['gaby', 'laura'].includes(st) && puedeDecidir(s, st) && !s.congelada && !s.corregida_por;
   const fila = (a, b) => b ? '<div class="r"><span>' + a + '</span><b>' + b + '</b></div>' : '';
   let h = '<div class="cab"><div><h3>' + esc(e?.nombre_oficial || '') + '</h3><div class="sub">' + esc(s.folio) + ' · ' + chipEst(s) + chipPrueba(s) + '</div></div><button class="x" type="button" id="dX" aria-label="Cerrar">✕</button></div>';
-  if (s.congelada) h += '<div class="alerta ve"><b>Congelada.</b> Laura ya la aprobó. Para cambiar algo, el empleado hace “Corregir una solicitud”.</div>';
+  if (s.congelada) h += '<div class="alerta ve"><b>Congelada.</b> Laura ya la aprobó. Para cambiar algo, el empleado hace “Corregir una solicitud”.</div>' +
+    (s.empleado_id === yo.id || veoPDFs() ? '<button class="btn chico l" type="button" id="dPDF" style="margin-top:8px">📄 Descargar PDF</button>' : '');
   if (s.corregida_por) h += '<div class="alerta mo"><b>Corregida.</b> Continúa en ' + esc(B.sol.concat(lista || []).find(x => x.id === s.corregida_por)?.folio || 'su corrección') + '. Ya no avanza.</div>';
   if (s.corrige_a) h += '<div class="alerta mo">Es una corrección. No pasó por el jefe: entró directo con Gaby.<br>' + esc(s.motivo_correccion || '') + '</div>';
   h += '<section class="fsec"><div class="fst">Qué pide</div>' +
@@ -265,6 +267,7 @@ function abrirDetalle(id, st, lista){
   $('panel').innerHTML = h;
   $('panel').classList.remove('oculto'); $('vista').classList.add('con-panel');
   $('dX').onclick = cerrarDetalle;
+  if ($('dPDF')) $('dPDF').onclick = () => descargarSolicitud(id, $('dPDF'));
   if ($('dBanco')) pintarBancoDetalle(s, st, async () => { try { B.sol = await cargarSolicitudes(); } catch (err){} if ($('bFilas')) filasBandeja(); abrirDetalle(id, st); });
   const re = () => abrirDetalle(id, st, lista);
   if ($('dEditRed')) $('dEditRed').onclick = () => { B.editRed = true; re(); };
@@ -287,6 +290,7 @@ function abrirDetalle(id, st, lista){
     if (error){ $('panel').querySelectorAll('[data-dec]').forEach(x => x.disabled = false); return toast(errTxt(error), true); }
     toast(s.folio + ': ' + DEC_TXT[dec] + (dec === 'aprobado' ? '. ' + SIGUE[st].replace('Pasan', 'Pasa').replace('Quedan congeladas', 'Quedó congelada') : ''));
     B.marcadas.delete(id);
+    if (st === 'laura' && dec === 'aprobado') guardarSolicitudesAprobadas([id]);
     recargarBandeja();
   });
   $('panel').scrollTop = 0;

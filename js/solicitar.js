@@ -343,7 +343,7 @@ function pintarListo(d){
 /* ================= Mis solicitudes ================= */
 async function vistaMias(){
   $('vista').innerHTML = '<div class="titulo"><h2>Mis solicitudes</h2><div class="sub">Las que pediste tú (y las que alguien capturó a tu nombre).</div></div><div class="carga">Cargando…</div>';
-  const { data, error } = await sb.from('solicitudes').select('id,folio,recibido_at,tipo,justificacion,fecha_inicio,fecha_fin,hora_ref,hora_fin,estado_global,etapa,mueve,horas_calculadas,redaccion,verificacion,es_prueba,capturado_por,empleado_id,corregida_por,decisiones(*)')
+  const { data, error } = await sb.from('solicitudes').select('id,folio,recibido_at,tipo,justificacion,fecha_inicio,fecha_fin,hora_ref,hora_fin,estado_global,etapa,mueve,horas_calculadas,redaccion,verificacion,es_prueba,capturado_por,empleado_id,corregida_por,congelada,decisiones(*)')
     .eq('empleado_id', yo.id).order('recibido_at', { ascending: false }).limit(200);
   if (error){ $('vista').querySelector('.carga').textContent = /solicitudes|PGRST/i.test(error.message) ? 'Falta correr el SQL 006 en Supabase.' : 'No pude cargar: ' + error.message; return; }
   const filas = (data || []).map(s => { const e = ESTADOS[s.estado_global] || [s.estado_global, '#eee', '#555'];
@@ -374,9 +374,11 @@ function verSolicitud(s){
     fila('Verificación', esc(s.verificacion || '')) + '</div>' +
     (pedido ? '<div class="alerta">' + esc(pedido.quien) + ' pidió: “' + esc(pedido.com) + '”</div>' : '') +
     '<div class="peq" style="margin-top:12px">Texto de tu formato:</div><div class="red">' + esc(s.redaccion) + '</div>' +
+    (s.congelada ? '<button class="btn" type="button" id="mPDF" style="margin-top:16px">📄 Descargar PDF</button>' : '') +
     (!s.corregida_por ? '<button class="btn' + (pedido ? '' : ' l') + '" type="button" id="mCorr" style="margin-top:16px">✏️ Corregir esta solicitud</button>' : '');
   $('panel').classList.remove('oculto'); $('vista').classList.add('con-panel');
   $('xPanel').onclick = cerrarPanel;
+  if ($('mPDF')) $('mPDF').onclick = () => descargarSolicitud(s.id, $('mPDF'));
   if ($('mCorr')) $('mCorr').onclick = () => { corregirFolio = s.folio; location.hash = 'corregir'; };
 }
 
