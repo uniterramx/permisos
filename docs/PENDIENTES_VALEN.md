@@ -57,3 +57,8 @@
 ## 7. v0.7.2 · PIN temporal visible
 - [x] Correr `sql/011_pin_temporal_visible.sql` (SQL Editor → New query → pegar completo → Run). Al final: "si", "si".
 - [x] Personas y PINs → Gabriela → Acceso → "Dar PIN temporal" → debe quedarse mostrando ese número.
+
+## 8. Vacaciones · respuestas de Gaby
+- [x] Preguntarle qué días cuentan (horario / L–V / naturales, festivos) y si lo no tomado se acumula o se pierde.
+- [ ] Preguntarle qué son los negativos de jul-2026 en su Excel (Max −18, Wario −17, Laura −1, Teo −1).
+- [ ] Pasarle a Claude lo que conteste.
