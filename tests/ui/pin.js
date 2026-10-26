@@ -1,0 +1,27 @@
+const { chromium } = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright');
+const fs = require('fs'), path = require('path'); const F = require('./sbfake');
+const REPO = '/home/user/uniterra-permisos', S = path.resolve(__dirname, '..'), OUT = S + '/ui';
+const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.png': 'image/png', '.pdf': 'application/pdf' };
+const sub = ini => F.admin("select a.auth_pin_id from accesos a join empleados e on e.id = a.empleado_id where e.iniciales = '" + ini + "'");
+const gid = F.admin("select id from empleados where iniciales = 'GTB'");
+let fallas = 0; const ok = (c, t) => { console.log((c ? 'OK   ' : 'FALLA') + ' ' + t); if (!c) fallas++; };
+(async () => { const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: 'block' }); const page = await ctx.newPage();
+  page.on('pageerror', e => { console.log('ERR', e.message); fallas++; }); page.on('dialog', d => d.accept());
+  await ctx.route('https://cdn.jsdelivr.net/**', r => r.fulfill({ path: S + '/pl/sbx/package/dist/umd/supabase.js', contentType: 'text/javascript' }));
+  await ctx.route('https://fonts.**/**', r => r.abort());
+  await ctx.route('https://tnlgwfrseajntindzofg.supabase.co/**', F.manejar);
+  await ctx.route('http://ut.local/**', r => { const p = new URL(r.request().url()).pathname.replace(/^\//, '') || 'index.html'; const f = path.join(REPO, p); return fs.existsSync(f) ? r.fulfill({ path: f, contentType: MIME[path.extname(f)] || 'application/octet-stream' }) : r.fulfill({ status: 404, body: '' }); });
+  await ctx.addInitScript(([k, v]) => { localStorage.setItem(k, v); localStorage.setItem('ut_vercomo', 'todo'); }, ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(sub('VMM'))]);
+  const abrir = async () => { await page.goto('http://ut.local/#personas'); await page.waitForTimeout(800); await page.evaluate(id => abrirPersona(id), gid); await page.waitForSelector('.pinest'); return page.locator('.pinest').innerText(); };
+  ok(/sin PIN/.test(await abrir()) && await page.locator('#ePinTemp').isVisible(), 'Sin PIN: muestra "sin PIN" y el botón');
+  const pin = await page.inputValue('#eTemp'); await page.click('#ePinTemp'); await page.waitForTimeout(1200);
+  let t = await abrir(); ok(t.includes(pin) && /temporal/.test(t) && /aún no lo cambia/.test(t), 'Temporal visible: ' + t.replace(/\n/g, ' '));
+  t = await abrir(); ok(t.includes(pin), 'Al reabrir la ficha sigue el MISMO temporal');
+  ok(!(await page.locator('#eNuevoPin').isVisible()), 'El recuadro de otro número solo sale al tocar "Dar otro temporal"');
+  await page.click('#eOtroPin'); ok(await page.locator('#eTemp').isVisible(), 'Dar otro temporal lo muestra');
+  // Gaby cambia su PIN
+  const r = F.sql("select public.cambiar_mi_pin('246813')", sub('GTB')); console.log('  cambiar_mi_pin:', r.out || r.err);
+  t = await abrir(); ok(/elegido/.test(t) && /lo cambió el/.test(t) && !t.includes(pin) && !t.includes('246813'), 'Elegido: ' + t.replace(/\n/g, ' '));
+  ok(F.admin("select coalesce(pin_temporal,'(borrado)') from accesos a join empleados e on e.id = a.empleado_id where e.iniciales = 'GTB'") === '(borrado)', 'El temporal se borró de la base');
+  await page.screenshot({ path: OUT + '/pin.png' });
+  await b.close(); console.log(fallas ? fallas + ' FALLAS' : 'TODO BIEN'); })();

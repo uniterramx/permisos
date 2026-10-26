@@ -17,11 +17,11 @@
 - **v0.6.1** (26-oct): hora con rueda tipo iPhone (horas 0–23, minutos de 5 en 5) en Nueva solicitud y Corregir.
 - **v0.7.0** (26-oct): Inicio rediseñado según `docs/wireframes/inicio.html` (aprobado): Nueva solicitud en la cabecera con atajos por tipo, franja "Por decidir", "Tu resumen" (saldo +verde/0 negro/−rojo; por reponer +rojo/0 negro/−verde), listas compactas, Administración en fila. "Ver como" ahora en la barra de arriba (solo admin): por rol (sigues siendo tú) o por PERSONA = solo ver (se simula lo que esa persona ve con las mismas reglas de la base; se bloquea toda escritura; los avisos de otros no se alcanzan a leer). Banco de horas ordenado por área y luego nombre.
 - **v0.7.1** (26-oct): tipografía **Outfit** (elegida en `docs/wireframes/tipografia.html`) con jerarquía de pesos 700/600/500/400/300 (bloque al final del CSS de index.html).
-- **v0.7.2** (26-oct): ficha de persona → Acceso muestra el PIN temporal (guardado en `accesos.pin_temporal` solo mientras debe cambiarlo) y, cuando la persona elige el suyo, "elegido · lo cambió el …" (el elegido NO se guarda: opción A de Valen). SQL 011 (trigger `accesos_pin_elegido`, `admin_accesos` con 2 columnas más). **Falta: Valen corre SQL 011.**
+- **v0.7.2** (26-oct): ficha de persona → Acceso muestra el PIN temporal (guardado en `accesos.pin_temporal` solo mientras debe cambiarlo) y, cuando la persona elige el suyo, "elegido · lo cambió el …" (el elegido NO se guarda: opción A de Valen). SQL 011 (trigger `accesos_pin_elegido`, `admin_accesos` con 2 columnas más). SQL 011 corrido por Valen.
 - 26-oct: repo transferido a la organización **uniterramx** → `uniterramx/permisos`, app en https://uniterramx.github.io/permisos/.
 - **v0.7.3** (26-oct): casilla "Recordarme en este dispositivo" en la entrada (sin ella, al volver a abrir la app pide PIN; recargar la misma pestaña no). "Elige tu PIN" tiene "No soy yo · salir".
 - Antes: — decisiones P1–P7 en 07 RESPONDIDAS; logo en `icons/logo-uniterra.png`. Handoff: `docs/handoff-permisos-ut-2026-10-22-fase5.md`.
-- Rama de trabajo actual: `claude/exciting-shannon-x8y45q` (la de esta sesión), se publica a `main`.
+- Rama de trabajo (chat 23–26 oct): `claude/exciting-shannon-x8y45q`, se publica a `main`. **Siguiente: Fase 6** — handoff: `docs/handoff-permisos-ut-2026-10-26-fase6.md`.
 - Pruebas locales: hay Postgres 16 en la máquina; `sql/` se prueba contra una imitación de Supabase
   (roles anon/authenticated, `auth.uid()` por `request.jwt.claim.sub`). Ver cómo en el historial de este chat.
 
