@@ -228,10 +228,11 @@ async function vistaPruebas(){
   $('vista').innerHTML = '<div class="titulo"><h2>Pruebas</h2><div class="sub">Folios PRUEBA y los movimientos del banco que hicieron. Solo tú los ves.</div></div><div class="carga">Contando…</div>';
   const { data, error } = await sb.rpc('borrar_pruebas', { p_confirmar: false });
   if (error){ $('vista').querySelector('.carga').textContent = errBanco(error); return; }
-  const n = data.solicitudes + data.movimientos + (data.bitacoras || 0) + (data.pdfs || 0);
+  const n = data.solicitudes + data.movimientos + (data.bitacoras || 0) + (data.pdfs || 0) + (data.vacaciones || 0);
   $('vista').querySelector('.carga').outerHTML = '<div class="formaj" style="max-width:520px"><div class="lista">' +
     '<div class="r"><span>Solicitudes de prueba</span><b>' + data.solicitudes + '</b></div><div class="r"><span>Movimientos de prueba en el banco</span><b>' + data.movimientos + '</b></div>' +
-    (data.bitacoras != null ? '<div class="r"><span>Bitácoras de prueba</span><b>' + data.bitacoras + '</b></div><div class="r"><span>PDF de prueba guardados</span><b>' + data.pdfs + '</b></div>' : '') + '</div>' +
+    (data.bitacoras != null ? '<div class="r"><span>Bitácoras de prueba</span><b>' + data.bitacoras + '</b></div><div class="r"><span>PDF de prueba guardados</span><b>' + data.pdfs + '</b></div>' : '') +
+    (data.vacaciones != null ? '<div class="r"><span>Vacaciones de prueba (pedidas y movimientos)</span><b>' + data.vacaciones + '</b></div>' : '') + '</div>' +
     (n ? '<div id="pzConf"><button class="btn rech" type="button" id="pzBorrar" style="margin-top:12px">Borrar todas las pruebas</button></div>' : '<div class="ayuda">No hay pruebas que borrar.</div>') +
     '<div class="ayuda">Lo real no se toca: solo se borra lo que está marcado como prueba.</div></div>';
   if ($('pzBorrar')) $('pzBorrar').onclick = () => {

@@ -14,7 +14,7 @@ async function pagina(b, ini, ancho, vercomo){
   await ctx.route('https://fonts.**/**', r => r.abort());
   await ctx.route('https://tnlgwfrseajntindzofg.supabase.co/**', F.manejar);
   await ctx.route('http://ut.local/**', r => { const p = new URL(r.request().url()).pathname.replace(/^\//, '') || 'index.html'; const f = path.join(REPO, p); return fs.existsSync(f) ? r.fulfill({ path: f, contentType: MIME[path.extname(f)] || 'application/octet-stream' }) : r.fulfill({ status: 404, body: '' }); });
-  await ctx.addInitScript(([k, v, c]) => { if (!sessionStorage.getItem('x')){ localStorage.setItem(k, v); localStorage.setItem('ut_vercomo', c); sessionStorage.setItem('x', 1); } }, ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(subDe(ini)), vercomo || 'todo']);
+  await ctx.addInitScript(([k, v, c]) => { if (!sessionStorage.getItem('x')){ localStorage.setItem(k, v); localStorage.setItem('ut_vercomo', c); localStorage.setItem('ut_recordarme', '1'); sessionStorage.setItem('x', 1); } }, ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(subDe(ini)), vercomo || 'todo']);
   await page.goto('http://ut.local/'); await page.waitForSelector('#app:not(.oculto)');
   return { page, ctx };
 }

@@ -383,6 +383,29 @@ table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
   .panel{top:61px;width:440px;border-left:1px solid var(--borde);box-shadow:-8px 0 24px rgba(90,77,62,.10);padding-top:18px}
   .menu{right:28px}
 }
+/* ---- Vacaciones (v0.8.0): columna "Proximos dias sin trabajo", cifras y bloques ---- */
+.vini{display:flex;flex-direction:column}
+.vizq{min-width:0}
+.vlado{order:-1;background:#fff;border:1px solid var(--borde);border-radius:12px;padding:14px;margin-top:14px}
+.vlt{font-size:14px;font-weight:600;display:block}
+.vlg{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:14px 0 4px}
+.vli{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--linea)}
+.vli span{color:var(--sub);font-weight:300;text-align:right}.vli b{white-space:nowrap}
+.tures.vt4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.dato.vhi{background:var(--verde-f);border-color:#a9d6b6}
+.vpos,.vneg,.vcero{font-style:normal}.vpos{color:var(--ok)}.vneg{color:var(--rojo)}.vcero{color:#000}
+.vcaja{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:14px 16px;margin-top:14px;max-width:620px}
+.vbloque{background:var(--alt);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.7;margin-top:12px}
+.vflecha{font-weight:700}
+.vrojo{background:var(--rojo-f);border:1px solid #f0c4c4;color:var(--rojo);border-radius:10px;padding:9px 12px;font-size:12.5px;margin-top:10px;line-height:1.5}.vrojo b{color:var(--cafe)}
+.vop{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--borde);background:#fff;border-radius:10px;padding:10px 12px;margin:0 0 8px;color:var(--cafe);font-size:13px;cursor:pointer}
+.vop input{width:20px;height:20px;margin:0;flex:none}.vop small{display:block;font-size:11px;color:var(--sub)}
+tr.vfut td{background:#fffdf5!important}
+tr.vnocuenta td{color:var(--cero)}
+.vdos{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+@media (min-width:760px){ .vini{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px;align-items:start} .vlado{order:0;position:sticky;top:80px;margin-top:20px} }
+@media (max-width:759px){ .tures.vt4{grid-template-columns:repeat(2,minmax(0,1fr))} .vdos{grid-template-columns:minmax(0,1fr)} }
+
 /* ---- Jerarquia tipografica (Outfit, aprobada 26-oct): 700 titulos y cifras · 600 acciones · 500 datos clave · 400 texto · 300 secundario ---- */
 b,strong{font-weight:500}
 h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:700}
@@ -453,11 +476,11 @@ h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.7.3';
+const VERSION = 'v0.8.0';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 // Modo "Ver como" persona = solo ver: se bloquea todo lo que escribe (funciones que guardan, insert/update/delete)
 const SOLO_VER = 'Modo solo ver: estás viendo la app como otra persona. Vuelve a ti para hacer cambios.';
-const RPC_LECTURA = new Set(['mi_perfil', 'contar_pendientes', 'bitacora_activa', 'espacio_pdfs', 'admin_accesos']);
+const RPC_LECTURA = new Set(['mi_perfil', 'contar_pendientes', 'bitacora_activa', 'espacio_pdfs', 'admin_accesos', 'vac_resumen', 'vac_resumen_todos', 'vac_preview', 'vac_sin_formato']);
 const bloqueado = new Proxy(function(){}, { get: (t, k) => k === 'then' ? (ok => ok({ data: null, error: { message: SOLO_VER }, count: 0 })) : () => bloqueado });
 { const _rpc = sb.rpc.bind(sb), _from = sb.from.bind(sb);
   sb.rpc = (fn, args, o) => yo?.simulado && !RPC_LECTURA.has(fn) ? bloqueado : _rpc(fn, args, o);
@@ -728,34 +751,40 @@ let atajoTipo = null;
 function vistaInicio(){
   const roles = rolesVista();
   const corto = yo.nombre_corto || yo.nombre.split(' ')[0];
+  const vac = llevaVac(empPorId(yo.id)), todosVal = roles.some(r => ['filtro', 'final', 'admin'].includes(r));
   const fila = (e, t, s, o = {}) => '<button type="button" class="ifila' + (o.ir ? '' : ' pronto') + '"' + (o.ir ? ' data-ir="' + o.ir + '"' : '') + (o.id ? ' id="' + o.id + '"' : '') + '>' +
     '<span class="e">' + e + '</span><div><b>' + t + '</b><small>' + s + (o.ir ? '' : ' · pronto') + '</small></div><em>›</em></button>';
   let h = '<div class="hero"><div class="hola"><h1>Hola, ' + esc(corto) + '</h1><div class="sub">' + esc(yo.area) + ' · ' +
     (yo.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</div></div>' +
     '<button class="nueva" type="button" data-ir="nueva"><span>＋</span>Nueva solicitud</button>' +
-    '<div class="atajos"><small>Atajos:</small>' + ATAJOS.map(([k, e, t]) => '<button class="atajo" type="button" data-atajo="' + k + '">' + e + ' ' + t + '</button>').join('') + '</div></div>';
-  h += '<div id="avisosBanco"></div><div id="avisosInicio"></div>';
+    '<div class="atajos"><small>Atajos:</small>' + ATAJOS.map(([k, e, t]) => '<button class="atajo" type="button" data-atajo="' + k + '">' + e + ' ' + t + '</button>').join('') +
+    (vac ? '<button class="atajo" type="button" data-ir="pedirvac">🌴 Vacaciones</button>' : '') + '</div></div>';
+  h += '<div class="vini"><div class="vizq"><div id="avisosBanco"></div><div id="avisosVac"></div><div id="avisosInicio"></div>';
   if (veoBandeja())
     h += '<div class="secc">Por decidir</div><div class="decidir" data-ir="bandeja"><div class="n" id="decN">·</div><div class="t"><b id="decT">Cargando…</b><div class="chips" id="decChips"></div></div>' +
       '<button class="ir" type="button">Abrir mi bandeja →</button></div>';
-  h += '<div class="secc">Tu resumen</div><div class="tures">' +
+  h += '<div class="secc">Tu resumen</div><div class="tures' + (vac ? ' vt4' : '') + '">' +
     '<button class="dato" type="button" data-ir="banco"><span>Mi saldo</span><b id="datoSaldo">·</b><small>banco de horas</small></button>' +
     '<button class="dato" type="button" data-ir="mias"><span>En proceso</span><b id="datoProc">·</b><small>mis solicitudes</small></button>' +
-    '<button class="dato" type="button" data-ir="banco"><span>Por reponer</span><b id="datoRep">·</b><small>reposición</small></button></div>';
+    '<button class="dato" type="button" data-ir="banco"><span>Por reponer</span><b id="datoRep">·</b><small>reposición</small></button>' +
+    (vac ? '<button class="dato" type="button" data-ir="vacaciones"><span>Vacaciones</span><b id="datoVac">·</b><small id="datoVacS">te quedan</small></button>' : '') + '</div>';
   h += '<div class="secc">Lo mío</div><div class="ilista">' + fila('📂', 'Mis solicitudes', 'estado y folios · PDF de las aprobadas', { ir: 'mias' }) +
-    fila('⏱️', 'Mi banco de horas', 'movimientos y mi bitácora', { ir: 'banco' }) + fila('✏️', 'Corregir una solicitud', 'cuando te piden cambios', { ir: 'corregir', id: 'filaCorr' }) +
+    fila('⏱️', 'Mi banco de horas', 'movimientos y mi bitácora', { ir: 'banco' }) + (vac ? fila('🌴', 'Mis vacaciones', 'pedir vacaciones y ver tus días', { ir: 'vacaciones' }) : '') + fila('✏️', 'Corregir una solicitud', 'cuando te piden cambios', { ir: 'corregir', id: 'filaCorr' }) +
     fila('📘', 'Guía', 'cómo se usa') + '</div>';
   if (veoBandeja())
     h += '<div class="secc">Para quien valida</div><div class="ilista">' + fila('📊', 'Panel general', 'todas, en vivo', { ir: 'panelgral' }) +
       fila('🏦', 'Banco de horas', roles.some(r => ['filtro', 'final', 'admin'].includes(r)) ? 'saldos y reposición de todos' : 'saldos de tu área', { ir: 'bancos' }) +
+      fila('🌴', 'Vacaciones', todosVal ? 'días de todos' : 'días de tu área', { ir: 'vacaciones_todos' }) +
+      (roles.some(r => ['final', 'admin'].includes(r)) ? fila('✅', 'Vacaciones por aprobar', 'paso 1 · apartar días', { ir: 'vacpedidos', id: 'filaVacPed' }) : '') +
       (veoPDFs() ? fila('📁', 'PDF guardados', 'solicitudes y bitácoras', { ir: 'pdfs' }) : '') + '</div>';
   if (roles.some(r => ['admin', 'altas'].includes(r))){
     const nav = avisosPersonas().total;
     h += '<div class="secc">Administración</div><div class="adm"><button type="button" data-ir="personas">👥 Personas y PINs' + (nav ? ' <span class="w">· ⚠️ ' + nav + '</span>' : '') + '</button>' +
-      '<button type="button" data-ir="proyectos">🏗️ Proyectos</button><button type="button" data-ir="areas">🏢 Áreas y jefes</button>' +
+      '<button type="button" data-ir="proyectos">🏗️ Proyectos</button><button type="button" data-ir="areas">🏢 Áreas y jefes</button><button type="button" data-ir="festivos">📅 Festivos</button>' +
       (roles.includes('admin') ? '<button type="button" data-ir="pruebas">🧪 Pruebas</button>' : '') + '</div>';
   }
-  h += '<div class="ver">' + VERSION + ' · Fase 5</div>';
+  h += '</div><aside class="vlado" id="vLado"><b class="vlt">📆 Próximos días sin trabajo</b><div class="ayuda">Cargando…</div></aside></div>';
+  h += '<div class="ver">' + VERSION + ' · Vacaciones</div>';
   $('vista').innerHTML = h;
   $('vista').querySelectorAll('[data-ir]').forEach(c => c.onclick = () => location.hash = c.dataset.ir);
   $('vista').querySelectorAll('[data-atajo]').forEach(c => c.onclick = () => { atajoTipo = c.dataset.atajo; location.hash = 'nueva'; });
@@ -764,6 +793,9 @@ function vistaInicio(){
   pintarProcInicio().catch(() => {});
   pintarAvisosInicio().catch(() => {});
   pintarPDFsInicio().catch(() => {});
+  pintarVacInicio().catch(() => {});
+  pintarLadoInicio().catch(() => {});
+  pintarAvisosVac().catch(() => {});
 }
 // "En proceso": mis solicitudes que esperan a alguien
 async function pintarProcInicio(){
@@ -888,8 +920,10 @@ function abrirPersona(id){
   h += sec('Puesto y área',
     '<div class="g2">' + campo('Área', '<select class="f" id="eArea">' + D.areas.map(a => '<option value="' + a.id + '"' + (a.id === e.area_id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>') +
     campo('En nómina', seg('eNomina', e.en_nomina ? '1' : '0', [['1', 'Sí'], ['0', 'No']])) + '</div>' +
-    campo('Puesto (oficial)', '<input class="f" id="ePuesto" value="' + esc(e.puesto || '') + '">'),
-    tipAyuda('El puesto va en el PDF debajo del nombre. El área define a qué bandeja llegan sus solicitudes. “En nómina” decide si su PDF lleva logo.'));
+    campo('Puesto (oficial)', '<input class="f" id="ePuesto" value="' + esc(e.puesto || '') + '">') +
+    (D.empleados.some(x => 'fecha_ingreso' in x) ? '<div class="g2">' + campo('Fecha de ingreso', '<input class="f" type="date" id="eIngreso" value="' + (e.fecha_ingreso || '') + '">') +
+      campo('Lleva vacaciones', seg('eVac', e.lleva_vacaciones === false ? '0' : '1', [['1', 'Sí'], ['0', 'No']])) + '</div>' : ''),
+    tipAyuda('El puesto va en el PDF debajo del nombre. El área define a qué bandeja llegan sus solicitudes. “En nómina” decide si su PDF lleva logo. La fecha de ingreso define su antigüedad y sus días de vacaciones.'));
 
   h += sec('Quién valida y quién firma',
     '<div class="g2">' + campo('Valida', '<select class="f" id="eValida">' + optGente(e.valida_id) + '</select>') +
@@ -1041,6 +1075,7 @@ async function guardarPersona(id, nombreOk){
     jornada: $('eJornada').value, en_nomina: $('eNomina').value === '1', activo: $('eActivo').checked,
     nombre_revisado: nombreOk()
   };
+  if ($('eIngreso')){ datos.fecha_ingreso = $('eIngreso').value || null; datos.lleva_vacaciones = $('eVac').value === '1'; }
   if (soyAdmin()) datos.roles = ['empleado', ...[...$('panel').querySelectorAll('[data-rol]')].filter(c => c.checked).map(c => c.dataset.rol)];
   if (!datos.nombre_oficial) return toast('Falta el nombre.', true);
   if (!/^[A-ZÑ]{2,6}\d?$/.test(datos.iniciales)) return toast('Las iniciales van en mayúsculas, de 2 a 6 letras (puede llevar un número al final).', true);
@@ -1261,5 +1296,6 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catc
 <script src="js/banco.js"></script>
 <script src="js/pdf.js"></script>
 <script src="js/documentos.js"></script>
+<script src="js/vacaciones.js"></script>
 </body>
 </html>

@@ -9,3 +9,5 @@
 - `ui.js` (Fase 5 completa), `inicio.js` (Inicio y Ver como), `pin.js` (PIN temporal), `sesion.js` (Recordarme), `rueda.js`.
   Necesitan supabase-js 2.45.4 y pdf-lib 1.17.1 locales (npm pack) porque jsdelivr está bloqueado en la sesión.
 - `prueba010*.sql`: pruebas SQL de bitácoras, Storage y documentos.
+- `prueba012.sql`: pruebas SQL de vacaciones (días hábiles, ley, año laboral, préstamo, excepción, descuento al aprobar Laura, -R1, avisos, quién ve qué, pruebas). Corre en transacción y deja todo igual. Debe decir "TODAS LAS PRUEBAS 012 PASARON".
+- `vacaciones.js`: navegador, flujo completo de vacaciones (Omar, Karla, Laura, Gaby) en 1366 y 390 px. Necesita la base recién armada + 010, 011, 012 y PINs (también a OPC y KYGS). sbfake.js ahora entiende gte/lte/gt/lt.

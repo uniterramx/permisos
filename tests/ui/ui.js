@@ -25,7 +25,7 @@ async function pagina(browser, ini, ancho){
     const f = path.join(REPO, p);
     return fs.existsSync(f) ? r.fulfill({ path: f, contentType: MIME[path.extname(f)] || 'application/octet-stream' }) : r.fulfill({ status: 404, body: '' });
   });
-  await ctx.addInitScript(([k, v]) => { localStorage.setItem(k, v); localStorage.setItem('ut_vercomo', 'todo'); }, ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(subDe(ini))]);
+  await ctx.addInitScript(([k, v]) => { localStorage.setItem(k, v); localStorage.setItem('ut_vercomo', 'todo'); localStorage.setItem('ut_recordarme', '1'); }, ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(subDe(ini))]);
   await page.goto('http://ut.local/');
   await page.waitForSelector('#app:not(.oculto)', { timeout: 15000 });
   return { page, ctx };

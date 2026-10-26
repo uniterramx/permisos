@@ -33,6 +33,7 @@ function rest(table, params){
     else if (op === 'is') where.push('t.' + k + ' is ' + (val === 'null' ? 'null' : val));
     else if (op === 'in') where.push('t.' + k + '::text in (' + val.replace(/^\(|\)$/g, '').split(',').map(x => lit(x.replace(/^"|"$/g, ''))).join(',') + ')');
     else if (op === 'neq') where.push('t.' + k + '::text <> ' + lit(val));
+    else if (['gte', 'lte', 'gt', 'lt'].includes(op)) where.push('t.' + k + ' ' + { gte: '>=', lte: '<=', gt: '>', lt: '<' }[op] + ' ' + lit(val));
     else throw new Error('filtro no soportado ' + k + '=' + v);
   }
   return 'select coalesce(json_agg(r), \'[]\') from (select ' + cols(params.get('select')) + ' from public.' + table + ' t' +

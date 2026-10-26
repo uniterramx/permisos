@@ -13,7 +13,7 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.png': 'image/pn
     await ctx.route('https://fonts.**/**', r => r.abort());
     await ctx.route('https://tnlgwfrseajntindzofg.supabase.co/**', F.manejar);
     await ctx.route('http://ut.local/**', r => { const p = new URL(r.request().url()).pathname.replace(/^\//, '') || 'index.html'; const f = path.join(REPO, p); return fs.existsSync(f) ? r.fulfill({ path: f, contentType: MIME[path.extname(f)] || 'application/octet-stream' }) : r.fulfill({ status: 404, body: '' }); });
-    await ctx.addInitScript(([k, v]) => localStorage.setItem(k, v), ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(sub)]);
+    await ctx.addInitScript(([k, v]) => { localStorage.setItem(k, v); localStorage.setItem('ut_recordarme', '1'); }, ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(sub)]);
     await page.goto('http://ut.local/#nueva'); await page.waitForSelector('[data-tipo="llegada"]');
     await page.click('[data-tipo="llegada"]');
     for (let i = 0; i < 5 && !(await page.locator('#wHora').count()); i++){ await page.click('#wSig'); await page.waitForTimeout(200); }

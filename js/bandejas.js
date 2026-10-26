@@ -131,7 +131,7 @@ function pintarBandeja(){
   if (!st){ $('vista').innerHTML = '<div class="vacio">No tienes bandeja en esta vista.</div>'; return; }
   const todas = filasEtapa(st);
   const cnt = k => todas.filter(s => categoria(s, st) === k).length;
-  let h = '<div class="titulo"><h2>Mi bandeja</h2><div class="sub">' + TAB_SUB[st] + '</div></div>';
+  let h = '<div class="titulo"><h2>Mi bandeja</h2><div class="sub">' + TAB_SUB[st] + '</div></div>' + (ets.includes('laura') ? '<div id="bVac"></div>' : '');
   if (ets.length > 1) h += '<div class="btabs" role="tablist">' + ets.map(e => { const n = pendMias(e).length;
     return '<button type="button" role="tab" class="btab' + (e === st ? ' on' : '') + '" data-tab="' + e + '">' + TAB_TXT[e] + (n ? '<em>' + n + '</em>' : '') + '</button>'; }).join('') + '</div>';
   const tarj = [['tot', 'Total', todas.length, 'var(--cafe)'], ['apr', 'Aprobadas', cnt('apr'), 'var(--ok)'], ['pend', 'Pendientes', cnt('pend'), 'var(--rev)'],
@@ -150,6 +150,7 @@ function pintarBandeja(){
   $('vista').querySelectorAll('[data-filtro]').forEach(b => b.onclick = () => { B.filtro = b.dataset.filtro; B.conf = false; pintarBandeja(); });
   $('bBuscar').oninput = e => { B.buscar = e.target.value; B.conf = false; filasBandeja(); };
   filasBandeja();
+  pintarBannerVac().catch(() => {});
 }
 
 function filasVisibles(){
@@ -238,6 +239,7 @@ function abrirDetalle(id, st, lista){
     fila('Horas al banco', +s.horas_calculadas ? horasTxt(s) + (s.mueve === 'no' ? ' <span class="peq">(no mueve banco)</span>' : '') : '') +
     fila('Proyecto', esc(proyTxt(s))) + fila('Motivo / detalle', esc(detalleTxt(s))) + fila('Verificación', esc(s.verificacion || '')) +
     fila('Recibida', cuando(s.recibido_at) + (s.capturado_por && s.capturado_por !== s.empleado_id ? ' · capturó ' + esc(nombreCorto(empPorId(s.capturado_por))) : '')) + '</section>';
+  if (s.tipo === 'ausencia' && s.justificacion === 'vacaciones') h += '<section class="fsec" id="dVac"><div class="ayuda">Cargando vacaciones…</div></section>';
   if (s.mueve !== 'no') h += '<section class="fsec" id="dBanco"><div class="ayuda">Cargando banco…</div></section>';
   h += '<section class="fsec"><div class="fst">Redacción para el formato<span class="esp"></span>' + (editable && !B.editRed ? '<button class="lnk" type="button" id="dEditRed">Editar</button>' : '') + '</div>' +
     (B.editRed && editable
@@ -270,6 +272,7 @@ function abrirDetalle(id, st, lista){
   $('panel').classList.remove('oculto'); $('vista').classList.add('con-panel');
   $('dX').onclick = cerrarDetalle;
   if ($('dPDF')) $('dPDF').onclick = () => descargarSolicitud(id, $('dPDF'));
+  if ($('dVac')) pintarVacDetalle(s).catch(() => {});
   if ($('dBanco')) pintarBancoDetalle(s, st, async () => { try { B.sol = await cargarSolicitudes(); } catch (err){} if ($('bFilas')) filasBandeja(); abrirDetalle(id, st); });
   const re = () => abrirDetalle(id, st, lista);
   if ($('dEditRed')) $('dEditRed').onclick = () => { B.editRed = true; re(); };
@@ -472,16 +475,17 @@ async function pintarExtrasInicio(){
     if (yo.simulado){  // la funcion de la base cuenta con TU sesion: aqui se cuenta con las reglas de esa persona
       const sol = await cargarSolicitudes();
       data = Object.fromEntries(misEtapas().map(st => [st, sol.filter(s => !s.corregida_por && s.estado_global === ESPERA[st] && tocaDecidir(s, st)).length]));
+      if (misEtapas().includes('laura')) data.vac = await contarVacPorAprobar();
     } else {
       const r = await sb.rpc('contar_pendientes');
       if (r.error) $('decT').textContent = faltaSQL007(r.error) ? 'falta el SQL 007' : 'No pude contar';
       data = r.data;
     }
     if (data && $('decN')){
-      const ets = misEtapas(), tot = ets.reduce((a, e) => a + (data[e] || 0), 0);
+      const ets = misEtapas(), vac = ets.includes('laura') ? +(data.vac || 0) : 0, tot = ets.reduce((a, e) => a + (data[e] || 0), 0) + vac;
       $('decN').textContent = tot;
       $('decT').textContent = tot ? (tot === 1 ? 'solicitud espera tu decisión' : 'solicitudes esperan tu decisión') : 'Nada pendiente 🎉';
-      $('decChips').innerHTML = ets.map(e => '<i>' + { jefe: 'Jefe', gaby: 'Gaby', laura: 'Laura' }[e] + ' ' + (data[e] || 0) + '</i>').join('');
+      $('decChips').innerHTML = ets.map(e => '<i>' + { jefe: 'Jefe', gaby: 'Gaby', laura: 'Laura' }[e] + ' ' + (data[e] || 0) + '</i>').join('') + (vac ? '<i>🌴 Vacaciones ' + vac + '</i>' : '');
     }
   }
   const caja = $('avisosInicio');

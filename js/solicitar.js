@@ -50,7 +50,7 @@ function pasos(){
   p.push('tipo');
   switch (W.tipo){
     case 'llegada': case 'salida_anticipada': p.push('fecha', 'hora', 'just', 'detalles'); break;
-    case 'ausencia': p.push('fecha', 'ultimo', 'just', 'detalles'); break;
+    case 'ausencia': p.push('fecha', 'ultimo', 'just'); if (vacEnFormato()) p.push('vac'); p.push('detalles'); break;
     case 'horas_extras': p.push('fecha', 'rango', 'proyecto', 'detalles'); break;
     case 'cambio_horario': p.push('fecha', 'rango', 'motivo', 'detalles'); break;
     case 'omision_checado': p.push('fecha', 'checar', 'detalles'); break;
@@ -115,6 +115,10 @@ const redondea5 = t => { const m = Calc.aMin(t); const r = Math.round(m / 5) * 5
 function vistaNueva(){
   W = nuevoW(); paso = 0;
   if (atajoTipo){ W.tipo = atajoTipo; atajoTipo = null; paso = pasos().indexOf('tipo') + 1; }  // atajo del Inicio
+  if (atajoVac){  // "Hacer formato" de unas vacaciones apartadas: ya va con fechas y justificacion
+    Object.assign(W, { tipo: 'ausencia', fecha_inicio: atajoVac.ini, fecha_fin: atajoVac.fin, justificacion: 'vacaciones', vac_pedido: atajoVac.id });
+    atajoVac = null; paso = pasos().indexOf('fecha');
+  }
   pintarPaso();
 }
 
@@ -174,6 +178,7 @@ function resumenFilas(){
     if (['horas_extras', 'cambio_horario', 'reposicion'].includes(W.tipo)) h += fila('Horas', hhmm(W.hora_ref) + ' a ' + hhmm(W.hora_fin));
     if (W.tipo === 'ausencia') h += fila('Tiempo', Calc.fmtDuracion(r.minutosReales || 0) + ' de jornada');
     if (W.justificacion) h += fila('Justificación', esc(JUST_TXT[W.justificacion]));
+    if (vacEnFormato() && W.vacPrev) h += fila('Vacaciones', vacTxtFormato());
     if (!conJust(W.tipo) || W.justificacion) h += fila('Banco de horas', bancoTxt(r));
   } else if (W.justificacion) h += fila('Justificación', esc(JUST_TXT[W.justificacion]));
   return h || '<div class="peq">Aquí vas a ver tu horario, qué afecta y cuántas horas se mueven.</div>';
@@ -230,6 +235,7 @@ const PAGINAS = {
   proyecto: () => preg('¿En qué proyecto trabajaste?') + '<select class="f" id="wProy"><option value="">Elige un proyecto…</option>' +
     D.proyectos.filter(p => p.activo).map(p => '<option value="' + p.id + '"' + (p.id === W.proyecto_id ? ' selected' : '') + '>' + esc(p.nombre_corto) + '</option>').join('') + '</select>',
   checar: () => preg('¿Qué olvidaste checar?') + chips(CHECAR, W.que_checar, 'checar'),
+  vac: () => paginaVac(),
   motivo: () => preg('¿Por qué recorriste tu jornada?', 'Va en tu formato oficial.') + '<textarea class="f ta" id="wMotivo" rows="3" placeholder="Ej. Entrega de proyecto en la tarde">' + esc(W.motivo_cambio) + '</textarea>',
   detalles: () => {
     let h = preg('Detalles', 'Solo lo que aplica a tu caso.');
@@ -256,6 +262,7 @@ const PAGINAS = {
     if (W.justificacion) h += fila('Justificación', esc(JUST_TXT[W.justificacion]) + (W.etiqueta_banco ? ' · “' + esc(W.etiqueta_banco) + '”' : ''), 'just');
     if (W.que_checar) h += fila('Qué olvidó', esc(Object.fromEntries(CHECAR)[W.que_checar]), 'checar');
     if (W.razon_real) h += fila('Razón real 🔒', esc(W.razon_real), 'detalles');
+    if (vacEnFormato()) h += fila('Vacaciones', W.vacPrev ? vacTxtFormato() + ' <span class="peq">(se descuentan al aprobar Laura)</span>' : '—', 'vac');
     h += fila('Banco de horas', bancoTxt(r));
     if (r.verificacion) h += fila('Verificación', esc(r.verificacion.texto));
     h += '</div><div class="peq" style="margin-top:12px">Texto que irá en tu formato:</div><div class="red">' + esc(r.redaccion) + '</div>';
@@ -284,16 +291,17 @@ const ENLACES = {
     siguiente();
   }),
   fecha: () => { const nota = () => { const of = ofDia(); $('wFechaNota').textContent = !W.fecha_inicio ? '' : of ? 'Tu horario ese día: ' + hhmm(of.entrada) + ' a ' + hhmm(of.salida) + (of.respaldo ? ' (no tienes horario registrado; se usa 9:00 a 14:00 — avísale a Gaby)' : '') : 'Ese día no tienes horario oficial (fin de semana o día que no trabajas).'; };
-    $('wFecha').onchange = () => { W.fecha_inicio = $('wFecha').value; if (W.fecha_fin && W.fecha_fin < W.fecha_inicio) W.fecha_fin = W.fecha_inicio; W.hora_ref = W.tipo === 'llegada' || W.tipo === 'salida_anticipada' ? null : W.hora_ref; nota(); refrescarResumen(); }; nota(); },
-  ultimo: () => $('wUltimo').onchange = () => { W.fecha_fin = $('wUltimo').value; refrescarResumen(); },
+    $('wFecha').onchange = () => { W.fecha_inicio = $('wFecha').value; W.vacPrev = null; if (W.fecha_fin && W.fecha_fin < W.fecha_inicio) W.fecha_fin = W.fecha_inicio; W.hora_ref = W.tipo === 'llegada' || W.tipo === 'salida_anticipada' ? null : W.hora_ref; nota(); refrescarResumen(); }; nota(); },
+  ultimo: () => $('wUltimo').onchange = () => { W.fecha_fin = $('wUltimo').value; W.vacPrev = null; refrescarResumen(); },
   hora: () => $('wHora').onchange = () => { W.hora_ref = $('wHora').value; refrescarResumen(); },
   rango: () => { const nota = () => { const d = Calc.duracion(W.hora_ref, W.hora_fin); $('wRangoNota').textContent = Calc.aMin(W.hora_fin) <= Calc.aMin(W.hora_ref) ? 'Termina al día siguiente (' + Calc.fmtDuracion(d) + ').' : Calc.fmtDuracion(d) + ' en total.'; };
     $('wIni').onchange = () => { W.hora_ref = $('wIni').value; nota(); refrescarResumen(); };
     $('wFin').onchange = () => { W.hora_fin = $('wFin').value; nota(); refrescarResumen(); };
     W.hora_ref = $('wIni').value; W.hora_fin = $('wFin').value; nota(); refrescarResumen(); },
-  just: () => $('vista').querySelectorAll('[data-just]').forEach(b => b.onclick = () => { W.justificacion = b.dataset.just; siguiente(); }),
+  just: () => $('vista').querySelectorAll('[data-just]').forEach(b => b.onclick = () => { if (W.justificacion !== b.dataset.just) W.vacPrev = null; W.justificacion = b.dataset.just; siguiente(); }),
   proyecto: () => $('wProy').onchange = () => { W.proyecto_id = $('wProy').value; refrescarResumen(); },
   checar: () => $('vista').querySelectorAll('[data-checar]').forEach(b => b.onclick = () => { W.que_checar = b.dataset.checar; siguiente(); }),
+  vac: () => { enlaceVac().catch(err => { if ($('wVacAp')) $('wVacAp').innerHTML = '<span class="vneg">' + esc(errVac(err)) + '</span>'; }); },
   motivo: () => $('wMotivo').oninput = () => { W.motivo_cambio = $('wMotivo').value; },
   detalles: () => {
     if ($('wCom')) $('wCom').onchange = () => { W.comision_sel = $('wCom').value; $('wComOtro').classList.toggle('oculto', W.comision_sel !== 'otro'); };
@@ -314,6 +322,7 @@ const ENLACES = {
 function resetDatos(){
   Object.assign(W, { fecha_fin: null, hora_ref: null, hora_fin: null, justificacion: null, proyecto_id: '', comision_sel: '', comision_otro: '',
     que_checar: null, texto_oficial: '', etiqueta_banco: '', motivo_cambio: '', confirmo: false });
+  delete W.vac_pedido; W.vacPrev = null; W.vacExc = null;
 }
 
 /* ---- Validaciones por pagina ---- */
@@ -327,6 +336,7 @@ const VALIDA = {
   just: () => !W.justificacion ? 'Elige la justificación.' : null,
   proyecto: () => !W.proyecto_id ? 'Elige el proyecto.' : null,
   checar: () => !W.que_checar ? 'Elige qué olvidaste checar.' : null,
+  vac: () => validaVac(),
   motivo: () => !W.motivo_cambio.trim() ? 'Escribe el motivo; es obligatorio y va en tu formato.' : null,
   detalles: () => ['asunto_personal', 'otro'].includes(W.justificacion) && !W.texto_oficial.trim() ? 'Escribe la redacción para el formato.'
     : W.comision_sel === 'otro' && !W.comision_otro.trim() ? 'Escribe el proyecto o cliente.' : null
@@ -346,10 +356,13 @@ async function enviar(){
     mueve: r.mueve, horas_calculadas: r.horas, calculo: r.calculo, horario_oficial: of ? hhmm(of.entrada) + '-' + hhmm(of.salida) : null,
     redaccion: r.redaccion, es_prueba: soyAdmin() && W.es_prueba
   };
+  const conVac = vacEnFormato();
+  if (conVac){ const ev = validaVac(); if (ev) return aviso($('wMsg'), ev); }
   $('wEnviar').disabled = true; aviso($('wMsg'), '');
-  const { data, error } = await sb.rpc('crear_solicitud', { p });
+  const { data, error } = conVac ? await sb.rpc('crear_solicitud_vac', { p, v: datosVacFormato() }) : await sb.rpc('crear_solicitud', { p });
   if (error){
     $('wEnviar').disabled = false;
+    if (conVac) return aviso($('wMsg'), 'No se pudo enviar: ' + errVac(error));
     return aviso($('wMsg'), /crear_solicitud|PGRST202|schema cache/i.test(error.message + error.code) ? 'Falta correr el SQL 006 en Supabase.' : 'No se pudo enviar: ' + error.message);
   }
   pintarListo(data);
@@ -373,7 +386,7 @@ function pintarListo(d){
 /* ================= Mis solicitudes ================= */
 async function vistaMias(){
   $('vista').innerHTML = '<div class="titulo"><h2>Mis solicitudes</h2><div class="sub">Las que pediste tú (y las que alguien capturó a tu nombre).</div></div><div class="carga">Cargando…</div>';
-  const { data, error } = await sb.from('solicitudes').select('id,folio,recibido_at,tipo,justificacion,fecha_inicio,fecha_fin,hora_ref,hora_fin,estado_global,etapa,mueve,horas_calculadas,redaccion,verificacion,es_prueba,capturado_por,empleado_id,corregida_por,congelada,decisiones(*)')
+  const { data, error } = await sb.from('solicitudes').select('id,folio,recibido_at,tipo,justificacion,fecha_inicio,fecha_fin,hora_ref,hora_fin,estado_global,etapa,mueve,horas_calculadas,redaccion,verificacion,es_prueba,capturado_por,empleado_id,corregida_por,congelada,vac_dias,decisiones(*)')
     .eq('empleado_id', yo.id).order('recibido_at', { ascending: false }).limit(200);
   if (error){ $('vista').querySelector('.carga').textContent = /solicitudes|PGRST/i.test(error.message) ? 'Falta correr el SQL 006 en Supabase.' : 'No pude cargar: ' + error.message; return; }
   const filas = (data || []).filter(s => veSim(s, s.empleado_id)).map(s => { const e = ESTADOS[s.estado_global] || [s.estado_global, '#eee', '#555'];
@@ -401,7 +414,8 @@ function verSolicitud(s){
     fila('Horas', s.hora_ref ? hhmm(s.hora_ref) + (s.hora_fin ? ' a ' + hhmm(s.hora_fin) : '') : '') +
     fila('Justificación', s.justificacion ? esc(JUST_TXT[s.justificacion]) : '') +
     fila('Banco', s.mueve !== 'no' && +s.horas_calculadas ? bancoTxt({ mueve: s.mueve, horas: +s.horas_calculadas }, true) + ' <span class="peq">(se aplica al aprobar tu jefe)</span>' : '') +
-    fila('Verificación', esc(s.verificacion || '')) + '</div>' +
+    fila('Verificación', esc(s.verificacion || '')) +
+    fila('Vacaciones', s.justificacion === 'vacaciones' && s.vac_dias ? nDias(s.vac_dias) + ' <span class="peq">(' + (s.congelada ? 'ya se descontaron' : 'se descuentan al aprobar Laura') + ')</span>' : '') + '</div>' +
     (pedido ? '<div class="alerta">' + esc(pedido.quien) + ' pidió: “' + esc(pedido.com) + '”</div>' : '') +
     '<div class="peq" style="margin-top:12px">Texto de tu formato:</div><div class="red">' + esc(s.redaccion) + '</div>' +
     (s.congelada ? '<button class="btn" type="button" id="mPDF" style="margin-top:16px">📄 Descargar PDF</button>' : '') +

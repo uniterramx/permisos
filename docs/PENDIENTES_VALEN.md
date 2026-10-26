@@ -62,3 +62,12 @@
 - [x] Preguntarle qué días cuentan (horario / L–V / naturales, festivos) y si lo no tomado se acumula o se pierde.
 - [ ] Preguntarle qué son los negativos de jul-2026 en su Excel (Max −18, Wario −17, Laura −1, Teo −1).
 - [ ] Pasarle a Claude lo que conteste.
+
+## 9. v0.8.0 · Vacaciones (en la compu)
+- [ ] Correr `sql/012_vacaciones.sql` (SQL Editor → New query → pegar completo → Run). Al final: "si", "si", "si", "true".
+- [ ] Recargar con Ctrl+Shift+R → abajo **v0.8.0 · Vacaciones**.
+- [ ] Personas → tu ficha → "Fecha de ingreso" (16/02/2026) → Guardar. (A los demás se las captura Gaby con su Excel.)
+- [ ] Inicio → 🌴 Vacaciones → pedir unas de PRUEBA → aprobarlas en Vacaciones por aprobar → hacer el formato de "Falté" (A cuenta de vacaciones) de PRUEBA → aprobarlo hasta Laura → ver el descuento en Mis vacaciones.
+- [ ] Administración → 📅 Festivos: cargar la lista de festivos (cuando la tengas).
+- [ ] Al terminar: 🧪 Pruebas → Borrar (también borra vacaciones de prueba).
+- [ ] Pendiente de Gaby: Excel de vacaciones cuadrado con el registro de Andrés → se captura como "Saldo de arranque" de cada quien (Vacaciones de todos → persona → Saldo de arranque).

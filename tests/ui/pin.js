@@ -11,7 +11,7 @@ let fallas = 0; const ok = (c, t) => { console.log((c ? 'OK   ' : 'FALLA') + ' '
   await ctx.route('https://fonts.**/**', r => r.abort());
   await ctx.route('https://tnlgwfrseajntindzofg.supabase.co/**', F.manejar);
   await ctx.route('http://ut.local/**', r => { const p = new URL(r.request().url()).pathname.replace(/^\//, '') || 'index.html'; const f = path.join(REPO, p); return fs.existsSync(f) ? r.fulfill({ path: f, contentType: MIME[path.extname(f)] || 'application/octet-stream' }) : r.fulfill({ status: 404, body: '' }); });
-  await ctx.addInitScript(([k, v]) => { localStorage.setItem(k, v); localStorage.setItem('ut_vercomo', 'todo'); }, ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(sub('VMM'))]);
+  await ctx.addInitScript(([k, v]) => { localStorage.setItem(k, v); localStorage.setItem('ut_vercomo', 'todo'); localStorage.setItem('ut_recordarme', '1'); }, ['sb-tnlgwfrseajntindzofg-auth-token', F.sesion(sub('VMM'))]);
   const abrir = async () => { await page.goto('http://ut.local/#personas'); await page.waitForTimeout(800); await page.evaluate(id => abrirPersona(id), gid); await page.waitForSelector('.pinest'); return page.locator('.pinest').innerText(); };
   ok(/sin PIN/.test(await abrir()) && await page.locator('#ePinTemp').isVisible(), 'Sin PIN: muestra "sin PIN" y el botón');
   const pin = await page.inputValue('#eTemp'); await page.click('#ePinTemp'); await page.waitForTimeout(1200);
