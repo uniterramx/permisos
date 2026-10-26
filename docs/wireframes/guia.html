@@ -42,7 +42,13 @@ h1{font-size:24px;margin:20px 0 2px;font-weight:700}
 .tema summary em{font-style:normal;color:var(--sub);transition:transform .15s}.tema[open] summary em{transform:rotate(90deg)}
 .tema[open] summary{border-bottom:1px solid var(--linea);background:var(--alt)}
 ol{margin:0;padding:12px 16px 14px 40px;font-size:13.5px;line-height:1.55}
-ol li{margin:0 0 8px;padding-left:4px}ol li::marker{font-weight:700;color:var(--verde)}
+ol li{margin:0 0 8px;padding-left:4px}
+.pq{border:1px solid #a9d6b6;background:#f3faf5;color:var(--verde);border-radius:12px;font-size:12px;font-weight:600;padding:2px 10px;margin-left:4px;min-height:26px}
+.velo{position:fixed;inset:0;background:rgba(60,50,40,.35);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.pop{background:#fff;border-radius:14px;max-width:440px;width:100%;padding:18px 18px 16px;box-shadow:0 10px 40px rgba(0,0,0,.2);font-size:13.5px;line-height:1.55}
+.pop h3{margin:0 0 8px;font-size:16px;font-weight:700}.pop p{margin:0 0 10px}
+.pop .dos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 12px}.pop .dos div{background:var(--alt);border-radius:10px;padding:9px 10px;font-size:12.5px}
+.pop button{height:40px;border:0;border-radius:10px;background:var(--cafe);color:#fff;font-weight:600;padding:0 18px;font-size:14px}ol li::marker{font-weight:700;color:var(--verde)}
 .donde{display:inline-block;font-size:11px;background:var(--verde-f);color:var(--verde);border-radius:9px;padding:1px 8px;font-weight:600;white-space:nowrap}
 .ojo{margin:0 14px 14px;background:#fef6e4;border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.5;color:#8a6d1e}
 .ver{text-align:center;font-size:11px;color:#c4bdb1;margin-top:22px}
@@ -76,12 +82,14 @@ const GUIA = {
       'En el Inicio toca ' + D('＋ Nueva solicitud') + ' o un atajo (Llegué tarde, Falté…).',
       'Contesta una pregunta por página y dale Siguiente. A un lado ves “Lo que llevas”: tu horario y cuántas horas se mueven.',
       'Al final revisa, marca “Confirmo que la información es verídica” y Enviar.',
-      'Te da un folio (F-TUS INICIALES-2026-0001). Pasa con tu jefe, luego con Gaby y al final con Laura.'],
+      'Te da un folio (F-TUS INICIALES-2026-0001). <b>Listo: ya no tienes que hacer nada más.</b> Solo se mueve de tu jefe a Gaby y al final a Laura.',
+      'Solo vuelves a entrar si te piden cambios (te sale un aviso naranja en el Inicio) o para descargar tu PDF cuando Laura la apruebe.'],
       'Una solicitud por cada cosa: si el mismo día llegaste tarde y saliste antes, son dos.'],
-    ['📂', 'Ver cómo va', 'estado y PDF', [
+    ['📂', 'Ver cómo va la solicitud', 'estado y PDF', [
       'Entra a ' + D('Mis solicitudes') + ': ahí ves si espera a tu jefe, a Gaby o a Laura.',
       'Cuando Laura la aprueba ya puedes descargar el PDF.',
-      'Imprímelo, fírmalo y entrégalo como siempre.']],
+      'Imprímelo, fírmalo y entrégalo como siempre.',
+      'Si te piden el formato en papel llenado a mano, usa el PDF como base: ya trae todo escrito como debe ir.']],
     ['✏️', 'Si te piden cambios', 'corregir una solicitud', [
       'Te sale un aviso naranja en el Inicio con lo que te pidieron.',
       'Toca Corregir (o ' + D('Corregir una solicitud') + ') y cambia solo lo que te pidieron.',
@@ -90,7 +98,7 @@ const GUIA = {
     ['⏱️', 'Tu banco de horas', 'saldo, movimientos y bitácora', [
       'Entra a ' + D('Mi banco de horas') + ': tu saldo en verde (a favor) o rojo (debes).',
       'Las horas extras se suman cuando las aprueba tu jefe; el “Uso de horas acumuladas” las resta.',
-      'La reposición va aparte: ahí ves lo que debes reponer y lo que ya repusiste.',
+      'La reposición va aparte: ahí ves lo que debes reponer y lo que ya repusiste. <button class="pq" type="button" data-pq="rep">¿Por qué aparte?</button>',
       'Cada 15 movimientos se cierra tu bitácora y Gaby te la da a firmar.']],
     ['🌴', 'Vacaciones', 'pedirlas y el formato', [
       '<b>Antes:</b> toca el atajo ' + D('🌴 Vacaciones') + ', pon desde y hasta, y envíalas. Van directo a Laura (con tu jefe lo hablas en persona).',
@@ -166,6 +174,12 @@ const GUIA = {
   ]]
 };
 const ROLES = { empleado: ['empleado'], jefe: ['empleado', 'jefe'], gaby: ['empleado', 'gaby'], laura: ['empleado', 'jefe', 'laura'] };
+const POPS = {
+  rep: '<h3>¿Por qué son cosas distintas?</h3><div class="dos">' +
+    '<div><b>⏱️ Banco de horas</b><br>Son horas extra que trabajaste para tener <b>tiempo libre</b> cuando lo necesites. Siempre está en 0 o a tu favor.</div>' +
+    '<div><b>↩️ Reposición</b><br>Cuando faltas por algo y quedas <b>debiendo</b> esas horas. Está en 0 o en negativo, y se paga trabajándolas.</div></div>' +
+    '<p><b>Te conviene:</b> si faltas y eliges reponer, no gastas tus horas extra ganadas; las sigues teniendo para cuando las quieras usar.</p>'
+};
 let rol = 'empleado', ancho = 'compu', tab = 'empleado', abierto = 0, q = '';
 const sinA = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 function pintar(){
@@ -185,6 +199,8 @@ function pintar(){
   });
   h += '<div class="ver">v0.9.0 · propuesta</div></div>';
   m.innerHTML = h;
+  m.querySelectorAll('[data-pq]').forEach(b => b.onclick = e => { e.preventDefault(); const v = document.createElement('div'); v.className = 'velo';
+    v.innerHTML = '<div class="pop">' + POPS[b.dataset.pq] + '<button type="button">Entendido</button></div>'; v.onclick = ev => { if (ev.target === v || ev.target.tagName === 'BUTTON') v.remove(); }; document.body.appendChild(v); });
   m.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { tab = b.dataset.t; abierto = 0; pintar(); });
   const b = document.getElementById('gB'); b.oninput = () => { q = b.value; pintar(); const n = document.getElementById('gB'); n.focus(); n.setSelectionRange(q.length, q.length); };
   m.querySelectorAll('details.tema').forEach(d => d.addEventListener('toggle', () => { if (d.open && !q){ abierto = +d.dataset.i; m.querySelectorAll('details.tema').forEach(o => { if (o !== d) o.open = false; }); } }));
