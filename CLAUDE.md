@@ -29,7 +29,7 @@ de horas + bitácora**. Ahora se migra TODO a una **web app propia**.
 | Firmas | **Imprimir y firmar a mano** (como hoy). El sistema genera el PDF; no hay firma digital |
 | Avisos | **Contador de pendientes dentro de la app** + **Pushover opcional** para quien lo instale (cada quien guarda su user key en su perfil) |
 | Arranque | **Solo se migra lo BASE** (catálogos: áreas, empleados, jefes, horarios, proyectos). Las solicitudes, decisiones y PDFs viejos **NO** se migran (decisión 21-oct, cambia la anterior de "migrar todo"). El sistema viejo está sin uso desde ago-2026; la app nueva arranca limpia para presentársela a Laura |
-| Repo | `uniterramx/permisos` (organización de Valen; antes `uniterramx/permisos`, transferido 26-oct), **público** (requisito de GitHub Pages gratis; los datos viven en Supabase) |
+| Repo | `uniterramx/permisos` (organización de Valen; antes `vmmterminus-star/uniterra-permisos`, transferido 26-oct), **público** (requisito de GitHub Pages gratis; los datos viven en Supabase) |
 
 ## 3. Quién es Valen y cómo trabajar con ella (OBLIGATORIO)
 
