@@ -33,13 +33,15 @@ async function cargarSolicitudes(soloMias){
   if (soloMias) q = q.eq('empleado_id', yo.id);
   const { data, error } = await q;
   if (error) throw error;
-  return (data || []).map(s => ({ ...s, d: Object.fromEntries((s.decisiones || []).map(x => [x.etapa, x])) }));
+  return (data || []).filter(s => veSim(s, s.empleado_id, s.area_id)).map(s => ({ ...s, d: Object.fromEntries((s.decisiones || []).map(x => [x.etapa, x])) }));
 }
 
 /* ================= Quien decide que (espejo de puedo_decidir del SQL 007) ================= */
 const yoEmp = () => empPorId(yo.id) || {};
 const misAreasJefe = () => D.jefes.filter(j => j.jefe_id === yo.id).map(j => j.area_id);
-function puedeDecidir(s, st){
+// tocaDecidir: le toca en esa etapa · puedeDecidir: ademas puede apretar el boton (no en modo "Ver como" persona)
+const puedeDecidir = (s, st) => !yo.simulado && tocaDecidir(s, st);
+function tocaDecidir(s, st){
   if (s.es_prueba) return soyAdmin();
   if (yoEmp().decide_solo_pruebas) return false;
   if (st === 'jefe') return misAreasJefe().includes(s.area_id);
@@ -65,7 +67,7 @@ function filasEtapa(st){
 }
 const esPend = (s, st) => !s.corregida_por && s.estado_global === ESPERA[st];
 const decDe = (s, st) => s.d[st]?.decision || 'no_aplica';
-const pendMias = st => filasEtapa(st).filter(s => esPend(s, st) && puedeDecidir(s, st));
+const pendMias = st => filasEtapa(st).filter(s => esPend(s, st) && tocaDecidir(s, st));
 function categoria(s, st){
   if (s.corregida_por) return 'apr';
   if (esPend(s, st)) return 'pend';
@@ -465,21 +467,30 @@ function pintarCorregir(){
 
 /* ================= Inicio: contador y avisos ================= */
 async function pintarExtrasInicio(){
-  const card = $('vista').querySelector('[data-ir="bandeja"]');
-  if (card){
-    const { data, error } = await sb.rpc('contar_pendientes');
-    if (!error && data){
+  if ($('decN')){
+    let data = null;
+    if (yo.simulado){  // la funcion de la base cuenta con TU sesion: aqui se cuenta con las reglas de esa persona
+      const sol = await cargarSolicitudes();
+      data = Object.fromEntries(misEtapas().map(st => [st, sol.filter(s => !s.corregida_por && s.estado_global === ESPERA[st] && tocaDecidir(s, st)).length]));
+    } else {
+      const r = await sb.rpc('contar_pendientes');
+      if (r.error) $('decT').textContent = faltaSQL007(r.error) ? 'falta el SQL 007' : 'No pude contar';
+      data = r.data;
+    }
+    if (data && $('decN')){
       const ets = misEtapas(), tot = ets.reduce((a, e) => a + (data[e] || 0), 0);
-      card.querySelector('span').textContent = tot ? tot + ' por decidir' : 'Nada pendiente';
-      if (tot) card.insertAdjacentHTML('afterbegin', '<div class="badge">' + tot + '</div>');
-      if (ets.length > 1) card.insertAdjacentHTML('beforeend', '<div class="desg">' + ets.map(e => '<i>' + { jefe: 'Jefe', gaby: 'Gaby', laura: 'Laura' }[e] + ' ' + (data[e] || 0) + '</i>').join('') + '</div>');
-    } else if (error && faltaSQL007(error)) card.querySelector('span').textContent = 'falta el SQL 007';
+      $('decN').textContent = tot;
+      $('decT').textContent = tot ? (tot === 1 ? 'solicitud espera tu decisión' : 'solicitudes esperan tu decisión') : 'Nada pendiente 🎉';
+      $('decChips').innerHTML = ets.map(e => '<i>' + { jefe: 'Jefe', gaby: 'Gaby', laura: 'Laura' }[e] + ' ' + (data[e] || 0) + '</i>').join('');
+    }
   }
   const caja = $('avisosInicio');
   if (!caja) return;
-  const { data } = await sb.from('solicitudes').select('id,folio,tipo,fecha_inicio,fecha_fin,estado_global,corregida_por,decisiones(*)')
+  const { data } = await sb.from('solicitudes').select('id,folio,tipo,fecha_inicio,fecha_fin,estado_global,corregida_por,es_prueba,empleado_id,area_id,decisiones(*)')
     .eq('empleado_id', yo.id).eq('estado_global', 'cambios_solicitados').order('recibido_at', { ascending: false });
-  caja.innerHTML = (data || []).filter(s => !s.corregida_por).map(s => { const pc = quienPidioCambios(s) || { quien: '', com: '' };
+  const conCambios = (data || []).filter(s => !s.corregida_por && veSim(s, s.empleado_id, s.area_id));
+  if ($('filaCorr') && conCambios.length) $('filaCorr').querySelector('em').outerHTML = '<span class="badge">' + conCambios.length + '</span>';
+  caja.innerHTML = conCambios.map(s => { const pc = quienPidioCambios(s) || { quien: '', com: '' };
     return '<div class="aviso-c"><div><b>Te pidieron cambios en ' + esc(s.folio) + '</b> (' + esc((TIPO_TXT[s.tipo] || '').toLowerCase()) + ', ' + diasTxt(s) + ')<br>' + esc(pc.quien) + ': “' + esc(pc.com) + '”</div>' +
       '<button class="btn chico camb" type="button" data-corr="' + esc(s.folio) + '">Corregir</button></div>'; }).join('');
   caja.querySelectorAll('[data-corr]').forEach(b => b.onclick = () => { corregirFolio = b.dataset.corr; location.hash = 'corregir'; });

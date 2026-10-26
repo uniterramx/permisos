@@ -5,7 +5,7 @@
 /* ================= Catalogos ================= */
 const MOV_TXT = { saldo_inicial: 'Saldo inicial', deposito: 'Depósito', retiro: 'Retiro', ajuste: 'Ajuste', reverso: 'Reverso', deuda: 'Debe', reposicion: 'Repuso' };
 const MOV_CL = { saldo_inicial: 'm-ini', deposito: 'm-dep', retiro: 'm-ret', ajuste: 'm-aj', reverso: 'm-rev', deuda: 'm-deu', reposicion: 'm-rep' };
-const BK = { movs: [], ver: 'banco', persona: null, orden: 'nombre', buscar: '', ajuste: false, ajCuenta: 'banco' };
+const BK = { movs: [], ver: 'banco', persona: null, orden: 'area', buscar: '', ajuste: false, ajCuenta: 'banco' };
 
 const hTxt = n => (n < 0 ? '−' : '') + Calc.fmtH(Math.abs(n));
 const hCelda = (n, cl) => n ? '<span class="' + (cl || '') + '">' + hTxt(n) + '</span>' : '<span class="cero">0</span>';
@@ -16,7 +16,7 @@ async function cargarMovs(empId){
   if (empId) q = q.eq('empleado_id', empId);
   const { data, error } = await q;
   if (error) throw error;
-  return data || [];
+  return (data || []).filter(m => veSim(m, m.empleado_id));
 }
 const faltaSQL008 = err => /movimientos|cambiar_horas|ajuste_banco|borrar_pruebas|PGRST202|PGRST205|schema cache|does not exist/i.test((err?.message || '') + ' ' + (err?.code || ''));
 const errBanco = err => faltaSQL008(err) ? 'Falta correr el SQL 008 en Supabase.' : errTxt(err);
@@ -71,7 +71,7 @@ function pintarBancos(){
     '<div class="stat k-neg"><span>En negativo</span><b class="' + (neg ? '' : 'z') + '">' + neg + '</b></div><div class="stat k-rep"><span>Deben reponer</span><b class="' + (deben ? '' : 'z') + '">' + deben + '</b></div>' +
     '<div class="stat k-rep"><span>Horas por reponer</span><b class="' + (porReponer ? '' : 'z') + '">' + Calc.fmtH(porReponer).replace(' h', '') + '</b></div></div>';
   h += '<div class="barra"><input class="f buscar" id="kBuscar" type="search" placeholder="Buscar persona…" value="' + esc(BK.buscar) + '">' +
-    '<select class="f" id="kOrden">' + [['nombre', 'Ordenar por nombre'], ['saldo', 'Saldo más bajo primero'], ['pend', 'Más pendiente de reponer']].map(([k, t]) => '<option value="' + k + '"' + (BK.orden === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div>';
+    '<select class="f" id="kOrden">' + [['area', 'Por área y nombre'], ['nombre', 'Ordenar por nombre'], ['saldo', 'Saldo más bajo primero'], ['pend', 'Más pendiente de reponer']].map(([k, t]) => '<option value="' + k + '"' + (BK.orden === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div>';
   h += '<div class="tabla-w"><table><thead><tr><th>Persona</th><th>Área</th><th>Depósitos</th><th>Retiros</th><th>Saldo</th><th class="rp">Debe</th><th class="rp">Repuesto</th><th class="rp">Pendiente</th><th>Último movimiento</th></tr></thead><tbody id="kFilas"></tbody></table></div>';
   h += '<div class="ver">' + VERSION + '</div>';
   $('vista').innerHTML = h;
@@ -82,7 +82,8 @@ function pintarBancos(){
 function filasBancos(gente){
   const t = sinAcentos(BK.buscar);
   const filas = gente.filter(([e]) => !t || sinAcentos(e.nombre_oficial).includes(t))
-    .sort((a, b) => BK.orden === 'saldo' ? a[1].saldo - b[1].saldo : BK.orden === 'pend' ? b[1].pend - a[1].pend : a[0].nombre_oficial.localeCompare(b[0].nombre_oficial, 'es'));
+    .sort((a, b) => BK.orden === 'saldo' ? a[1].saldo - b[1].saldo : BK.orden === 'pend' ? b[1].pend - a[1].pend
+      : (BK.orden === 'area' ? (areaPorId(a[0].area_id)?.orden || 99) - (areaPorId(b[0].area_id)?.orden || 99) : 0) || a[0].nombre_oficial.localeCompare(b[0].nombre_oficial, 'es'));
   $('kFilas').innerHTML = filas.length ? filas.map(([e, r]) => '<tr class="clic" data-id="' + e.id + '"><td><b>' + esc(e.nombre_oficial) + '</b></td>' +
     '<td class="' + areaClase(e.area_id) + '">' + esc(areaPorId(e.area_id)?.nombre || '') + '</td>' +
     '<td class="num">' + hCelda(r.dep) + '</td><td class="num">' + hCelda(r.ret) + '</td>' +
@@ -195,17 +196,20 @@ async function pintarBancoDetalle(s, st, refrescar){
 
 /* ================= Inicio: saldo en la tarjeta ================= */
 async function pintarSaldoInicio(){
-  const card = $('vista').querySelector('[data-ir="banco"]'); if (!card) return;
+  if (!$('datoSaldo')) return;
+  // Saldo: + verde, 0 negro, - rojo. Por reponer: + rojo (debe), 0 negro, - verde (repuso de mas)
+  const pinta = (el, n, alReves) => { el.textContent = hTxt(n); el.className = !n ? 'n0' : (n > 0) !== !!alReves ? 'verde' : 'rojo'; };
   try {
     const r = resumenMovs(await cargarMovs(yo.id));
-    card.querySelector('span').textContent = 'Saldo ' + hTxt(r.saldo) + (r.pend > 0 ? ' · debes reponer ' + Calc.fmtH(r.pend) : '');
-  } catch (err){ if (faltaSQL008(err)) card.querySelector('span').textContent = 'falta el SQL 008'; }
+    pinta($('datoSaldo'), r.saldo); pinta($('datoRep'), r.pend, true);
+  } catch (err){ $('datoSaldo').textContent = faltaSQL008(err) ? 'falta SQL 008' : '—'; }
 }
 
 /* ================= Inicio: avisos (p. ej. Gaby o Laura rechazaron algo que ya movio el banco) ================= */
 async function pintarAvisosInicio(){
   const caja = $('avisosBanco'); if (!caja) return;
-  const { data, error } = await sb.from('avisos').select('*').is('visto_at', null).order('id');
+  let { data, error } = await sb.from('avisos').select('*').is('visto_at', null).order('id');
+  if (yo.simulado) data = (data || []).filter(a => !a.es_prueba && a.para === yo.id);  // los avisos de otros no se alcanzan a leer
   if (error || !data?.length){ caja.innerHTML = ''; return; }
   caja.innerHTML = data.map(a => '<div class="aviso-c info"><div><b>Aviso</b>' + (a.es_prueba ? ' <span class="chip c-rev">prueba</span>' : '') + '<br>' + esc(a.texto) + '</div>' +
     (a.bitacora_id ? '<button class="btn chico" type="button" data-avbit="' + a.bitacora_id + '">📄 Bitácora</button>' : '') +

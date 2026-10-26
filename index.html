@@ -62,7 +62,39 @@ select.f{background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org
 .top .marca{display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;font-size:15px;font-weight:700}
 .top svg{width:30px;height:30px}
 .crumb{flex:1;font-size:13px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vcomo{font-size:11px;background:var(--rev-f);color:var(--rev);border-radius:10px;padding:3px 9px;white-space:nowrap}
+.vcomo{display:flex;align-items:center;gap:6px;margin:0;font-size:11px;color:var(--sub);border:1px solid var(--borde);background:#fff;border-radius:16px;padding:0 4px 0 10px;height:32px;white-space:nowrap}
+.vcomo select{border:0;background:none;font-size:12px;font-weight:600;max-width:170px;height:30px;color:var(--cafe)}
+.comobar{background:var(--rev-f);color:var(--rev);font-size:12px;padding:8px 20px;display:flex;gap:6px 10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #f0e2b8;position:sticky;top:61px;z-index:4}
+.comobar b{color:var(--cafe)}.comobar button{margin-left:auto;border:1px solid #e8d9a8;background:#fff;border-radius:14px;font-size:12px;padding:5px 11px}
+@media (max-width:759px){ .vcomo span{display:none} .vcomo select{max-width:110px} .comobar{top:61px} }
+/* ---- Inicio: cabecera con Nueva solicitud, Por decidir, Tu resumen, listas ---- */
+.hero{display:flex;align-items:center;gap:14px 24px;flex-wrap:wrap;padding:20px 0 16px;border-bottom:1px solid var(--borde)}
+.hero .hola{flex:1;min-width:200px;padding:0}
+.nueva{height:52px;border:0;border-radius:14px;background:var(--cafe);color:#fff;font-size:16px;font-weight:700;padding:0 26px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 18px rgba(90,77,62,.22)}
+.nueva span{font-size:22px;line-height:1}
+.atajos{width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.atajos small{font-size:11px;color:var(--sub);margin-right:2px}
+.atajo{height:36px;border:1px solid var(--borde);background:#fff;border-radius:18px;padding:0 13px;font-size:13px;white-space:nowrap}
+.atajo:hover,.ifila:hover,.dato:hover{border-color:var(--cafe)}
+@media (max-width:759px){ .nueva{width:100%} .atajos{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px} .atajos::-webkit-scrollbar{display:none} }
+.decidir{display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap;background:var(--verde-f);border:1px solid #a9d6b6;border-radius:14px;padding:16px 18px;cursor:pointer}
+.decidir .n{font-size:34px;font-weight:700;color:var(--verde);line-height:1;min-width:24px}
+.decidir .t{flex:1;min-width:160px}.decidir .t b{color:var(--verde);font-size:15px}
+.decidir .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.decidir .chips i{font-style:normal;font-size:11px;background:#fff;border-radius:9px;padding:2px 8px;color:var(--verde)}
+.decidir .ir{height:40px;border:0;border-radius:10px;background:var(--verde);color:#fff;font-weight:600;padding:0 16px;font-size:14px}
+@media (max-width:759px){ .decidir .ir{width:100%} }
+.tures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dato{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:12px 14px;text-align:left}
+.dato span{font-size:11px;color:var(--sub);display:block}.dato b{font-size:22px;display:block;margin-top:2px}.dato small{font-size:11px;color:var(--sub)}
+.dato b.n0{color:#000}.dato b.verde{color:var(--ok)}.dato b.rojo{color:var(--rojo)}
+@media (max-width:759px){ .tures{gap:6px} .dato{padding:10px} .dato b{font-size:18px} }
+.ilista{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.ifila{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--borde);border-radius:11px;padding:10px 12px;min-height:52px;text-align:left;font-size:13px;width:100%}
+.ifila .e{font-size:20px;width:26px;text-align:center}.ifila div{flex:1;min-width:0}.ifila b{display:block;font-size:13px}.ifila small{font-size:11px;color:var(--sub)}
+.ifila em{font-style:normal;color:var(--sub)}.ifila.pronto{opacity:.5;cursor:default}
+.ifila .badge{position:static;background:var(--naranja);color:#fff;font-size:11px;font-weight:700;border-radius:9px;padding:1px 7px}
+.adm{display:flex;flex-wrap:wrap;gap:8px}
+.adm button{height:38px;border:1px dashed var(--borde);background:transparent;border-radius:10px;padding:0 12px;font-size:13px}.adm .w{color:var(--naranja)}
 .av{width:40px;height:40px;border-radius:50%;border:0;background:var(--arena);font-size:12px;font-weight:700;flex:none}
 .menu{position:fixed;right:16px;top:60px;z-index:20;background:#fff;border:1px solid var(--borde);border-radius:12px;box-shadow:0 6px 20px rgba(90,77,62,.15);padding:6px;width:250px}
 .menu .quien{padding:10px 12px;font-size:12px;color:var(--sub);border-bottom:1px solid var(--borde);line-height:1.5}
@@ -398,9 +430,10 @@ table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
     <button class="marca" id="btnCasa" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="40" fill="#efeae3"/><rect x="34" y="44" width="112" height="100" rx="14" fill="#fff" stroke="#5a4d3e" stroke-width="7"/><path d="M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z" fill="#5a4d3e"/><line x1="62" y1="32" x2="62" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><line x1="118" y1="32" x2="118" y2="54" stroke="#5a4d3e" stroke-width="8" stroke-linecap="round"/><path d="M66 108l16 16 32-34" fill="none" stroke="#38761D" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span>Permisos UT</span></button>
     <span class="crumb" id="crumb"></span>
-    <span class="vcomo oculto" id="vcomo"></span>
+    <label class="vcomo oculto" id="vcomo"><span>👁️ Ver como</span><select id="vcSel" aria-label="Ver la app como"></select></label>
     <button class="av" id="btnAv" type="button" aria-label="Mi cuenta"></button>
   </div>
+  <div class="comobar oculto" id="comobar"></div>
   <div class="menu oculto" id="menu"></div>
   <main class="cuerpo" id="vista"></main>
   <aside class="panel oculto" id="panel"></aside>
@@ -412,8 +445,15 @@ table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.6.1';
+const VERSION = 'v0.7.0';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
+// Modo "Ver como" persona = solo ver: se bloquea todo lo que escribe (funciones que guardan, insert/update/delete)
+const SOLO_VER = 'Modo solo ver: estás viendo la app como otra persona. Vuelve a ti para hacer cambios.';
+const RPC_LECTURA = new Set(['mi_perfil', 'contar_pendientes', 'bitacora_activa', 'espacio_pdfs', 'admin_accesos']);
+const bloqueado = new Proxy(function(){}, { get: (t, k) => k === 'then' ? (ok => ok({ data: null, error: { message: SOLO_VER }, count: 0 })) : () => bloqueado });
+{ const _rpc = sb.rpc.bind(sb), _from = sb.from.bind(sb);
+  sb.rpc = (fn, args, o) => yo?.simulado && !RPC_LECTURA.has(fn) ? bloqueado : _rpc(fn, args, o);
+  sb.from = t => { const q = _from(t); if (yo?.simulado) ['insert', 'update', 'upsert', 'delete'].forEach(m => q[m] = () => bloqueado); return q; }; }
 const $ = id => document.getElementById(id);
 $('verEntrar').textContent = VERSION + ' · Fase 5';
 
@@ -555,7 +595,7 @@ $('formCambiar').addEventListener('submit', async e => {
 });
 
 /* ================= Datos ================= */
-let yo = null;
+let yo = null, yoReal = null;  // yoReal: quien entró; yo: a quien se está viendo (igual, salvo "Ver como" persona)
 const D = { areas: [], empleados: [], horarios: [], proyectos: [], jefes: [], accesos: {} };
 const empPorId = id => D.empleados.find(e => e.id === id);
 const areaPorId = id => D.areas.find(a => a.id === id);
@@ -607,65 +647,115 @@ function avisoNombre(nombre){
 }
 
 /* ================= Inicio y navegacion ================= */
-const COMOS = [['todo','Todo'],['empleado','Empleado'],['jefe','Jefe'],['filtro','Gaby'],['final','Laura']];
-function verComo(){ return soyAdmin() ? (recordar.get('vercomo') || 'todo') : 'todo'; }
+// "Ver como": un rol (sigues siendo tú) o una persona (solo ver: se simula lo que esa persona ve; no se guarda nada)
+const COMOS = [['todo','Yo (todo)'],['empleado','Empleado'],['jefe','Jefe'],['filtro','Gaby'],['final','Laura']];
+const esAdminReal = () => ((yoReal || yo)?.roles || []).includes('admin');
+function verComo(){ return esAdminReal() ? (recordar.get('vercomo') || 'todo') : 'todo'; }
 function rolesVista(){
+  if (yo.simulado) return yo.roles || ['empleado'];
   const v = verComo();
-  if (v === 'todo') return yo.roles;
+  if (v === 'todo' || v.startsWith('p:')) return yo.roles;
   return v === 'empleado' ? ['empleado'] : ['empleado', v];
+}
+function aplicarComo(){
+  yo = yoReal;
+  const v = verComo();
+  if (!v.startsWith('p:')) return;
+  const e = empPorId(v.slice(2));
+  if (!e || e.id === yoReal.id){ recordar.set('vercomo', 'todo'); return; }
+  yo = { id: e.id, nombre: e.nombre_oficial, nombre_corto: e.nombre_corto, iniciales: e.iniciales, puesto: e.puesto,
+         area: areaPorId(e.area_id)?.nombre || '', jornada: e.jornada, en_nomina: e.en_nomina, roles: e.roles || ['empleado'], simulado: true };
+}
+// Lo que esa persona alcanzaria a ver (espejo de las reglas de la base). Fuera del modo persona deja pasar todo.
+function veSim(row, empId, areaId){
+  if (!yo?.simulado) return true;
+  if (row?.es_prueba) return false;
+  if ((yo.roles || []).some(r => ['admin', 'filtro', 'final'].includes(r))) return true;
+  if (empId === yo.id || row?.capturado_por === yo.id) return true;
+  const area = areaId || empPorId(empId)?.area_id;
+  return D.jefes.some(j => j.jefe_id === yo.id && j.area_id === area);
 }
 
 function pintarMenu(){
-  let h = '<div class="quien"><b>' + esc(yo.nombre) + '</b>' + esc(yo.puesto || '') + '<br>' + esc(yo.area) + '</div>';
-  if (soyAdmin()){
-    h += '<div class="comos"><span>Ver la app como:</span><div>' + COMOS.map(([k, t]) =>
-      '<button type="button" data-como="' + k + '" class="' + (verComo() === k ? 'on' : '') + '">' + t + '</button>').join('') + '</div></div>';
-  }
+  const real = yoReal || yo;
+  let h = '<div class="quien"><b>' + esc(real.nombre) + '</b>' + esc(real.puesto || '') + '<br>' + esc(real.area) + '</div>';
   h += '<button type="button" id="btnMiPin">Cambiar mi PIN</button><button type="button" id="btnSalir">Salir</button>';
   $('menu').innerHTML = h;
-  $('menu').querySelectorAll('[data-como]').forEach(b => b.onclick = () => {
-    recordar.set('vercomo', b.dataset.como); $('menu').classList.add('oculto'); location.hash = ''; ir();
-  });
   $('btnMiPin').onclick = () => { $('menu').classList.add('oculto'); abrirCambio(false); };
   $('btnSalir').onclick = async () => {
-    await sb.auth.signOut(); yo = null; $('menu').classList.add('oculto'); cerrarPanel(); mostrar('entrar'); cargarLista();
+    await sb.auth.signOut(); yo = null; yoReal = null; $('menu').classList.add('oculto'); cerrarPanel(); mostrar('entrar'); cargarLista();
   };
+  // Selector "Ver como" (solo administradora)
   const v = verComo();
-  $('vcomo').classList.toggle('oculto', v === 'todo');
-  $('vcomo').textContent = 'viendo como ' + (COMOS.find(c => c[0] === v) || [, ''])[1];
+  $('vcomo').classList.toggle('oculto', !esAdminReal());
+  if (esAdminReal()){
+    const gente = D.empleados.filter(e => e.activo && e.id !== real.id).sort((a, b) => a.nombre_oficial.localeCompare(b.nombre_oficial, 'es'));
+    $('vcSel').innerHTML = '<optgroup label="Rol">' + COMOS.map(([k, t]) => '<option value="' + k + '"' + (v === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</optgroup>' +
+      '<optgroup label="Persona (solo ver)">' + gente.map(e => '<option value="p:' + e.id + '"' + (v === 'p:' + e.id ? ' selected' : '') + '>' + esc(e.nombre_oficial) + '</option>').join('') + '</optgroup>';
+    $('vcSel').onchange = () => { recordar.set('vercomo', $('vcSel').value); aplicarComo(); pintarMenu(); cerrarPanel(); location.hash = ''; ir(); };
+  }
+  const bar = $('comobar');
+  if (yo?.simulado){
+    bar.innerHTML = '👁️ Estás viendo la app como <b>' + esc(yo.nombre) + '</b><span>· solo ver: no se decide ni se guarda nada</span><button type="button" id="cbFuera">Volver a mí</button>';
+  } else if (esAdminReal() && v !== 'todo'){
+    bar.innerHTML = '👁️ Viendo la app con el rol <b>' + esc((COMOS.find(c => c[0] === v) || [, ''])[1]) + '</b><span>· sigues siendo tú</span><button type="button" id="cbFuera">Volver a mí</button>';
+  } else bar.innerHTML = '';
+  bar.classList.toggle('oculto', !bar.innerHTML);
+  if ($('cbFuera')) $('cbFuera').onclick = () => { recordar.set('vercomo', 'todo'); aplicarComo(); pintarMenu(); cerrarPanel(); location.hash = ''; ir(); };
 }
+
+// Atajos de la cabecera: abren "Nueva solicitud" con el tipo ya elegido
+const ATAJOS = [['llegada', '⏰', 'Llegué tarde'], ['salida_anticipada', '🚪', 'Salí antes'], ['ausencia', '📅', 'Falté'],
+  ['horas_extras', '➕', 'Horas extras'], ['omision_checado', '☝️', 'Olvidé checar'], ['reposicion', '↩️', 'Repuse horas']];
+let atajoTipo = null;
 
 function vistaInicio(){
   const roles = rolesVista();
   const corto = yo.nombre_corto || yo.nombre.split(' ')[0];
-  const tarjeta = (e, t, s, o = {}) => '<div class="card ' + (o.ir ? 'va' : 'pronto') + ' ' + (o.cls || '') + '"' + (o.ir ? ' data-ir="' + o.ir + '"' : '') + '>' +
-    (o.badge ? '<div class="badge">' + o.badge + '</div>' : '') + '<div class="e">' + e + '</div><b>' + t + '</b><span>' + s + (o.ir ? '' : ' · pronto') + '</span></div>';
-  let h = '<div class="hola"><h1>Hola, ' + esc(corto) + '</h1><div class="sub">' + esc(yo.area) + ' · ' +
-    (yo.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</div></div><div id="avisosBanco"></div><div id="avisosInicio"></div>';
-  h += '<div class="secc">Para todos</div><div class="grid">' +
-    tarjeta('📝', 'Nueva solicitud', 'diario', { ir: 'nueva' }) + tarjeta('⏱️', 'Mi banco de horas', 'saldo y movimientos', { ir: 'banco' }) +
-    tarjeta('📂', 'Mis solicitudes', 'estado y folios', { ir: 'mias' }) + tarjeta('✏️', 'Corregir una solicitud', 'cuando te piden cambios', { ir: 'corregir' }) +
-    tarjeta('📘', 'Guía', 'cómo se usa') + '</div>';
+  const fila = (e, t, s, o = {}) => '<button type="button" class="ifila' + (o.ir ? '' : ' pronto') + '"' + (o.ir ? ' data-ir="' + o.ir + '"' : '') + (o.id ? ' id="' + o.id + '"' : '') + '>' +
+    '<span class="e">' + e + '</span><div><b>' + t + '</b><small>' + s + (o.ir ? '' : ' · pronto') + '</small></div><em>›</em></button>';
+  let h = '<div class="hero"><div class="hola"><h1>Hola, ' + esc(corto) + '</h1><div class="sub">' + esc(yo.area) + ' · ' +
+    (yo.jornada === 'MT' ? 'Medio tiempo' : 'Tiempo completo') + '</div></div>' +
+    '<button class="nueva" type="button" data-ir="nueva"><span>＋</span>Nueva solicitud</button>' +
+    '<div class="atajos"><small>Atajos:</small>' + ATAJOS.map(([k, e, t]) => '<button class="atajo" type="button" data-atajo="' + k + '">' + e + ' ' + t + '</button>').join('') + '</div></div>';
+  h += '<div id="avisosBanco"></div><div id="avisosInicio"></div>';
   if (veoBandeja())
-    h += '<div class="secc">Para quien valida</div><div class="grid">' +
-      tarjeta('✅', 'Mi bandeja', 'pendientes de decidir', { cls: 'hi', ir: 'bandeja' }) +
-      tarjeta('📊', 'Panel general', 'todas, en vivo', { ir: 'panelgral' }) + tarjeta('🏦', 'Banco de horas', 'saldos y reposición', { ir: 'bancos' }) +
-      (veoPDFs() ? tarjeta('📁', 'PDF guardados', 'solicitudes y bitácoras', { ir: 'pdfs' }) : '') + '</div>';
-  if (roles.some(r => ['admin','altas'].includes(r))){
-    const act = D.empleados.filter(e => e.activo).length, nav = avisosPersonas().total;
-    h += '<div class="secc">Administración</div><div class="grid">' +
-      tarjeta('👥', 'Personas y PINs', act + ' personas' + (nav ? ' · ⚠️ ' + nav + ' avisos' : ''), { ir: 'personas' }) +
-      tarjeta('🏗️', 'Proyectos', D.proyectos.filter(p => p.activo).length + ' activos', { ir: 'proyectos' }) +
-      tarjeta('🏢', 'Áreas y jefes', D.areas.length + ' áreas', { ir: 'areas' }) +
-      (roles.includes('admin') ? tarjeta('🧪', 'Pruebas', 'borrar folios de prueba', { ir: 'pruebas' }) : '') + '</div>';
+    h += '<div class="secc">Por decidir</div><div class="decidir" data-ir="bandeja"><div class="n" id="decN">·</div><div class="t"><b id="decT">Cargando…</b><div class="chips" id="decChips"></div></div>' +
+      '<button class="ir" type="button">Abrir mi bandeja →</button></div>';
+  h += '<div class="secc">Tu resumen</div><div class="tures">' +
+    '<button class="dato" type="button" data-ir="banco"><span>Mi saldo</span><b id="datoSaldo">·</b><small>banco de horas</small></button>' +
+    '<button class="dato" type="button" data-ir="mias"><span>En proceso</span><b id="datoProc">·</b><small>mis solicitudes</small></button>' +
+    '<button class="dato" type="button" data-ir="banco"><span>Por reponer</span><b id="datoRep">·</b><small>reposición</small></button></div>';
+  h += '<div class="secc">Lo mío</div><div class="ilista">' + fila('📂', 'Mis solicitudes', 'estado y folios · PDF de las aprobadas', { ir: 'mias' }) +
+    fila('⏱️', 'Mi banco de horas', 'movimientos y mi bitácora', { ir: 'banco' }) + fila('✏️', 'Corregir una solicitud', 'cuando te piden cambios', { ir: 'corregir', id: 'filaCorr' }) +
+    fila('📘', 'Guía', 'cómo se usa') + '</div>';
+  if (veoBandeja())
+    h += '<div class="secc">Para quien valida</div><div class="ilista">' + fila('📊', 'Panel general', 'todas, en vivo', { ir: 'panelgral' }) +
+      fila('🏦', 'Banco de horas', roles.some(r => ['filtro', 'final', 'admin'].includes(r)) ? 'saldos y reposición de todos' : 'saldos de tu área', { ir: 'bancos' }) +
+      (veoPDFs() ? fila('📁', 'PDF guardados', 'solicitudes y bitácoras', { ir: 'pdfs' }) : '') + '</div>';
+  if (roles.some(r => ['admin', 'altas'].includes(r))){
+    const nav = avisosPersonas().total;
+    h += '<div class="secc">Administración</div><div class="adm"><button type="button" data-ir="personas">👥 Personas y PINs' + (nav ? ' <span class="w">· ⚠️ ' + nav + '</span>' : '') + '</button>' +
+      '<button type="button" data-ir="proyectos">🏗️ Proyectos</button><button type="button" data-ir="areas">🏢 Áreas y jefes</button>' +
+      (roles.includes('admin') ? '<button type="button" data-ir="pruebas">🧪 Pruebas</button>' : '') + '</div>';
   }
   h += '<div class="ver">' + VERSION + ' · Fase 5</div>';
   $('vista').innerHTML = h;
   $('vista').querySelectorAll('[data-ir]').forEach(c => c.onclick = () => location.hash = c.dataset.ir);
+  $('vista').querySelectorAll('[data-atajo]').forEach(c => c.onclick = () => { atajoTipo = c.dataset.atajo; location.hash = 'nueva'; });
   pintarExtrasInicio().catch(() => {});
   pintarSaldoInicio().catch(() => {});
+  pintarProcInicio().catch(() => {});
   pintarAvisosInicio().catch(() => {});
   pintarPDFsInicio().catch(() => {});
+}
+// "En proceso": mis solicitudes que esperan a alguien
+async function pintarProcInicio(){
+  const el = $('datoProc'); if (!el) return;
+  const { data, error } = await sb.from('solicitudes').select('id,estado_global,es_prueba,empleado_id,area_id,capturado_por').eq('empleado_id', yo.id);
+  if (error){ el.textContent = '—'; return; }
+  const n = (data || []).filter(s => veSim(s, s.empleado_id, s.area_id) && ['nueva_espera_jefe', 'espera_gaby', 'espera_laura'].includes(s.estado_global)).length;
+  el.textContent = n; el.className = n ? '' : 'n0';
 }
 
 const VISTAS = { personas: ['Administración › Personas', vistaPersonas], proyectos: ['Administración › Proyectos', vistaProyectos],
@@ -1105,11 +1195,12 @@ async function arrancar(){
     await sb.auth.signOut(); mostrar('entrar'); cargarLista();
     return aviso($('msgPin'), 'Entraste, pero tu cuenta no está ligada a ninguna persona. Avísale a Valen.');
   }
-  yo = data;
+  yo = data; yoReal = data;
   try { await cargarCatalogos(); } catch (err){ toast('No pude cargar los datos: ' + traducirError(err), true); }
-  $('btnAv').textContent = yo.iniciales;
+  $('btnAv').textContent = yoReal.iniciales;
+  if (yoReal.debe_cambiar){ pintarMenu(); return abrirCambio(true); }
+  aplicarComo();
   pintarMenu();
-  if (yo.debe_cambiar) return abrirCambio(true);
   mostrar('app'); ir();
 }
 

@@ -74,6 +74,7 @@ const rutaSolicitud = s => (s.es_prueba ? 'pruebas/' : '') + 'solicitudes/' + s.
 
 // Guarda en Storage + registra. Si ya existe (otro lo guardó antes), no pasa nada.
 async function guardarPDF(tipo, id, ruta, bytes, conLogo){
+  if (yo.simulado) return;  // "Ver como" persona: solo ver
   const up = await sb.storage.from('pdfs').upload(ruta, new Blob([bytes], { type: 'application/pdf' }), { contentType: 'application/pdf', upsert: false });
   if (up.error && !/exist|duplicate|409/i.test(up.error.message + ' ' + (up.error.statusCode || ''))) throw up.error;
   const r = await sb.rpc('registrar_pdf', { p_tipo: tipo, p_id: id, p_con_logo: conLogo });
@@ -209,7 +210,7 @@ async function pintarBitacorasPersona(empId, mio){
   const r = await sb.from('bitacoras').select('*').eq('empleado_id', empId).order('cerrada_at', { ascending: false });
   if (!$('kBit')) return;
   if (r.error){ caja.innerHTML = '<div class="ayuda">' + esc(errDoc(r.error)) + '</div>'; return; }
-  const bits = r.data || [];
+  const bits = (r.data || []).filter(b => veSim(b, b.empleado_id));
   const movs = BK.movs.filter(m => m.empleado_id === empId && m.cuenta === 'banco' && !m.bitacora_id);
   const cadenas = [false].concat(soyAdmin() && movs.some(m => m.es_prueba) ? [true] : []);
   const gaby = (yo.roles || []).includes('filtro') && rolesVista().includes('filtro');
@@ -254,7 +255,7 @@ async function vistaPDFs(){
   const [esp, docs] = await Promise.all([sb.rpc('espacio_pdfs'), sb.from('documentos').select('*').order('generado_at', { ascending: false }).limit(2000)]);
   const err = esp.error || docs.error;
   if (err){ $('vista').querySelector('.carga').textContent = errDoc(err); return; }
-  DOCS.lista = docs.data || []; DOCS.esp = esp.data;
+  DOCS.lista = (docs.data || []).filter(d => !yo.simulado || !d.es_prueba); DOCS.esp = esp.data;
   const ids = [...new Set(DOCS.lista.map(d => d.solicitud_id).filter(Boolean))], bids = [...new Set(DOCS.lista.map(d => d.bitacora_id).filter(Boolean))];
   const [s, b] = await Promise.all([ids.length ? sb.from('solicitudes').select('id,empleado_id').in('id', ids) : { data: [] }, bids.length ? sb.from('bitacoras').select('id,empleado_id').in('id', bids) : { data: [] }]);
   const quien = Object.fromEntries([...(s.data || []), ...(b.data || [])].map(x => [x.id, x.empleado_id]));
@@ -289,11 +290,11 @@ function filasPDFs(){
 
 /* ================= Inicio: tarjeta de PDF guardados (con aviso al 80 %) ================= */
 async function pintarPDFsInicio(){
-  const card = $('vista').querySelector('[data-ir="pdfs"]'); if (!card) return;
+  const card = $('vista').querySelector('.ifila[data-ir="pdfs"]'); if (!card) return;
   const { data, error } = await sb.rpc('espacio_pdfs');
-  if (error){ if (faltaSQL010(error)) card.querySelector('span').textContent = 'falta el SQL 010'; return; }
+  if (error){ if (faltaSQL010(error)) card.querySelector('small').textContent = 'falta el SQL 010'; return; }
   const pct = data.bytes / data.limite * 100;
-  card.querySelector('span').textContent = data.archivos + ' archivos · ' + MB(data.bytes) + ' de 1 GB';
+  card.querySelector('small').textContent = data.archivos + ' archivos · ' + MB(data.bytes) + ' de 1 GB';
   if (pct >= 80) $('avisosBanco')?.insertAdjacentHTML('afterbegin', '<div class="aviso-c"><div><b>El espacio de PDF va en ' + Math.round(pct) + ' %</b><br>Toca pasar los años viejos a Drive para que no se llene (1 GB).</div></div>');
 }
 

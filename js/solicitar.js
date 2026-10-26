@@ -114,6 +114,7 @@ const redondea5 = t => { const m = Calc.aMin(t); const r = Math.round(m / 5) * 5
 /* ================= Pantalla ================= */
 function vistaNueva(){
   W = nuevoW(); paso = 0;
+  if (atajoTipo){ W.tipo = atajoTipo; atajoTipo = null; paso = pasos().indexOf('tipo') + 1; }  // atajo del Inicio
   pintarPaso();
 }
 
@@ -375,7 +376,7 @@ async function vistaMias(){
   const { data, error } = await sb.from('solicitudes').select('id,folio,recibido_at,tipo,justificacion,fecha_inicio,fecha_fin,hora_ref,hora_fin,estado_global,etapa,mueve,horas_calculadas,redaccion,verificacion,es_prueba,capturado_por,empleado_id,corregida_por,congelada,decisiones(*)')
     .eq('empleado_id', yo.id).order('recibido_at', { ascending: false }).limit(200);
   if (error){ $('vista').querySelector('.carga').textContent = /solicitudes|PGRST/i.test(error.message) ? 'Falta correr el SQL 006 en Supabase.' : 'No pude cargar: ' + error.message; return; }
-  const filas = (data || []).map(s => { const e = ESTADOS[s.estado_global] || [s.estado_global, '#eee', '#555'];
+  const filas = (data || []).filter(s => veSim(s, s.empleado_id)).map(s => { const e = ESTADOS[s.estado_global] || [s.estado_global, '#eee', '#555'];
     return '<tr class="clic" data-id="' + s.id + '"><td>' + esc(s.folio) + (s.es_prueba ? ' <span class="chip c-rev">prueba</span>' : '') + '</td>' +
       '<td class="opt">' + new Date(s.recibido_at).toLocaleString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + '</td>' +
       '<td>' + esc(TIPO_TXT[s.tipo] || s.tipo) + '</td><td>' + fechaMX(s.fecha_inicio) + (s.fecha_fin !== s.fecha_inicio ? ' – ' + fechaMX(s.fecha_fin) : '') + '</td>' +
