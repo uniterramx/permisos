@@ -161,7 +161,7 @@ para no hacer doble chamba); (c) Valen + Gaby + 1–2 personas de prueba primero
 **N3. Consulta de saldo del empleado**: ¿cada quien ve su saldo y su bitácora abierta en la app?
 (diseño original: no quería que el empleado entrara a un Sheet; con la app ya no aplica esa objeción).
 
-**N4. Reporte mensual** (Panel: permisos/h generadas/h usadas por empleado): ¿se manda solo a Laura
+**N4. Reporte mensual** → (26-oct) NO por ahora: solo si Laura lo pide.  (Panel: permisos/h generadas/h usadas por empleado): ¿se manda solo a Laura
 cada mes o se consulta?
 
 **N5. Auditoría**: ¿la vista de "cambios sospechosos" la ve solo Valen o también Laura?
@@ -171,6 +171,6 @@ cada mes o se consulta?
 **N7. Respaldos**: plan gratis de Supabase tiene respaldos limitados. ¿Export semanal automático a
 CSV/XLSX (decisión original de 3 capas) en Storage o a Drive/correo de Valen?
 
-**N8. Mini-guía para cada rol** (entregable de cierre): ¿PDF, página dentro de la app o video?
+**N8. Mini-guía para cada rol** → (26-oct) página "📘 Guía" dentro de la app, por rol (wireframe docs/wireframes/guia.html).  (entregable de cierre): ¿PDF, página dentro de la app o video?
 
 **N9. ¿Se borra `Centro de Links - Uniterra.html`?** (copia vieja; preguntado dos veces sin respuesta).

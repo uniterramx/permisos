@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Guía UT · propuesta</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap">
+<style>
+/* Wireframe de la Guia (propuesta). Paleta calida aprobada, Outfit. Un solo tema claro a proposito. */
+:root{ --cafe:#5a4d3e; --crema:#f8f6f3; --arena:#efeae3; --borde:#e2ddd6; --sub:#9a8e7f; --linea:#ECE4DF; --alt:#faf9f7;
+  --verde-f:#C6E7D0; --verde:#38761D; --wf:#fff7d6; --wf-b:#e8d68a; color-scheme:light; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#e9e5df;color:var(--cafe);font-family:Outfit,system-ui,sans-serif}
+body{overflow-x:hidden}
+button,input{font-family:inherit;color:var(--cafe)}button{cursor:pointer}
+b{font-weight:500}
+.wf{background:var(--wf);border-bottom:1px solid var(--wf-b);font-size:12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:8px 16px;position:sticky;top:0;z-index:20}
+.wf b{font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}.wf .sep{flex:1}
+.wf button{border:1px solid var(--wf-b);background:#fff;border-radius:14px;padding:4px 11px;font-size:12px;min-height:30px}
+.wf button.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.nota{max-width:1000px;margin:14px auto 0;padding:0 16px;font-size:12px;color:var(--sub);line-height:1.55;font-weight:300}.nota b{color:var(--cafe);font-weight:600}
+.marco{background:var(--crema);margin:14px auto 40px;max-width:1000px;border:1px solid var(--borde);border-radius:14px;overflow:hidden}
+.marco.cel{max-width:390px}
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--borde)}
+.marca{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}.marca i{width:30px;height:30px;border-radius:8px;background:var(--arena)}
+.crumb{flex:1;font-size:13px;color:var(--sub);font-weight:300}
+.av{width:38px;height:38px;border-radius:50%;background:var(--arena);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cuerpo{padding:0 24px 28px}.marco.cel .cuerpo{padding:0 16px 24px}
+h1{font-size:24px;margin:20px 0 2px;font-weight:700}
+.sub{font-size:13px;color:var(--sub);font-weight:300}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 4px}
+.tab{height:38px;border:1px solid var(--borde);background:#fff;border-radius:19px;padding:0 15px;font-size:13.5px;font-weight:600}
+.tab.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.marco.cel .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.buscar{width:100%;max-width:340px;height:38px;border:1px solid var(--borde);border-radius:9px;padding:0 11px;font-size:14px;margin:10px 0 6px;outline:none;background:#fff}
+.tema{background:#fff;border:1px solid var(--borde);border-radius:12px;margin-top:8px;overflow:hidden}
+.tema summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:52px}
+.tema summary::-webkit-details-marker{display:none}
+.tema summary .e{font-size:20px;width:26px;text-align:center}
+.tema summary div{flex:1}.tema summary b{display:block;font-size:14px;font-weight:600}.tema summary small{font-size:11.5px;color:var(--sub);font-weight:300}
+.tema summary em{font-style:normal;color:var(--sub);transition:transform .15s}.tema[open] summary em{transform:rotate(90deg)}
+.tema[open] summary{border-bottom:1px solid var(--linea);background:var(--alt)}
+ol{margin:0;padding:12px 16px 14px 40px;font-size:13.5px;line-height:1.55}
+ol li{margin:0 0 8px;padding-left:4px}ol li::marker{font-weight:700;color:var(--verde)}
+.donde{display:inline-block;font-size:11px;background:var(--verde-f);color:var(--verde);border-radius:9px;padding:1px 8px;font-weight:600;white-space:nowrap}
+.ojo{margin:0 14px 14px;background:#fef6e4;border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.5;color:#8a6d1e}
+.ver{text-align:center;font-size:11px;color:#c4bdb1;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wf">
+  <b>Wireframe · Guía</b>
+  <span>Ver como:</span>
+  <button data-r="empleado" class="on">Empleado</button><button data-r="jefe">Jefe</button><button data-r="gaby">Gaby</button><button data-r="laura">Laura</button>
+  <span class="sep"></span>
+  <button data-w="compu" class="on">Compu</button><button data-w="cel">Celular</button>
+</div>
+<div class="nota">
+  <b>Idea:</b> la fila “📘 Guía” del Inicio (hoy dice “pronto”) abre esta página. Arriba, una pestaña por cada rol que tiene la persona
+  (el empleado solo ve “Empleado”; Gaby ve “Empleado” y “Gaby”…). Cada tema se abre y se cierra (uno a la vez), con pasos cortos numerados
+  y una etiqueta verde que dice <b>dónde está</b> en la app. Buscador para encontrar rápido. El texto ya es el definitivo: corrígeme lo que quieras.
+</div>
+<div class="marco" id="marco"></div>
+<script>
+const D = (t) => '<span class="donde">' + t + '</span>';
+const GUIA = {
+  empleado: ['Empleado', [
+    ['🔑', 'Entrar y tu PIN', 'la primera vez y si se te olvida', [
+      'Elige tu área y tu nombre y escribe tu PIN de 6 números.',
+      'La primera vez la app te pide elegir un PIN nuevo que solo tú sepas.',
+      'Marca “Recordarme en este dispositivo” para no ponerlo cada vez (solo en tu compu o tu celular).',
+      'Para cambiarlo: toca tus iniciales ' + D('arriba a la derecha') + ' → Cambiar mi PIN.'],
+      'Si te equivocas 5 veces se bloquea. Si se te olvida o se bloqueó, pídeselo a Gaby.'],
+    ['＋', 'Hacer una solicitud', 'llegué tarde, falté, horas extras…', [
+      'En el Inicio toca ' + D('＋ Nueva solicitud') + ' o un atajo (Llegué tarde, Falté…).',
+      'Contesta una pregunta por página y dale Siguiente. A un lado ves “Lo que llevas”: tu horario y cuántas horas se mueven.',
+      'Al final revisa, marca “Confirmo que la información es verídica” y Enviar.',
+      'Te da un folio (F-TUS INICIALES-2026-0001). Pasa con tu jefe, luego con Gaby y al final con Laura.'],
+      'Una solicitud por cada cosa: si el mismo día llegaste tarde y saliste antes, son dos.'],
+    ['📂', 'Ver cómo va', 'estado y PDF', [
+      'Entra a ' + D('Mis solicitudes') + ': ahí ves si espera a tu jefe, a Gaby o a Laura.',
+      'Cuando Laura la aprueba ya puedes descargar el PDF.',
+      'Imprímelo, fírmalo y entrégalo como siempre.']],
+    ['✏️', 'Si te piden cambios', 'corregir una solicitud', [
+      'Te sale un aviso naranja en el Inicio con lo que te pidieron.',
+      'Toca Corregir (o ' + D('Corregir una solicitud') + ') y cambia solo lo que te pidieron.',
+      'Se crea el folio -R1 y va directo con Gaby.'],
+      'Después de enviar una solicitud ya no se edita: siempre se corrige así.'],
+    ['⏱️', 'Tu banco de horas', 'saldo, movimientos y bitácora', [
+      'Entra a ' + D('Mi banco de horas') + ': tu saldo en verde (a favor) o rojo (debes).',
+      'Las horas extras se suman cuando las aprueba tu jefe; el “Uso de horas acumuladas” las resta.',
+      'La reposición va aparte: ahí ves lo que debes reponer y lo que ya repusiste.',
+      'Cada 15 movimientos se cierra tu bitácora y Gaby te la da a firmar.']],
+    ['🌴', 'Vacaciones', 'pedirlas y el formato', [
+      '<b>Antes:</b> toca el atajo ' + D('🌴 Vacaciones') + ', pon desde y hasta, y envíalas. Van directo a Laura (con tu jefe lo hablas en persona).',
+      'Si Laura aprueba, los días quedan <b>apartados</b>.',
+      '<b>Después</b>, cuando ya faltaste: ' + D('＋ Nueva solicitud') + ' → Falté → A cuenta de vacaciones → eliges tus vacaciones apartadas.',
+      'Los días se descuentan cuando Laura aprueba ese formato. Si un día sí viniste, ese no se cuenta.',
+      'Tus días los ves en ' + D('Mis vacaciones') + ': cuántos te quedan y cuántos te quedarían.'],
+      'Solo cuentan los días de lunes a viernes que no son festivos. Tus días se renuevan en tu aniversario y no se acumulan. Si no te alcanzan, “Pedir como excepción” es solo si ya lo hablaste en persona.'],
+    ['📆', 'Próximos días sin trabajo', 'tus vacaciones y los festivos', [
+      'En el Inicio (al costado en la compu, hasta abajo en el celular) ves tus próximas vacaciones y los festivos.',
+      'Toca “Ver festivos” para ver la lista completa.']]
+  ]],
+  jefe: ['Jefe', [
+    ['📥', 'Tu bandeja', 'lo que espera tu decisión', [
+      'En el Inicio, la franja verde ' + D('Por decidir') + ' te dice cuántas tienes → Abrir mi bandeja.',
+      'Abre en Pendientes. Toca una fila para ver el detalle: horario, qué pasó, horas y redacción.']],
+    ['✅', 'Decidir', 'aprobar, pedir cambios o rechazar', [
+      '<b>Aprobar:</b> pasa con Gaby y, si mueve el banco, se aplica en ese momento.',
+      '<b>Pedir cambios</b> o <b>Rechazar:</b> el comentario es obligatorio (la persona necesita saber qué cambiar).',
+      '<b>Resuelto:</b> cierra como hecho, sin banco ni PDF.',
+      'Puedes cambiar tu decisión después con “Cambiar decisión”, mientras Laura no la haya aprobado.']],
+    ['📦', 'Aprobar en lote', 'varias a la vez', [
+      'Las pendientes ya vienen marcadas: quita las que no y dale Aprobar en lote.']],
+    ['⏱️', 'Cambiar horas', 'antes de aprobar', [
+      'En el detalle, antes de aprobar, toca “Cambiar horas”, pon las correctas y el motivo.',
+      'Si con esa solicitud la persona queda en negativo, la app te avisa antes.'],
+      'Queda registrado quién las cambió y cuánto daba el cálculo.'],
+    ['🏦', 'Tu área', 'banco de horas y vacaciones', [
+      'En el Inicio, ' + D('Para quien valida') + ': Banco de horas y Vacaciones de tu área.',
+      'En “Próximos días sin trabajo” ves quién de tu área sale de vacaciones.']]
+  ]],
+  gaby: ['Gaby', [
+    ['🔍', 'Filtro', 'revisar que esté bien llenada', [
+      'Mi bandeja → pestaña ' + D('Filtro (Gaby)') + '.',
+      'Si la redacción tiene algo mal, toca “Editar” (queda quién la cambió y cómo decía antes).',
+      'Aprobar → pasa con Laura. Pedir cambios → le llega el aviso a la persona.'],
+      'También ves las que el jefe mandó a cambios, para avisarle a la persona.'],
+    ['👥', 'Personas y PINs', 'altas, fecha de ingreso, horario, PIN', [
+      'Administración → ' + D('👥 Personas y PINs') + ' → toca a la persona.',
+      'Ahí cambias puesto, área, fecha de ingreso, quién firma y su horario.',
+      'En Acceso: “Dar PIN temporal” (la persona lo cambia al entrar) o “Desbloquear”.']],
+    ['🏦', 'Ajustes al banco', 'sumar o restar a mano', [
+      'Banco de horas → la persona → ' + D('+ Ajuste a mano') + '.',
+      'Elige Banco o Reposición, escribe las horas (+ suma, − resta) y el motivo.'],
+      'Nada se borra: para deshacer un ajuste, haz otro al revés.'],
+    ['📄', 'Bitácoras', 'imprimir y recoger firma', [
+      'Cuando alguien junta 15 movimientos, su bitácora se cierra sola y te sale un aviso con el botón ' + D('📄 Bitácora') + '.',
+      'Imprímela y recoge la firma de la persona.',
+      'Si la quieres cerrar antes: Banco de horas → la persona → Cerrar ahora.']],
+    ['🌴', 'Vacaciones', 'saldo de arranque y ajustes', [
+      'Inicio → ' + D('🌴 Vacaciones') + ' → toca a la persona.',
+      '<b>Saldo de arranque</b> (una sola vez): los días que le quedan hoy, contando desde su último aniversario.',
+      '<b>Ajuste:</b> +/− días con el motivo, para corregir.',
+      'Te sale un aviso cuando a alguien ya le pasaron sus vacaciones y no ha hecho su formato.']],
+    ['📅', 'Festivos', 'cargar los días festivos', [
+      'Administración → ' + D('📅 Festivos') + ' → fecha, nombre → Agregar.',
+      'Si ya había vacaciones aprobadas ese día, la app te avisa para regresarle el día con un ajuste.']]
+  ]],
+  laura: ['Laura', [
+    ['🖊️', 'Aprobación final', 'las solicitudes', [
+      'Mi bandeja → pestaña ' + D('Aprobación final (Laura)') + '.',
+      'Al aprobar, la solicitud queda congelada y su PDF se guarda solo.',
+      'Si después hay que cambiar algo, la persona hace una corrección (-R1).']],
+    ['🌴', 'Vacaciones por aprobar', 'apartar los días', [
+      'En el Inicio, ' + D('Por decidir') + ' te dice cuántas hay → Vacaciones por aprobar.',
+      'Toca una: ves cuántos días le quedan y cuántos le quedarían. Si es excepción, sale en rojo con con quién lo habló.',
+      'Aprobar = los días quedan apartados. Rechazar pide comentario.',
+      'Los días se descuentan cuando apruebas su formato de “Falté a cuenta de vacaciones”.']],
+    ['📊', 'Panel general', 'todo, en vivo', [
+      'Inicio → ' + D('Panel general') + ': todas las solicitudes con su estado y un resumen por persona.']],
+    ['📁', 'PDF guardados', 'todos los formatos', [
+      'Inicio → ' + D('PDF guardados') + ': busca y descarga cualquier PDF aprobado.']]
+  ]]
+};
+const ROLES = { empleado: ['empleado'], jefe: ['empleado', 'jefe'], gaby: ['empleado', 'gaby'], laura: ['empleado', 'jefe', 'laura'] };
+let rol = 'empleado', ancho = 'compu', tab = 'empleado', abierto = 0, q = '';
+const sinA = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function pintar(){
+  const m = document.getElementById('marco'), tabs = ROLES[rol];
+  if (!tabs.includes(tab)) tab = tabs[0];
+  m.className = 'marco' + (ancho === 'cel' ? ' cel' : '');
+  let h = '<div class="top"><div class="marca"><i></i>Permisos UT</div><span class="crumb">› Guía</span><div class="av">' + { empleado: 'OPC', jefe: 'REMC', gaby: 'GTB', laura: 'LZTM' }[rol] + '</div></div><div class="cuerpo">';
+  h += '<h1>📘 Guía</h1><div class="sub">Cómo se usa la app, en pasos cortos. Toca un tema para abrirlo.</div>';
+  if (tabs.length > 1) h += '<div class="tabs">' + tabs.map(t => '<button class="tab' + (t === tab ? ' on' : '') + '" data-t="' + t + '">' + GUIA[t][0] + '</button>').join('') + '</div>';
+  h += '<input class="buscar" id="gB" type="search" placeholder="Buscar… (ej. PIN, vacaciones)" value="' + q + '">';
+  const temas = q ? tabs.flatMap(t => GUIA[t][1]) : GUIA[tab][1];
+  temas.forEach((x, i) => {
+    const txt = sinA(x[1] + ' ' + x[2] + ' ' + x[3].join(' ') + ' ' + (x[4] || ''));
+    if (q && !txt.includes(sinA(q))) return;
+    h += '<details class="tema" data-i="' + i + '"' + (q || i === abierto ? ' open' : '') + '><summary><span class="e">' + x[0] + '</span><div><b>' + x[1] + '</b><small>' + x[2] + '</small></div><em>›</em></summary>' +
+      '<ol>' + x[3].map(p => '<li>' + p + '</li>').join('') + '</ol>' + (x[4] ? '<div class="ojo">💡 ' + x[4] + '</div>' : '') + '</details>';
+  });
+  h += '<div class="ver">v0.9.0 · propuesta</div></div>';
+  m.innerHTML = h;
+  m.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { tab = b.dataset.t; abierto = 0; pintar(); });
+  const b = document.getElementById('gB'); b.oninput = () => { q = b.value; pintar(); const n = document.getElementById('gB'); n.focus(); n.setSelectionRange(q.length, q.length); };
+  m.querySelectorAll('details.tema').forEach(d => d.addEventListener('toggle', () => { if (d.open && !q){ abierto = +d.dataset.i; m.querySelectorAll('details.tema').forEach(o => { if (o !== d) o.open = false; }); } }));
+}
+document.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { rol = b.dataset.r; tab = ROLES[rol][0]; abierto = 0; document.querySelectorAll('[data-r]').forEach(x => x.classList.toggle('on', x === b)); pintar(); });
+document.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { ancho = b.dataset.w; document.querySelectorAll('[data-w]').forEach(x => x.classList.toggle('on', x === b)); pintar(); });
+pintar();
+</script>
+</body>
+</html>
