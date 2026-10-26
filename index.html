@@ -408,6 +408,7 @@ h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:
     <select id="selNombre" class="f"></select>
     <label>PIN (6 dígitos)</label>
     <div class="pin" id="pinEntrar"></div>
+    <label class="check" style="margin-top:14px"><input type="checkbox" id="chkRecordar"> Recordarme en este dispositivo</label>
     <button class="btn ancho" id="btnPin" type="submit">Entrar</button>
     <div class="msg oculto" id="msgPin"></div>
   </form>
@@ -452,7 +453,7 @@ h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.7.2';
+const VERSION = 'v0.7.3';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 // Modo "Ver como" persona = solo ver: se bloquea todo lo que escribe (funciones que guardan, insert/update/delete)
 const SOLO_VER = 'Modo solo ver: estás viendo la app como otra persona. Vuelve a ti para hacer cambios.';
@@ -553,6 +554,8 @@ $('formPin').addEventListener('submit', async e => {
     recordar.set('persona', empleado);
     const r = await sb.auth.signInWithPassword({ email: data.email, password: data.secreto });
     if (r.error) throw r.error;
+    recordar.set('recordarme', $('chkRecordar').checked ? '1' : '0');
+    sesionViva(true);
     pinEntrar.limpiar();
     await arrancar();
   } catch (err){
@@ -570,7 +573,7 @@ function abrirCambio(obligatorio){
   cambioObligatorio = obligatorio;
   [pinActual, pinNuevo, pinRepite].forEach(p => p.limpiar());
   $('filaActual').classList.toggle('oculto', obligatorio);
-  $('btnCancelarCambio').classList.toggle('oculto', obligatorio);
+  $('btnCancelarCambio').textContent = obligatorio ? 'No soy yo · salir' : 'Cancelar';
   $('cambiarTit').textContent = obligatorio ? 'Elige tu PIN' : 'Cambiar mi PIN';
   $('cambiarSub').textContent = obligatorio
     ? 'Tu PIN es temporal. Elige uno nuevo de 6 números que solo tú sepas.'
@@ -579,7 +582,7 @@ function abrirCambio(obligatorio){
   mostrar('cambiar');
   (obligatorio ? pinNuevo : pinActual).foco();
 }
-$('btnCancelarCambio').onclick = () => { mostrar('app'); };
+$('btnCancelarCambio').onclick = () => { if (cambioObligatorio) salir(); else mostrar('app'); };
 
 $('formCambiar').addEventListener('submit', async e => {
   e.preventDefault();
@@ -696,7 +699,7 @@ function pintarMenu(){
   $('menu').innerHTML = h;
   $('btnMiPin').onclick = () => { $('menu').classList.add('oculto'); abrirCambio(false); };
   $('btnSalir').onclick = async () => {
-    await sb.auth.signOut(); yo = null; yoReal = null; $('menu').classList.add('oculto'); cerrarPanel(); mostrar('entrar'); cargarLista();
+    await salir();
   };
   // Selector "Ver como" (solo administradora)
   const v = verComo();
@@ -1235,9 +1238,19 @@ async function arrancar(){
 }
 
 // Arranca cuando ya cargaron todos los scripts (js/solicitar.js registra sus vistas)
+// Sesion: si NO marco "Recordarme", al volver a abrir la app se pide el PIN otra vez
+// (recargar la misma pestaña no cuenta como volver a abrir).
+function sesionViva(v){ try { v ? sessionStorage.setItem('ut_viva', '1') : sessionStorage.removeItem('ut_viva'); } catch (e){} }
+const esSesionViva = () => { try { return sessionStorage.getItem('ut_viva') === '1'; } catch (e){ return false; } };
+async function salir(){
+  await sb.auth.signOut(); sesionViva(false); yo = null; yoReal = null;
+  $('menu').classList.add('oculto'); cerrarPanel(); mostrar('entrar'); cargarLista();
+}
 window.addEventListener('DOMContentLoaded', async () => {
+  $('chkRecordar').checked = recordar.get('recordarme') === '1';
   const { data } = await sb.auth.getSession();
-  if (data.session) return arrancar();
+  if (data.session && (recordar.get('recordarme') === '1' || esSesionViva())){ sesionViva(true); return arrancar(); }
+  if (data.session) await sb.auth.signOut();
   mostrar('entrar'); cargarLista();
 });
 
