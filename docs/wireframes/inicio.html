@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Inicio UT · propuesta</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23efeae3'/%3E%3Crect x='34' y='44' width='112' height='100' rx='14' fill='%23fff' stroke='%235a4d3e' stroke-width='7'/%3E%3Cpath d='M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z' fill='%235a4d3e'/%3E%3Cpath d='M66 108l16 16 32-34' fill='none' stroke='%2338761D' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* Wireframe del Inicio (propuesta). Paleta calida aprobada; un solo tema claro a proposito. */
+:root{
+  --cafe:#5a4d3e; --crema:#f8f6f3; --arena:#efeae3; --borde:#e2ddd6; --sub:#9a8e7f; --linea:#ECE4DF; --blanco:#fff;
+  --verde-f:#C6E7D0; --verde:#38761D; --camb-f:#fef0e6; --camb:#b06630; --pend-f:#fef6e4; --pend:#a0872e; --rech:#b04040;
+  --wf:#fff7d6; --wf-b:#e8d68a; color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:#e9e5df;color:var(--cafe);font-family:Alexandria,system-ui,sans-serif}
+body{overflow-x:hidden}
+button,select{font-family:inherit;color:var(--cafe)}
+button{cursor:pointer}
+
+.wf{background:var(--wf);border-bottom:1px solid var(--wf-b);font-size:12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:8px 16px;position:sticky;top:0;z-index:20}
+.wf b{font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.wf .sep{flex:1}
+.wf button{border:1px solid var(--wf-b);background:#fff;border-radius:14px;padding:4px 11px;font-size:12px;min-height:30px}
+.wf button.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.nota{max-width:1180px;margin:14px auto 0;padding:0 16px;font-size:12px;color:var(--sub);line-height:1.55}
+.nota b{color:var(--cafe)}
+
+/* Marco: compu o celular */
+.marco{background:var(--crema);margin:14px auto 40px;max-width:1180px;border:1px solid var(--borde);border-radius:14px;overflow:hidden}
+.marco.cel{max-width:390px}
+
+.top{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--borde);background:var(--crema)}
+.marca{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.marca i{width:30px;height:30px;border-radius:8px;background:var(--arena);display:inline-block}
+.esp{flex:1}
+.av{width:38px;height:38px;border-radius:50%;background:var(--arena);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.vc{font-size:11px;border:1px solid var(--borde);background:#fff;border-radius:16px;padding:0 10px;height:30px;display:flex;align-items:center;gap:6px}
+.vc select{border:0;background:none;font-size:12px;font-weight:600;max-width:150px}
+.comobar{background:var(--pend-f);color:var(--pend);font-size:12px;padding:8px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #f0e2b8}
+.comobar b{color:var(--cafe)}
+.comobar button{margin-left:auto;border:1px solid #e8d9a8;background:#fff;border-radius:14px;font-size:12px;padding:4px 10px}
+
+.cuerpo{padding:0 24px 28px}
+.marco.cel .cuerpo{padding:0 16px 24px}
+
+/* 1) Cabecera con la accion principal: NO es una tarjeta mas */
+.hero{display:flex;align-items:center;gap:16px 24px;flex-wrap:wrap;padding:22px 0 18px;border-bottom:1px solid var(--borde)}
+.hero .hola{flex:1;min-width:220px}
+.hero h1{font-size:26px;margin:0}
+.sub{font-size:13px;color:var(--sub)}
+.nueva{height:52px;border:0;border-radius:14px;background:var(--cafe);color:#fff;font-size:16px;font-weight:700;padding:0 26px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 18px rgba(90,77,62,.22)}
+.nueva span{font-size:22px;line-height:1}
+.atajos{width:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.atajos small{font-size:11px;color:var(--sub);margin-right:2px}
+.atajo{height:34px;border:1px solid var(--borde);background:#fff;border-radius:17px;padding:0 13px;font-size:13px;white-space:nowrap}
+.marco.cel .hero{padding:18px 0 14px}
+.marco.cel .nueva{width:100%;justify-content:center}
+.marco.cel .atajos{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.marco.cel .atajos::-webkit-scrollbar{display:none}
+
+/* Avisos */
+.aviso{background:var(--camb-f);border:1px solid #f2d2b8;border-radius:12px;padding:11px 14px;font-size:13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px;color:var(--camb)}
+.aviso div{flex:1;min-width:190px;line-height:1.5}.aviso b{color:var(--cafe)}
+.aviso button{height:34px;border:0;border-radius:9px;background:var(--camb);color:#fff;font-size:13px;padding:0 12px}
+
+.secc{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:22px 0 8px}
+
+/* 2) Tu resumen: cifras, no botones grandes */
+.res{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dato{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:12px 14px;text-align:left}
+.dato span{font-size:11px;color:var(--sub);display:block}
+.dato b{font-size:22px;display:block;margin-top:2px}
+.dato small{font-size:11px;color:var(--sub)}
+.dato .neg{color:var(--rech)}
+.marco.cel .res{grid-template-columns:repeat(3,1fr);gap:6px}
+.marco.cel .dato{padding:10px}.marco.cel .dato b{font-size:18px}
+
+/* 3) Para decidir (quien valida): una franja, no un cuadrito */
+.decidir{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap;background:var(--verde-f);border:1px solid #a9d6b6;border-radius:14px;padding:16px 18px;margin-top:4px}
+.decidir .n{font-size:34px;font-weight:700;color:var(--verde);line-height:1}
+.decidir .t{flex:1;min-width:160px}.decidir .t b{color:var(--verde);font-size:15px}.decidir .t div{font-size:12px;color:#4a7a52;margin-top:3px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chips i{font-style:normal;font-size:11px;background:#fff;border-radius:9px;padding:2px 8px;color:var(--verde)}
+.decidir .ir{height:40px;border:0;border-radius:10px;background:var(--verde);color:#fff;font-weight:600;padding:0 16px;font-size:14px}
+.marco.cel .decidir .ir{width:100%}
+
+/* 4) Todo lo demas: lista compacta (icono + texto + flecha) */
+.lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.fila{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--borde);border-radius:11px;padding:10px 12px;min-height:52px;text-align:left;font-size:13px}
+.fila .e{font-size:20px;width:26px;text-align:center}
+.fila div{flex:1}.fila b{display:block;font-size:13px}.fila small{font-size:11px;color:var(--sub)}
+.fila em{font-style:normal;color:var(--sub)}
+.fila.pronto{opacity:.5}
+.fila .badge{background:var(--camb);color:#fff;font-size:11px;font-weight:700;border-radius:9px;padding:1px 7px}
+
+.adm{display:flex;flex-wrap:wrap;gap:8px}
+.adm button{height:36px;border:1px dashed var(--borde);background:transparent;border-radius:10px;padding:0 12px;font-size:12.5px}
+.adm .w{color:var(--camb)}
+.ver{text-align:center;font-size:11px;color:var(--cero,#c4bdb1);margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wf">
+  <b>Wireframe · Inicio</b>
+  <span>Ver como:</span>
+  <button data-r="empleado" class="on">Empleado</button><button data-r="jefe">Jefe (Raúl)</button><button data-r="gaby">Gaby</button><button data-r="laura">Laura</button><button data-r="valen">Valen</button>
+  <span class="sep"></span>
+  <button data-w="compu" class="on">Compu</button><button data-w="cel">Celular</button>
+</div>
+<div class="nota">
+  <b>Idea:</b> “Nueva solicitud” deja de ser un cuadro más y pasa a la cabecera, junto al saludo: un botón oscuro con atajos (“Llegué tarde”, “Falté”…) que abren el formulario con el tipo ya elegido.
+  Abajo, <b>tu resumen</b> en cifras; luego, para quien valida, una <b>franja verde de “Por decidir”</b>; y todo lo demás en una <b>lista compacta</b>.
+  Administración baja a una fila discreta (solo Valen y Gaby). En <b>Valen</b>, arriba a la derecha está el nuevo “Ver como: persona”.
+</div>
+<div class="marco" id="marco"></div>
+
+<script>
+const R = {
+  empleado: { n: 'Luis', av: 'LAMC', area: 'Taller de Proyectos · Tiempo completo', saldo: '5 h', proc: 1, rep: '0 h', aviso: true, decide: null, pdfs: false, adm: false },
+  jefe:     { n: 'Raúl', av: 'REMC', area: 'Taller de Proyectos · Medio tiempo', saldo: '2 h', proc: 0, rep: '0 h', aviso: false, decide: [['Jefe', 4]], pdfs: false, adm: false },
+  gaby:     { n: 'Gaby', av: 'GTB', area: 'Administración · Medio tiempo', saldo: '1.5 h', proc: 0, rep: '1 h', aviso: false, decide: [['Gaby', 6]], pdfs: true, adm: true, bit: true },
+  laura:    { n: 'Laura', av: 'LZTM', area: 'Administración · Tiempo completo', saldo: '0 h', proc: 0, rep: '0 h', aviso: false, decide: [['Jefe', 1], ['Laura', 9]], pdfs: true, adm: false },
+  valen:    { n: 'Valentina', av: 'VMM', area: 'Taller de Proyectos · Medio tiempo', saldo: '0 h', proc: 0, rep: '0 h', aviso: false, decide: [['Jefe', 0], ['Gaby', 0], ['Laura', 0]], pdfs: true, adm: true, valen: true }
+};
+const GENTE = ['Luis Alonso Muñoz Casas', 'Raúl Edilberto Martínez Carrazco', 'Gabriela Téllez Buendía', 'Laura Zafiro Torres Muñoz', 'Adrián Everardo Gómez Facio'];
+const PERSONA = { 'Luis Alonso Muñoz Casas': 'empleado', 'Raúl Edilberto Martínez Carrazco': 'jefe', 'Gabriela Téllez Buendía': 'gaby', 'Laura Zafiro Torres Muñoz': 'laura',
+  'Adrián Everardo Gómez Facio': { n: 'Adrián', av: 'AEGF', area: 'Taller de Proyectos · Medio tiempo', saldo: '−1 h', proc: 2, rep: '0 h', aviso: false, decide: null, pdfs: false, adm: false } };
+let rol = 'empleado', ancho = 'compu', comoPersona = '';
+
+function pintar(){
+  const yo = R[rol], m = document.getElementById('marco');
+  // Valen "viendo como" una persona: el Inicio es el de esa persona, con la barra amarilla arriba
+  const r = yo.valen && comoPersona ? (typeof PERSONA[comoPersona] === 'string' ? R[PERSONA[comoPersona]] : PERSONA[comoPersona]) : yo;
+  m.className = 'marco' + (ancho === 'cel' ? ' cel' : '');
+  const tot = r.decide ? r.decide.reduce((a, x) => a + x[1], 0) : 0;
+  let h = '<div class="top"><div class="marca"><i></i>Permisos UT</div><span class="esp"></span>' +
+    (yo.valen ? '<label class="vc">👁️ Ver como <select id="vcSel"><option value="">mí</option><optgroup label="Rol">' +
+      ['Empleado', 'Jefe', 'Gaby', 'Laura'].map(x => '<option>' + x + '</option>').join('') + '</optgroup><optgroup label="Persona">' +
+      GENTE.map(x => '<option' + (comoPersona === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</optgroup></select></label>' : '') +
+    '<div class="av">' + yo.av + '</div></div>';
+  if (yo.valen && comoPersona) h += '<div class="comobar">👁️ Estás viendo la app como <b>' + comoPersona + '</b> · solo ver: los botones de decidir y guardar están apagados<button type="button" id="vcFuera">Volver a mí</button></div>';
+
+  h += '<div class="cuerpo">';
+  // 1) Cabecera
+  h += '<div class="hero"><div class="hola"><h1>Hola, ' + r.n + '</h1><div class="sub">' + r.area + '</div></div>' +
+    '<button class="nueva" type="button"><span>＋</span>Nueva solicitud</button>' +
+    '<div class="atajos"><small>Atajos:</small>' + ['⏰ Llegué tarde', '🚪 Salí antes', '🏖️ Falté', '🌙 Horas extras', '👆 Olvidé checar', '🔁 Repuse horas']
+      .map(x => '<button class="atajo" type="button">' + x + '</button>').join('') + '</div></div>';
+  // Avisos
+  if (r.aviso) h += '<div class="aviso"><div><b>Te pidieron cambios en F-LAMC-2026-0004</b> (llegada tarde, 27/10/2026)<br>Raúl: “falta el motivo”</div><button type="button">Corregir</button></div>';
+  if (r.bit) h += '<div class="aviso" style="background:#fff;border-color:var(--borde);color:var(--cafe)"><div><b>Se cerró la bitácora B-LAMC-2026-0001</b> de Luis (15 movimientos). Imprímela y recoge su firma.</div><button type="button" style="background:var(--cafe)">📄 Bitácora</button></div>';
+  // 2) Para decidir
+  if (r.decide){
+    h += '<div class="secc">Por decidir</div><div class="decidir"><div class="n">' + tot + '</div><div class="t"><b>' + (tot ? 'solicitudes esperan tu decisión' : 'Nada pendiente 🎉') + '</b>' +
+      '<div class="chips">' + r.decide.map(([k, n]) => '<i>' + k + ' ' + n + '</i>').join('') + '</div></div><button class="ir" type="button">Abrir mi bandeja →</button></div>';
+  }
+  // 3) Tu resumen
+  h += '<div class="secc">Tu resumen</div><div class="res">' +
+    '<button class="dato" type="button"><span>Mi saldo</span><b>' + r.saldo + '</b><small>banco de horas</small></button>' +
+    '<button class="dato" type="button"><span>En proceso</span><b>' + r.proc + '</b><small>mis solicitudes</small></button>' +
+    '<button class="dato" type="button"><span>Por reponer</span><b' + (r.rep !== '0 h' ? ' class="neg"' : '') + '>' + r.rep + '</b><small>reposición</small></button></div>';
+  // 4) Lo demas
+  const fila = (e, t, s, o = {}) => '<button class="fila' + (o.pronto ? ' pronto' : '') + '" type="button"><span class="e">' + e + '</span><div><b>' + t + '</b><small>' + s + '</small></div>' + (o.badge ? '<span class="badge">' + o.badge + '</span>' : '<em>›</em>') + '</button>';
+  h += '<div class="secc">Lo mío</div><div class="lista">' + fila('📂', 'Mis solicitudes', 'estado y folios · PDF de las aprobadas') + fila('⏱️', 'Mi banco de horas', 'movimientos y mi bitácora') +
+    fila('✏️', 'Corregir una solicitud', 'cuando te piden cambios', r.aviso ? { badge: 1 } : {}) + fila('📘', 'Guía', 'cómo se usa · pronto', { pronto: true }) + '</div>';
+  if (r.decide){
+    h += '<div class="secc">Para quien valida</div><div class="lista">' + fila('📊', 'Panel general', 'todas, en vivo') + fila('🏦', 'Banco de horas', rol === 'jefe' ? 'saldos de tu área' : 'saldos y reposición de todos') +
+      (r.pdfs ? fila('📁', 'PDF guardados', '3 archivos · 0.2 MB de 1 GB') : '') + '</div>';
+  }
+  if (r.adm){
+    h += '<div class="secc">Administración</div><div class="adm"><button type="button">👥 Personas y PINs <span class="w">· ⚠️ 9</span></button><button type="button">🏗️ Proyectos</button><button type="button">🏢 Áreas y jefes</button>' +
+      (r.valen ? '<button type="button">🧪 Pruebas</button>' : '') + '</div>';
+  }
+  h += '<div class="ver">v0.7.0 · propuesta</div></div>';
+  m.innerHTML = h;
+  const s = document.getElementById('vcSel');
+  if (s) s.onchange = () => { comoPersona = GENTE.includes(s.value) ? s.value : ''; pintar(); };
+  const f = document.getElementById('vcFuera');
+  if (f) f.onclick = () => { comoPersona = ''; pintar(); };
+}
+document.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { rol = b.dataset.r; comoPersona = ''; document.querySelectorAll('[data-r]').forEach(x => x.classList.toggle('on', x === b)); pintar(); });
+document.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { ancho = b.dataset.w; document.querySelectorAll('[data-w]').forEach(x => x.classList.toggle('on', x === b)); pintar(); });
+pintar();
+</script>
+</body>
+</html>
