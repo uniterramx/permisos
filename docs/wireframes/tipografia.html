@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Tipografía UT · opciones</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700&family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&family=Manrope:wght@400;600;700&family=DM+Sans:wght@400;600;700&family=Figtree:wght@400;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23efeae3'/%3E%3Crect x='34' y='44' width='112' height='100' rx='14' fill='%23fff' stroke='%235a4d3e' stroke-width='7'/%3E%3Cpath d='M34 58a14 14 0 0 1 14-14h84a14 14 0 0 1 14 14v14H34z' fill='%235a4d3e'/%3E%3Cpath d='M66 108l16 16 32-34' fill='none' stroke='%2338761D' stroke-width='10' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* Wireframe de tipografia. Paleta calida aprobada; un solo tema claro a proposito. */
+:root{ --cafe:#5a4d3e; --crema:#f8f6f3; --arena:#efeae3; --borde:#e2ddd6; --sub:#9a8e7f; --linea:#ECE4DF; --enc:#D9D7CE;
+  --verde-f:#C6E7D0; --verde:#38761D; --ok:#4a8c42; --rojo:#b04040; --pend-f:#fef6e4; --pend:#a0872e; --wf:#fff7d6; --wf-b:#e8d68a; color-scheme:light; --f:Alexandria }
+*{box-sizing:border-box}
+html,body{margin:0;background:#e9e5df;color:var(--cafe);font-family:system-ui,sans-serif}
+body{overflow-x:hidden}
+button{font-family:inherit;color:var(--cafe);cursor:pointer}
+.wf{background:var(--wf);border-bottom:1px solid var(--wf-b);font-size:12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:8px 16px;position:sticky;top:0;z-index:20}
+.wf b{font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.wf button{border:1px solid var(--wf-b);background:#fff;border-radius:14px;padding:4px 11px;font-size:12px;min-height:30px}
+.wf button.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+.nota{font-size:12px;color:var(--sub);line-height:1.55;margin-bottom:12px}.nota b{color:var(--cafe)}
+
+/* Comparacion lado a lado */
+.cmp{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.op{background:var(--crema);border:1px solid var(--borde);border-radius:14px;padding:16px;cursor:pointer;text-align:left;font-family:var(--fo)}
+.op.on{outline:2px solid var(--cafe)}
+.op .nom{font-family:system-ui,sans-serif;font-size:11px;color:var(--sub);display:flex;justify-content:space-between;margin-bottom:8px}
+.op .nom em{font-style:normal;background:var(--arena);border-radius:8px;padding:1px 7px}
+.op h3{font-size:26px;margin:0;font-weight:700}
+.op .s{font-size:13px;color:var(--sub);margin:2px 0 10px}
+.op .nums{display:flex;gap:14px;font-size:20px;font-weight:700;margin-bottom:10px}
+.op .nums .v{color:var(--ok)}.op .nums .r{color:var(--rojo)}
+.op .tb{font-size:8px;border:1px solid var(--linea);border-radius:6px;overflow:hidden;background:#fff}
+.op .tb div{display:grid;grid-template-columns:1.4fr 1fr .8fr .6fr;padding:6px 8px;border-top:1px solid var(--linea)}
+.op .tb div:first-child{background:var(--enc);font-weight:700;border:0}
+.op .campo{margin-top:10px;height:36px;border:1px solid var(--borde);border-radius:9px;background:#fff;display:flex;align-items:center;padding:0 11px;font-size:14px}
+.op .txt{font-size:13px;line-height:1.5;margin-top:10px}
+
+/* Vista completa con la letra elegida */
+.app{background:var(--crema);border:1px solid var(--borde);border-radius:14px;overflow:hidden;margin-top:18px;font-family:var(--f),system-ui,sans-serif}
+.top{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--borde)}
+.top b{font-size:15px}.top i{width:30px;height:30px;border-radius:8px;background:var(--arena)}.esp{flex:1}
+.av{width:38px;height:38px;border-radius:50%;background:var(--arena);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cuerpo{padding:0 24px 24px}
+.hero{display:flex;align-items:center;gap:14px 24px;flex-wrap:wrap;padding:20px 0 16px;border-bottom:1px solid var(--borde)}
+.hero .h{flex:1;min-width:200px}.hero h1{font-size:28px;margin:0}.sub{font-size:13px;color:var(--sub)}
+.nueva{height:52px;border:0;border-radius:14px;background:var(--cafe);color:#fff;font-size:16px;font-weight:700;padding:0 26px;font-family:inherit;box-shadow:0 6px 18px rgba(90,77,62,.22)}
+.atajos{width:100%;display:flex;gap:8px;flex-wrap:wrap}.atajo{height:36px;border:1px solid var(--borde);background:#fff;border-radius:18px;padding:0 13px;font-size:13px;font-family:inherit}
+.secc{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:22px 0 8px}
+.tures{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dato{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:12px 14px}.dato span{font-size:11px;color:var(--sub);display:block}
+.dato b{font-size:22px;display:block}.dato small{font-size:11px;color:var(--sub)}
+.tabla{background:#fff;border:1px solid var(--borde);border-radius:10px;overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:8px}
+th{background:var(--enc);text-align:left;padding:10px 8px;font-weight:700}td{padding:12px 8px;border-top:1px solid var(--linea)}
+.chip{font-size:8px;border-radius:8px;padding:2px 7px;background:var(--pend-f);color:var(--pend);white-space:nowrap}
+.f{height:38px;border:1px solid var(--borde);border-radius:9px;background:#fff;padding:0 11px;font-size:14px;font-family:inherit;width:100%;max-width:340px;color:var(--cafe)}
+@media (max-width:700px){ .cuerpo{padding:0 16px 20px} .nueva{width:100%} .atajos{flex-wrap:nowrap;overflow-x:auto} .tures{gap:6px} .dato b{font-size:18px} }
+</style>
+</head>
+<body>
+<div class="wf"><b>Wireframe · Tipografía</b><span>Toca una opción para verla en la app completa ↓</span></div>
+<div class="wrap">
+  <div class="nota"><b>Opciones</b> (todas gratis en Google Fonts, con acentos y ñ). Cada tarjeta muestra lo mismo: título, números (saldo, hora, folio), una fila de tabla a <b>8 px</b> como tus Sheets, un campo a <b>14 px</b> y un párrafo de redacción. Abajo, la app completa con la que elijas. Los PDF se quedan en Times (formato oficial).</div>
+  <div class="cmp" id="cmp"></div>
+  <div class="app" id="app">
+    <div class="top"><i></i><b>Permisos UT</b><span class="esp"></span><div class="av">VMM</div></div>
+    <div class="cuerpo">
+      <div class="hero"><div class="h"><h1>Hola, Valentina</h1><div class="sub">Taller de Proyectos · Medio tiempo</div></div>
+        <button class="nueva" type="button">＋ Nueva solicitud</button>
+        <div class="atajos"><button class="atajo">⏰ Llegué tarde</button><button class="atajo">🚪 Salí antes</button><button class="atajo">📅 Falté</button><button class="atajo">➕ Horas extras</button><button class="atajo">☝️ Olvidé checar</button></div></div>
+      <div class="secc">Tu resumen</div>
+      <div class="tures"><div class="dato"><span>Mi saldo</span><b style="color:var(--ok)">5.75 h</b><small>banco de horas</small></div><div class="dato"><span>En proceso</span><b>2</b><small>mis solicitudes</small></div><div class="dato"><span>Por reponer</span><b style="color:var(--rojo)">1.5 h</b><small>reposición</small></div></div>
+      <div class="secc">Tabla (8 px, como tus Sheets)</div>
+      <div class="tabla"><table><thead><tr><th>Empleado · folio</th><th>Recibido</th><th>Tipo</th><th>Día(s)</th><th>Horas</th><th>Estado</th><th>Comentario</th></tr></thead><tbody>
+        <tr><td><b>Luis Muñoz</b><br>F-LAMC-2026-0014</td><td>26/10 09:41</td><td>Llegada tarde</td><td>27/10/2026</td><td>−1.5 h</td><td><span class="chip">Espera Gaby</span></td><td>Variación de horario con cargo al banco de horas acumuladas.</td></tr>
+        <tr><td><b>Adrián Gómez</b><br>F-AEGF-2026-0031</td><td>26/10 11:02</td><td>Horas extras</td><td>24/10/2026</td><td>+2.25 h</td><td><span class="chip">Espera Gaby</span></td><td>Trabajo fuera de horario oficial en proyecto Plan Maestro CUCosta.</td></tr>
+      </tbody></table></div>
+      <div class="secc">Campo de captura (14 px)</div>
+      <input class="f" value="Asistencia a comisión foránea — Edificio PIDAT CUCEI" aria-label="ejemplo">
+    </div>
+  </div>
+</div>
+<script>
+const OPS = [
+  ['Alexandria', 'la actual', 'Geométrica y ancha; mucha personalidad, ocupa más espacio.'],
+  ['Outfit', 'tu sugerencia', 'Geométrica, limpia y moderna; más compacta que Alexandria.'],
+  ['Plus Jakarta Sans', '', 'Moderna, un poco más estrecha; números muy legibles.'],
+  ['Manrope', '', 'Semi-geométrica, técnica; muy clara en tablas chicas.'],
+  ['DM Sans', '', 'Neutra y amable; buena en tamaños pequeños.'],
+  ['Figtree', '', 'Redondeada y cálida; lectura fácil en celular.']
+];
+let sel = 'Alexandria';
+function pintar(){
+  document.getElementById('cmp').innerHTML = OPS.map(([f, tag, d]) => '<button type="button" class="op' + (f === sel ? ' on' : '') + '" data-f="' + f + '" style="--fo:\'' + f + '\'">' +
+    '<div class="nom"><span>' + f + '</span>' + (tag ? '<em>' + tag + '</em>' : '') + '</div><h3>Hola, Valentina</h3><div class="s">' + d + '</div>' +
+    '<div class="nums"><span class="v">+5.75 h</span><span class="r">−1.5 h</span><span>10:45</span></div>' +
+    '<div class="tb"><div><span>Empleado · folio</span><span>Tipo</span><span>Día</span><span>Horas</span></div><div><span>Luis Muñoz · F-LAMC-2026-0014</span><span>Llegada tarde</span><span>27/10/2026</span><span>−1.5 h</span></div></div>' +
+    '<div class="campo">Asistencia a comisión foránea</div><div class="txt">Variación de horario con cargo al banco de horas acumuladas. Apliqué 1.5 h de mi tiempo acumulado.</div></button>').join('');
+  document.getElementById('app').style.setProperty('--f', "'" + sel + "'");
+  document.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { sel = b.dataset.f; pintar(); document.getElementById('app').scrollIntoView({ behavior: 'smooth' }); });
+}
+pintar();
+</script>
+</body>
+</html>
