@@ -128,6 +128,14 @@ textarea.f{height:64px;padding:9px 11px;resize:none}
 .fchip{display:inline-block;font-size:12px;background:var(--alt);border-radius:9px;padding:2px 9px;margin:4px 6px 0 0}
 .btn.chico{height:34px;font-size:13px;padding:0 12px}
 .adm{display:flex;flex-wrap:wrap;gap:8px}.adm button{height:36px;border:1px dashed var(--borde);background:transparent;border-radius:10px;padding:0 12px;font-size:12.5px}
+.ini2{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px;align-items:start}
+.lado{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:14px;margin-top:22px;position:sticky;top:12px;outline:2px dashed #a9d6b6;outline-offset:2px}
+.lado .lt{font-size:14px;font-weight:600;display:block}
+.lado .lg{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:14px 0 4px}
+.lado .li{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--linea)}
+.lado .li span{color:var(--sub);font-weight:300;text-align:right}
+.marco.cel .ini2{grid-template-columns:minmax(0,1fr)}.marco.cel .lado{order:-1;position:static;margin-top:14px}
+@media (max-width:759px){.ini2{grid-template-columns:minmax(0,1fr)}.lado{order:-1;position:static}}
 .ver{text-align:center;font-size:11px;color:var(--cero);margin-top:22px}
 </style>
 </head>
@@ -192,11 +200,7 @@ function inicio(r){
   let h = '<div class="tit"><h1>Hola, ' + r.n + '</h1><div class="sub">Solo se dibuja lo que cambia; lo demás del Inicio queda igual (tenue).</div></div>';
   h += '<div class="atajos tenue" style="opacity:1"><small>Atajos:</small>' + ['⏰ Llegué tarde', '🚪 Salí antes', '🏖️ Falté', '🌙 Horas extras', '👆 Olvidé checar', '🔁 Repuse horas']
     .map(x => '<button class="atajo tenue" type="button">' + x + '</button>').join('') + '<button class="atajo nuevo" type="button">🌴 Vacaciones</button></div>';
-  h += '<div class="franja nuevo fest" style="outline:2px dashed #a9d6b6;outline-offset:2px;align-items:flex-start"><span class="e">📆</span><div><b>Próximos días sin trabajo</b>' +
-    '<div class="flin"><span class="fl">🌴 Tus vacaciones</span><span class="fchip">23–28 dic · 3 días · <b class="pos">✓ aprobadas</b></span></div>' +
-    '<div class="flin"><span class="fl">🎉 Festivos</span>' + FEST.filter(f => f[3]).slice(0, 3).map(f => '<span class="fchip">' + f[1] + ' <b>' + f[0].slice(0, 5) + '</b> · ' + f[2] + '</span>').join('') + '</div>' +
-    (r.todos ? '<div class="flin"><span class="fl">👥 ' + (r.todos === 'area' ? 'De tu área' : 'De vacaciones') + '</span><span class="fchip">Toño · 23–28 dic</span><span class="fchip">' + (r.todos === 'area' ? 'Adrián' : 'Karla') + ' · 4–6 ene</span></div>' : '') +
-    '</div><button class="btn l chico" type="button">Ver todos ›</button></div>';
+  h += '<div class="ini2"><div class="izq">';
   h += '<div class="secc">Tu resumen</div><div class="cifras">' +
     '<button class="dato tenue" type="button"><span>Mi saldo</span><b>5 h</b><small>banco de horas</small></button>' +
     '<button class="dato tenue" type="button"><span>En proceso</span><b>1</b><small>mis solicitudes</small></button>' +
@@ -208,7 +212,12 @@ function inicio(r){
   if (r.todos) h += '<div class="secc">Para quien valida</div><div class="ilista"><button class="ifila tenue" type="button"><span class="e">🏦</span><div><b>Banco de horas</b><small>saldos</small></div><em>›</em></button>' +
     '<button class="ifila nuevo" type="button"><span class="e">🌴</span><div><b>Vacaciones</b><small>' + (r.todos === 'area' ? 'días de tu área' : 'días de todos') + '</small></div><em>›</em></button></div>';
   if (r.ajusta) h += '<div class="secc">Administración</div><div class="adm"><button class="tenue" type="button">👥 Personas y PINs</button><button class="tenue" type="button">🏗️ Proyectos</button><button class="tenue" type="button">🏢 Áreas y jefes</button><button class="nuevo" type="button">📅 Festivos</button></div>';
-  h += '<div class="mini">La franja de festivos la ven <b>todos</b> (también Pável). Pável no ve la cifra de Vacaciones ni “Mis vacaciones” (no lleva conteo). El atajo 🌴 abre Nueva solicitud con “Falté” + “A cuenta de vacaciones” ya elegidos.</div>';
+  h += '</div><aside class="lado nuevo"><b class="lt">📆 Próximos días sin trabajo</b>' +
+    '<div class="lg">🌴 Tus vacaciones</div><div class="li"><b>23–28 dic</b><span>3 días · <b class="pos">✓ aprobadas</b></span></div>' +
+    '<div class="lg">🎉 Festivos</div>' + FEST.filter(f => f[3]).slice(0, 4).map(f => '<div class="li"><b>' + f[1] + ' ' + f[0].slice(0, 5) + '</b><span>' + f[2] + '</span></div>').join('') +
+    (r.todos ? '<div class="lg">👥 ' + (r.todos === 'area' ? 'De tu área' : 'De vacaciones') + '</div><div class="li"><b>Toño</b><span>23–28 dic</span></div><div class="li"><b>' + (r.todos === 'area' ? 'Adrián' : 'Karla') + '</b><span>4–6 ene</span></div>' : '') +
+    '<button class="btn l chico" type="button" style="width:100%;margin-top:12px">Ver todos ›</button></aside></div>';
+  h += '<div class="mini">La columna “Próximos días sin trabajo” va al costado en la compu y arriba en el celular. La ven <b>todos</b> (también Pável). Pável no ve la cifra de Vacaciones ni “Mis vacaciones” (no lleva conteo). El atajo 🌴 abre Nueva solicitud con “Falté” + “A cuenta de vacaciones” ya elegidos.</div>';
   return h;
 }
 
