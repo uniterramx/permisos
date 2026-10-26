@@ -24,8 +24,8 @@
   (roles anon/authenticated, `auth.uid()` por `request.jwt.claim.sub`). Ver cómo en el historial de este chat.
 
 ## Datos clave
-- App: https://vmmterminus-star.github.io/uniterra-permisos/
-- Repo: `vmmterminus-star/uniterra-permisos` (público). Rama de trabajo `claude/expediente`, publicada a `main`.
+- App: https://uniterramx.github.io/permisos/
+- Repo: `uniterramx/permisos` (público). Rama de trabajo `claude/expediente`, publicada a `main`.
 - Supabase: proyecto `tnlgwfrseajntindzofg` (URL y anon key en `config.js`). La sesión de Claude Code
   NO puede conectarse a Supabase (red bloqueada): todo SQL se le da a Valen completo para el SQL Editor.
   ⚠️ El SQL Editor no conserva tablas temporales entre sentencias: usar CTE/`values` en línea.
