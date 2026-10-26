@@ -386,7 +386,7 @@ table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
 /* ---- Vacaciones (v0.8.0): columna "Proximos dias sin trabajo", cifras y bloques ---- */
 .vini{display:flex;flex-direction:column}
 .vizq{min-width:0}
-.vlado{order:-1;background:#fff;border:1px solid var(--borde);border-radius:12px;padding:14px;margin-top:14px}
+.vlado{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:14px;margin-top:14px}
 .vlt{font-size:14px;font-weight:600;display:block}
 .vlg{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:14px 0 4px}
 .vli{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--linea)}
@@ -476,7 +476,7 @@ h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.8.0';
+const VERSION = 'v0.8.1';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 // Modo "Ver como" persona = solo ver: se bloquea todo lo que escribe (funciones que guardan, insert/update/delete)
 const SOLO_VER = 'Modo solo ver: estás viendo la app como otra persona. Vuelve a ti para hacer cambios.';

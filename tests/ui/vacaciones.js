@@ -115,7 +115,7 @@ const sinScroll = page => page.evaluate(() => document.documentElement.scrollWid
     await page.waitForFunction(() => $('datoVac') && $('datoVac').textContent !== '·' && !/Cargando/.test($('vLado').textContent));
     ok(await page.evaluate(() => $('datoVac').textContent) === '16 días', 'Omar: 16 días (' + await page.evaluate(() => $('datoVac').textContent) + ')');
     const lado = await page.locator('#vLado').boundingBox(), res = await page.locator('.tures').boundingBox();
-    ok(lado.y < res.y, 'celular: la columna va arriba');
+    ok(lado.y > res.y, 'celular: la columna va abajo de todo');
     ok(await sinScroll(page), '390: sin scroll de lado (Inicio)');
     await page.screenshot({ path: OUT + '/vac-inicio-cel.png', fullPage: true });
     await page.evaluate(() => { location.hash = 'vacaciones'; }); await page.waitForSelector('text=Movimientos');
