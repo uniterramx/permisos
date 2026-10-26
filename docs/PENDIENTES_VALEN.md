@@ -53,3 +53,7 @@
 - [x] PRUEBA aprobada por jefe, Gaby y Laura → al aprobar Laura sale "PDF guardado" → abrirla y "📄 Descargar PDF".
 - [x] Banco de horas → una persona → bloque "Bitácora": PDF de la activa; "Cerrar ahora" (la tuya queda de prueba) → PDF de la cerrada.
 - [x] Inicio → 📁 PDF guardados (espacio usado). Al terminar: 🧪 Pruebas → Borrar (también borra bitácoras y PDF de prueba).
+
+## 7. v0.7.2 · PIN temporal visible
+- [ ] Correr `sql/011_pin_temporal_visible.sql` (SQL Editor → New query → pegar completo → Run). Al final: "si", "si".
+- [ ] Personas y PINs → Gabriela → Acceso → "Dar PIN temporal" → debe quedarse mostrando ese número.

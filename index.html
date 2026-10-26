@@ -94,6 +94,7 @@ select.f{background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org
 .ifila em{font-style:normal;color:var(--sub)}.ifila.pronto{opacity:.5;cursor:default}
 .ifila .badge{position:static;background:var(--naranja);color:#fff;font-size:11px;font-weight:700;border-radius:9px;padding:1px 7px}
 .adm{display:flex;flex-wrap:wrap;gap:8px}
+.pinest{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px}.pinnum{font-size:20px;letter-spacing:.18em;font-weight:700}
 .adm button{height:38px;border:1px dashed var(--borde);background:transparent;border-radius:10px;padding:0 12px;font-size:13px}.adm .w{color:var(--naranja)}
 .av{width:40px;height:40px;border-radius:50%;border:0;background:var(--arena);font-size:12px;font-weight:700;flex:none}
 .menu{position:fixed;right:16px;top:60px;z-index:20;background:#fff;border:1px solid var(--borde);border-radius:12px;box-shadow:0 6px 20px rgba(90,77,62,.15);padding:6px;width:250px}
@@ -451,7 +452,7 @@ h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.7.1';
+const VERSION = 'v0.7.2';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 // Modo "Ver como" persona = solo ver: se bloquea todo lo que escribe (funciones que guardan, insert/update/delete)
 const SOLO_VER = 'Modo solo ver: estás viendo la app como otra persona. Vuelve a ti para hacer cambios.';
@@ -610,6 +611,15 @@ const areaClase = id => 'a' + Math.min(6, (areaPorId(id)?.orden || 6));
 const puedoEditar = () => (yo?.roles || []).some(r => r === 'admin' || r === 'altas');
 const soyAdmin = () => (yo?.roles || []).includes('admin');
 
+// Estado de PIN de cada persona (solo Valen y Gaby). Devuelve true si algo cambio desde la ultima vez.
+async function refrescarAccesos(){
+  if (!puedoEditar()) return false;
+  const r = await sb.rpc('admin_accesos');
+  if (r.error) return false;
+  const antes = JSON.stringify(D.pinDet || {});
+  D.accesos = {}; D.pinDet = {}; (r.data || []).forEach(x => { D.accesos[x.empleado_id] = x.estado; D.pinDet[x.empleado_id] = x; });
+  return JSON.stringify(D.pinDet) !== antes;
+}
 async function cargarCatalogos(){
   const [a, e, h, p, j] = await Promise.all([
     sb.from('areas').select('*').order('orden'),
@@ -621,10 +631,7 @@ async function cargarCatalogos(){
   const err = [a, e, h, p, j].find(r => r.error);
   if (err) throw err.error;
   D.areas = a.data; D.empleados = e.data; D.horarios = h.data; D.proyectos = p.data; D.jefes = j.data;
-  if (puedoEditar()){
-    const r = await sb.rpc('admin_accesos');
-    D.accesos = {}; (r.data || []).forEach(x => D.accesos[x.empleado_id] = x.estado);
-  }
+  await refrescarAccesos();
 }
 
 // Horario vigente hoy (o el mas reciente si todos son a futuro)
@@ -806,6 +813,7 @@ function vistaPersonas(){
     '<select class="f" id="pArea"><option value="">Todas las áreas</option>' + D.areas.map(a => '<option value="' + a.id + '"' + (filtro.area === a.id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>' +
     '<select class="f" id="pEstado">' + [['activos','Activos'],['inactivos','Inactivos'],['todos','Todos']].map(([k, t]) => '<option value="' + k + '"' + (filtro.estado === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select>' +
     '<span class="esp"></span><button class="btn" id="pNueva" type="button">+ Nueva persona</button></div>';
+  refrescarAccesos().then(c => { if (c && $('pFilas')) filasPersonas(); });
   h += '<div class="tabla-w"><table><thead><tr><th>Nombre</th><th>Ini.</th><th class="opt">Puesto</th><th>Área</th><th class="opt">Firma</th><th class="opt">Jornada</th><th class="opt">Nómina</th><th>PIN</th></tr></thead><tbody id="pFilas"></tbody></table></div>';
   h += '<div class="ver">' + VERSION + '</div>';
   $('vista').innerHTML = h;
@@ -817,7 +825,7 @@ function vistaPersonas(){
   filasPersonas();
 }
 
-const ESTADO_PIN = { activo: ['c-ok','activo'], temporal: ['c-rev','temporal'], bloqueado: ['c-blk','bloqueado'], sin_pin: ['c-no','sin PIN'] };
+const ESTADO_PIN = { activo: ['c-ok','elegido'], temporal: ['c-rev','temporal'], bloqueado: ['c-blk','bloqueado'], sin_pin: ['c-no','sin PIN'] };
 function filasPersonas(){
   const av = avisosPersonas();
   const t = sinAcentos(filtro.texto);
@@ -851,6 +859,7 @@ const tipAyuda = txt => '<button type="button" class="ii" aria-label="Ayuda">i</
 const seg = (id, val, ops) => '<div class="seg" data-seg="' + id + '">' + ops.map(([v, t]) => '<button type="button" data-v="' + v + '" class="' + (String(v) === String(val) ? 'on' : '') + '">' + t + '</button>').join('') + '</div><input type="hidden" id="' + id + '" value="' + val + '">';
 
 function abrirPersona(id){
+  if (id) refrescarAccesos().then(c => { if (c && panelId === id) abrirPersona(id); });  // por si la persona ya cambio su PIN
   const e = id ? empPorId(id) : { nombre_oficial: '', iniciales: '', puesto: '', area_id: D.areas[0]?.id, jornada: 'TC', en_nomina: false, activo: true, roles: ['empleado'] };
   panelId = id || 'nueva'; horNuevo = false; horSel = null;
   const activos = D.empleados.filter(x => x.activo).sort((a, b) => a.nombre_oficial.localeCompare(b.nombre_oficial, 'es'));
@@ -893,9 +902,7 @@ function abrirPersona(id){
   }
 
   h += sec('Acceso',
-    (id ? '<div class="fila" style="margin-top:0"><input class="f" id="eTemp" inputmode="numeric" maxlength="6" style="width:110px;text-align:center;letter-spacing:.18em" value="' + String(Math.floor(100000 + Math.random() * 900000)) + '">' +
-      '<button class="btn l chico" type="button" id="ePinTemp">Dar PIN temporal</button>' +
-      (est === 'bloqueado' ? '<button class="btn l chico" type="button" id="eDesbloq">Desbloquear</button>' : '') + '</div>' : '<div class="peq">Después de darla de alta le asignas su PIN temporal.</div>') +
+    (id ? accesoFicha(e, est) : '<div class="peq">Después de darla de alta le asignas su PIN temporal.</div>') +
     '<label class="check"><input type="checkbox" id="eActivo"' + (e.activo ? ' checked' : '') + '> Activa · si la apagas ya no entra, pero su historial se queda</label>',
     tipAyuda('El PIN temporal se lo das a la persona; al entrar, la app le pide elegir el suyo.'));
 
@@ -920,6 +927,7 @@ function abrirPersona(id){
   $('xPanel').onclick = $('eCancelar').onclick = () => { cerrarPanel(); if ($('pFilas')) filasPersonas(); };
   pintarHorario(id, e.jornada);
   if ($('ePinTemp')) $('ePinTemp').onclick = () => pinTemporal(id);
+  if ($('eOtroPin')) $('eOtroPin').onclick = () => { $('eNuevoPin').classList.remove('oculto'); $('eOtroPin').classList.add('oculto'); };
   if ($('eDesbloq')) $('eDesbloq').onclick = () => desbloquear(id);
   $('eGuardar').onclick = () => guardarPersona(id, () => nombreOk);
 }
@@ -1089,6 +1097,22 @@ function verificarHorario(empId, esperado){
   return !!h && esperado.dias.every(d => textoDia(h, d.dia) === textoGuardado(d));
 }
 
+// Acceso en la ficha: el temporal se ve hasta que la persona elige el suyo; el elegido nunca se ve (no se guarda)
+function accesoFicha(e, est){
+  const det = D.pinDet?.[e.id] || {};
+  const nuevo = '<div class="fila" style="margin-top:8px"><input class="f" id="eTemp" inputmode="numeric" maxlength="6" style="width:110px;text-align:center;letter-spacing:.18em" value="' + String(Math.floor(100000 + Math.random() * 900000)) + '">' +
+    '<button class="btn l chico" type="button" id="ePinTemp">' + (est === 'sin_pin' ? 'Dar PIN temporal' : 'Dar este temporal') + '</button></div>';
+  const cuando = det.pin_cambiado_at ? ' el ' + new Date(det.pin_cambiado_at).toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+  let h = '<div class="pinest">';
+  if (est === 'temporal') h += '<span class="chip c-rev">temporal</span>' + (det.pin_temporal ? '<b class="pinnum">' + esc(det.pin_temporal) + '</b>' : '<span class="peq">(se dio antes de v0.7.2: no se ve el número)</span>') + '<span class="peq">aún no lo cambia</span>';
+  else if (est === 'activo') h += '<span class="chip c-ok">elegido</span><span>PIN elegido por ' + esc(nombreCorto(e)) + (cuando ? ' · lo cambió' + cuando : '') + '</span><span class="peq">es secreto: no se ve</span>';
+  else if (est === 'bloqueado') h += '<span class="chip c-blk">bloqueado</span><span class="peq">5 intentos fallidos</span>';
+  else h += '<span class="chip c-no">sin PIN</span><span class="peq">todavía no puede entrar</span>';
+  h += '</div>';
+  if (est === 'sin_pin') return h + nuevo;
+  return h + '<div class="fila" style="margin-top:6px"><button class="lnk" type="button" id="eOtroPin">' + (est === 'temporal' ? 'Dar otro temporal' : 'Olvidó su PIN: darle un temporal') + '</button>' +
+    (est === 'bloqueado' ? '<button class="btn l chico" type="button" id="eDesbloq">Desbloquear</button>' : '') + '</div><div id="eNuevoPin" class="oculto">' + nuevo + '</div>';
+}
 async function pinTemporal(id){
   const pin = $('eTemp').value.trim();
   if (!/^\d{6}$/.test(pin)) return toast('El PIN temporal tiene 6 números.', true);
