@@ -74,7 +74,7 @@ de horas + bitácora**. Ahora se migra TODO a una **web app propia**.
 11. **Ícono de la app**: cuadrado con **esquinas redondeadas**, **sin fondo transparente**, en tres
     formas: embebido en el HTML (favicon), **PNG** (incluye `apple-touch-icon` 180×180) e **ICO**.
     Más manifest de PWA (192 y 512). Diseño a aprobar por Valen antes.
-12. **Tipografía Alexandria** (Google Fonts). En tablas densas tamaño 7–8 (como sus Sheets), y
+12. **Tipografía Outfit** (Google Fonts; cambio 26-oct, antes Alexandria) con jerarquía de pesos: 700 títulos y cifras · 600 acciones/botones/encabezados · 500 datos clave · 400 texto · 300 secundario (gris). En tablas densas tamaño 7–8 (como sus Sheets), y
     los campos de captura 13–14 px (regla 10).
 13. Los textos de la UI (etiquetas, opciones) son libres de cambiar en el sistema nuevo porque las
     llaves serán enums. **Pero los textos que se IMPRIMEN en el PDF y las redacciones** salen

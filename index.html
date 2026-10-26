@@ -16,7 +16,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --cafe:#5a4d3e; --crema:#f8f6f3; --arena:#efeae3; --borde:#e2ddd6; --sub:#9a8e7f; --cero:#c4bdb1;
@@ -25,7 +25,7 @@
   --ok-f:#eaf5e8; --ok:#4a8c42; --rev-f:#fef6e4; --rev:#a0872e;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--crema);color:var(--cafe);font-family:Alexandria,system-ui,sans-serif}
+html,body{margin:0;background:var(--crema);color:var(--cafe);font-family:Outfit,system-ui,sans-serif}
 body{min-height:100dvh;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);overflow-x:hidden}
 button,input,select,textarea{font-family:inherit;font-size:14px;color:var(--cafe)}
 button{cursor:pointer}
@@ -382,6 +382,12 @@ table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
   .panel{top:61px;width:440px;border-left:1px solid var(--borde);box-shadow:-8px 0 24px rgba(90,77,62,.10);padding-top:18px}
   .menu{right:28px}
 }
+/* ---- Jerarquia tipografica (Outfit, aprobada 26-oct): 700 titulos y cifras · 600 acciones · 500 datos clave · 400 texto · 300 secundario ---- */
+b,strong{font-weight:500}
+h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:700}
+.btn,.nueva,.atajo,.ifila b,.card b,.adm button,th,.chip,.tipo-mv,.seg button.on,.segm button.on,.btab.on,.tipo.on,.decidir .t b,.decidir .ir,.av,.fst,.vcomo select,.nm b,.ri.on{font-weight:600}
+.btn.l{font-weight:500}
+.sub,.ayuda,.peq,.qs,small,label,.lbl,.secc,.r span,.dato span,.dato small,.ifila small,.nm small,.atajos small,.vcomo span,.inact{font-weight:300}
 </style>
 </head>
 <body>
@@ -445,7 +451,7 @@ table.angosta th:first-child,table.angosta td:first-child{min-width:0;width:1%}
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.7.0';
+const VERSION = 'v0.7.1';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 // Modo "Ver como" persona = solo ver: se bloquea todo lo que escribe (funciones que guardan, insert/update/delete)
 const SOLO_VER = 'Modo solo ver: estás viendo la app como otra persona. Vuelve a ti para hacer cambios.';
