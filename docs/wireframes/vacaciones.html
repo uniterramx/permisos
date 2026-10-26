@@ -143,8 +143,8 @@ textarea.f{height:64px;padding:9px 11px;resize:none}
   <b>Pável no lleva conteo.</b> Todos los números son de ejemplo.
 </div>
 <div class="dudas"><div>
-  <b>Lo amarillo depende de Gaby</b> <i class="q">Gaby</i>: qué días cuentan (horario / L–V / naturales, festivos) · si en el aniversario lo no tomado se junta o se pierde · qué son los negativos de julio.
-  <br><b>Y una para ti</b> <i class="q">Valen</i>: ¿se permite quedar en <b>negativo</b> (pedir más días de los que tienes)? En el banco de horas sí, con aviso al aprobar. En la pantalla 4 lo dibujé igual.
+  <b>Reglas de Gaby (26-oct):</b> cuentan solo días hábiles <b>L–V</b>, los <b>festivos no</b>. Cada aniversario te tocan los días de ley según tus años; se toman <b>dentro de tu año laboral</b> (de aniversario a aniversario) y <b>no se acumulan</b>: lo que no tomaste se vence.
+  <br><b>Falta decidir</b> <i class="q">Valen</i>: qué <b>festivos</b> (lista) · si se permite quedar en <b>negativo</b> (en la pantalla 4 lo dibujé como el banco: sí, con aviso a Laura).
 </div></div>
 <div class="marco" id="marco"></div>
 
@@ -192,11 +192,12 @@ function inicio(r){
 function movs(){
   return '<div class="tabla-w"><table><thead><tr><th>Fecha</th><th>Folio</th><th>Movimiento</th><th>Detalle</th><th class="n">Días</th><th class="n">Disponibles</th></tr></thead><tbody>' +
     '<tr><td>26/10/2026</td><td>Inicial</td><td><span class="tag t-ini">Saldo de arranque</span></td><td>lo que traía en el Excel de Gaby</td><td class="n">' + num(12) + '</td><td class="n">12</td></tr>' +
-    '<tr><td>05/11/2026</td><td>0009</td><td><span class="tag t-tom">Tomadas</span></td><td>lun 17 – mar 18 nov</td><td class="n">' + num(-2) + '</td><td class="n">10</td></tr>' +
-    '<tr class="anul"><td>12/11/2026</td><td>0011</td><td><span class="tag t-tom">Tomadas</span></td><td>vie 21 nov</td><td class="n">−1</td><td class="n">9</td></tr>' +
+    '<tr><td>05/11/2026</td><td>0009</td><td><span class="tag t-tom">Tomadas</span></td><td>mar 17 – mié 18 nov</td><td class="n">' + num(-2) + '</td><td class="n">10</td></tr>' +
+    '<tr class="anul"><td>12/11/2026</td><td>0011</td><td><span class="tag t-tom">Tomadas</span></td><td>vie 20 nov</td><td class="n">−1</td><td class="n">9</td></tr>' +
     '<tr><td>13/11/2026</td><td>Reverso</td><td><span class="tag t-rev">Reverso de 0011</span></td><td>Laura cambió su decisión</td><td class="n">' + num(1) + '</td><td class="n">10</td></tr>' +
-    '<tr class="futuro"><td>01/02/2027</td><td>Aniversario</td><td><span class="tag t-ani">5 años</span></td><td>te tocan 20 días ' + q() + '</td><td class="n">' + num(20) + '</td><td class="n">30 ' + q() + '</td></tr>' +
-    '</tbody></table></div><div class="mini">Más nuevo abajo, como la bitácora. El renglón tachado ya no cuenta: se canceló con su reverso (nada se borra). El de aniversario aparece solo en su fecha; si lo no tomado se pierde, ahí saldría un renglón “Vencidas”.</div>';
+    '<tr class="futuro"><td>31/01/2027</td><td>Vencidas</td><td><span class="tag t-tom">Fin de tu año laboral</span></td><td>lo que no tomaste del 4º año</td><td class="n">' + num(-10) + '</td><td class="n">0</td></tr>' +
+    '<tr class="futuro"><td>01/02/2027</td><td>Aniversario</td><td><span class="tag t-ani">5 años</span></td><td>te tocan 20 días</td><td class="n">' + num(20) + '</td><td class="n">20</td></tr>' +
+    '</tbody></table></div><div class="mini">Más nuevo abajo, como la bitácora. El renglón tachado ya no cuenta: se canceló con su reverso (nada se borra). Los dos renglones de fondo crema aparecen solos en su fecha: “Vencidas” el último día de tu año laboral y “Aniversario” al día siguiente (los días no se acumulan).</div>';
 }
 
 function mias(){
@@ -204,10 +205,10 @@ function mias(){
   h += '<div class="cifras" style="margin-top:14px">' +
     '<div class="dato"><span>Antigüedad</span><b>4 años</b><small>desde 01/02/2022</small></div>' +
     '<div class="dato"><span>Te tocan este año</span><b>18 días</b><small>por ley (4º año)</small></div>' +
-    '<div class="dato"><span>Tomados</span><b>8 días</b><small>desde tu aniversario ' + q() + '</small></div>' +
+    '<div class="dato"><span>Tomados</span><b>8 días</b><small>en este año laboral</small></div>' +
     '<div class="dato hi"><span>Disponibles</span><b>10 días</b><small>hoy</small></div></div>';
-  h += '<div class="franja encamino"><span class="e">⏳</span><div><b>3 días en camino</b> · F-OPC-2026-0012 (22–24 dic) espera a Laura.<br><span class="sub">Se descuentan cuando Laura apruebe; si la aprueba te quedan 7.</span></div></div>';
-  h += '<div class="franja"><span class="e">🎂</span><div><b>Próximo aniversario: 01/02/2027</b> (5 años) → te tocan <b>20 días</b>. ' + q() + ' ¿se juntan con los que te queden?</div></div>';
+  h += '<div class="franja encamino"><span class="e">⏳</span><div><b>3 días en camino</b> · F-OPC-2026-0012 (23–28 dic) espera a Laura.<br><span class="sub">Se descuentan cuando Laura apruebe; si la aprueba te quedan 7.</span></div></div>';
+  h += '<div class="franja"><span class="e">🎂</span><div><b>Tu año laboral: 01/02/2026 – 31/01/2027.</b> Lo que no tomes antes del 31/01/2027 se vence.<br><span class="sub">El 01/02/2027 cumples 5 años y empiezas con 20 días.</span></div></div>';
   h += '<div class="secc">Movimientos</div>' + movs();
   return h;
 }
@@ -240,8 +241,8 @@ function todos(r){
 
 function pedir(r){
   let h = '<div class="tit"><h1>Pedir y aprobar</h1><div class="sub">Lo nuevo dentro de pantallas que ya existen</div></div><div class="dos" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">';
-  h += '<div class="caja"><h2>Nueva solicitud · paso Resumen</h2><div class="sub">Omar · Falté · A cuenta de vacaciones · 22 al 24 dic 2026</div>' +
-    '<div class="bloque">🌴 <b>Días de vacaciones:</b> 3 ' + q() + '<br><span class="sub">lun 22, mar 23, mié 24 de diciembre</span><br>' +
+  h += '<div class="caja"><h2>Nueva solicitud · paso Resumen</h2><div class="sub">Omar · Falté · A cuenta de vacaciones · 23 al 28 dic 2026</div>' +
+    '<div class="bloque">🌴 <b>Días de vacaciones:</b> 3 hábiles<br><span class="sub">mié 23, jue 24 y lun 28 · no cuentan vie 25 (festivo) ni sáb/dom</span><br>' +
     'Tus vacaciones: <b>10</b> <span class="flecha">→</span> <b class="pos">7</b> <span class="sub">cuando Laura apruebe</span></div>' +
     '<div class="mini">No mueve el banco de horas (como hoy). En “Mis solicitudes” sale como “3 días en camino” hasta que Laura decida.</div></div>';
   h += '<div class="caja"><h2>Mi bandeja · detalle (Laura)</h2><div class="sub">F-KYGS-2026-0003 · Karla · A cuenta de vacaciones · 3 días</div>' +
