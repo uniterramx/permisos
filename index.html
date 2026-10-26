@@ -406,6 +406,29 @@ tr.vnocuenta td{color:var(--cero)}
 @media (min-width:760px){ .vini{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px;align-items:start} .vlado{order:0;position:sticky;top:80px;margin-top:20px} }
 @media (max-width:759px){ .tures.vt4{grid-template-columns:repeat(2,minmax(0,1fr))} .vdos{grid-template-columns:minmax(0,1fr)} }
 
+/* ---- Guia (v0.9.0) ---- */
+.gtabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 4px}
+.gtab{height:38px;border:1px solid var(--borde);background:#fff;border-radius:19px;padding:0 15px;font-size:13.5px;font-weight:600;white-space:nowrap}
+.gtab.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.gbuscar{max-width:340px;margin:10px 0 6px}
+.gtema{background:#fff;border:1px solid var(--borde);border-radius:12px;margin-top:8px;overflow:hidden;max-width:860px}
+.gtema summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:52px}
+.gtema summary::-webkit-details-marker{display:none}
+.gtema summary .e{font-size:20px;width:26px;text-align:center}
+.gtema summary div{flex:1}.gtema summary b{display:block;font-size:14px;font-weight:600}.gtema summary small{font-size:11.5px;color:var(--sub);font-weight:300}
+.gtema summary em{font-style:normal;color:var(--sub);transition:transform .15s}.gtema[open] summary em{transform:rotate(90deg)}
+.gtema[open] summary{border-bottom:1px solid var(--linea);background:var(--alt)}
+.gtema ol{margin:0;padding:12px 16px 14px 40px;font-size:13.5px;line-height:1.55}
+.gtema li{margin:0 0 8px;padding-left:4px}.gtema li::marker{font-weight:700;color:var(--verde)}
+.gdonde{display:inline-block;font-size:11px;background:var(--verde-f);color:var(--verde);border-radius:9px;padding:1px 8px;font-weight:600;white-space:nowrap}
+.gojo{margin:0 14px 14px;background:var(--rev-f);border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.5;color:#8a6d1e}
+.gpq{border:1px solid #a9d6b6;background:#f3faf5;color:var(--verde);border-radius:12px;font-size:12px;font-weight:600;padding:2px 10px;margin-left:4px;min-height:26px}
+.gvelo{position:fixed;inset:0;background:rgba(60,50,40,.35);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60}
+.gpop{background:#fff;border-radius:14px;max-width:440px;width:100%;padding:18px 18px 16px;box-shadow:0 10px 40px rgba(0,0,0,.2);font-size:13.5px;line-height:1.55}
+.gpop h3{margin:0 0 8px;font-size:16px;font-weight:700}.gpop p{margin:0 0 10px}
+.gdos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 12px}.gdos div{background:var(--alt);border-radius:10px;padding:9px 10px;font-size:12.5px}
+@media (max-width:759px){ .gtabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none} }
+
 /* ---- Jerarquia tipografica (Outfit, aprobada 26-oct): 700 titulos y cifras · 600 acciones · 500 datos clave · 400 texto · 300 secundario ---- */
 b,strong{font-weight:500}
 h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:700}
@@ -476,7 +499,7 @@ h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.8.1';
+const VERSION = 'v0.9.0';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 // Modo "Ver como" persona = solo ver: se bloquea todo lo que escribe (funciones que guardan, insert/update/delete)
 const SOLO_VER = 'Modo solo ver: estás viendo la app como otra persona. Vuelve a ti para hacer cambios.';
@@ -770,7 +793,7 @@ function vistaInicio(){
     (vac ? '<button class="dato" type="button" data-ir="vacaciones"><span>Vacaciones</span><b id="datoVac">·</b><small id="datoVacS">te quedan</small></button>' : '') + '</div>';
   h += '<div class="secc">Lo mío</div><div class="ilista">' + fila('📂', 'Mis solicitudes', 'estado y folios · PDF de las aprobadas', { ir: 'mias' }) +
     fila('⏱️', 'Mi banco de horas', 'movimientos y mi bitácora', { ir: 'banco' }) + (vac ? fila('🌴', 'Mis vacaciones', 'pedir vacaciones y ver tus días', { ir: 'vacaciones' }) : '') + fila('✏️', 'Corregir una solicitud', 'cuando te piden cambios', { ir: 'corregir', id: 'filaCorr' }) +
-    fila('📘', 'Guía', 'cómo se usa') + '</div>';
+    fila('📘', 'Guía', 'cómo se usa, paso a paso', { ir: 'guia' }) + '</div>';
   if (veoBandeja())
     h += '<div class="secc">Para quien valida</div><div class="ilista">' + fila('📊', 'Panel general', 'todas, en vivo', { ir: 'panelgral' }) +
       fila('🏦', 'Banco de horas', roles.some(r => ['filtro', 'final', 'admin'].includes(r)) ? 'saldos y reposición de todos' : 'saldos de tu área', { ir: 'bancos' }) +
@@ -1297,5 +1320,6 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catc
 <script src="js/pdf.js"></script>
 <script src="js/documentos.js"></script>
 <script src="js/vacaciones.js"></script>
+<script src="js/guia.js"></script>
 </body>
 </html>
