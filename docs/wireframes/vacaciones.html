@@ -96,7 +96,11 @@ tr.futuro td{background:#fffdf5!important}
 .t-ini{background:var(--arena)}.t-tom{background:var(--rech-f);color:var(--rech)}.t-rev{background:#e3eef7;color:#37699e}.t-aj{background:#f0eaf7;color:#7a5aa0}.t-ani{background:#eaf5e8;color:var(--apr)}
 
 .dos{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
-.marco.cel .dos{grid-template-columns:1fr}
+.marco.cel .dos,.marco.cel .dos[style]{grid-template-columns:minmax(0,1fr)!important}
+@media (max-width:759px){.dos,.dos[style]{grid-template-columns:minmax(0,1fr)!important}}
+.flin{display:flex;flex-wrap:wrap;align-items:center;gap:0 2px;margin-top:4px}.fl{font-size:11px;color:var(--sub);font-weight:300;min-width:104px}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:600;margin-top:12px}.chk input{width:18px;height:18px}
+.rojo{background:var(--rech-f);border:1px solid #f0c4c4;color:var(--rech);border-radius:10px;padding:9px 12px;font-size:12.5px;margin-top:10px;line-height:1.5}.rojo b{color:var(--cafe)}
 .panel{background:#fff;border:1px solid var(--borde);border-radius:12px;padding:14px}
 .panel h2{font-size:16px;margin:0 0 2px}
 .panel .fila2{display:flex;justify-content:space-between;font-size:12.5px;padding:7px 0;border-bottom:1px solid var(--linea)}
@@ -147,7 +151,7 @@ textarea.f{height:64px;padding:9px 11px;resize:none}
 </div>
 <div class="dudas"><div>
   <b>Reglas de Gaby (26-oct):</b> cuentan solo días hábiles <b>L–V</b>, los <b>festivos no</b>. Cada aniversario te tocan los días de ley según tus años; se toman <b>dentro de tu año laboral</b> (de aniversario a aniversario) y <b>no se acumulan</b>: lo que no tomaste se vence.
-  <br><b>Decidido por Valen:</b> wireframe aprobado · festivos en un catálogo editable + franja en el Inicio de todos · <b>no se puede enviar</b> si no te alcanzan los días. <b>Falta</b> <i class="q">Valen</i>: la lista de festivos y cómo funcionan las excepciones.
+  <br><b>Decidido por Valen:</b> wireframe aprobado · festivos en un catálogo editable + franja en el Inicio de todos · <b>no se puede enviar</b> si no te alcanzan los días. <b>Excepción</b>: casilla “Pedir como excepción” después de hablarlo en persona; Laura decide; el negativo se descuenta de los días del siguiente aniversario. Franja del Inicio: tus vacaciones + festivos; jefes ven su área, Gaby y Laura a todos. <b>Falta</b> <i class="q">Valen</i>: la lista de festivos.
 </div></div>
 <div class="marco" id="marco"></div>
 
@@ -188,8 +192,11 @@ function inicio(r){
   let h = '<div class="tit"><h1>Hola, ' + r.n + '</h1><div class="sub">Solo se dibuja lo que cambia; lo demás del Inicio queda igual (tenue).</div></div>';
   h += '<div class="atajos tenue" style="opacity:1"><small>Atajos:</small>' + ['⏰ Llegué tarde', '🚪 Salí antes', '🏖️ Falté', '🌙 Horas extras', '👆 Olvidé checar', '🔁 Repuse horas']
     .map(x => '<button class="atajo tenue" type="button">' + x + '</button>').join('') + '<button class="atajo nuevo" type="button">🌴 Vacaciones</button></div>';
-  h += '<div class="franja nuevo fest" style="outline:2px dashed #a9d6b6;outline-offset:2px"><span class="e">🎉</span><div><b>Próximos días festivos</b> <span class="sub">(no se trabaja)</span><br>' +
-    FEST.filter(f => f[3]).slice(0, 3).map(f => '<span class="fchip">' + f[1] + ' <b>' + f[0].slice(0, 5) + '</b> · ' + f[2] + '</span>').join('') + '</div><button class="btn l chico" type="button">Ver todos ›</button></div>';
+  h += '<div class="franja nuevo fest" style="outline:2px dashed #a9d6b6;outline-offset:2px;align-items:flex-start"><span class="e">📆</span><div><b>Próximos días sin trabajo</b>' +
+    '<div class="flin"><span class="fl">🌴 Tus vacaciones</span><span class="fchip">23–28 dic · 3 días · <b class="pos">✓ aprobadas</b></span></div>' +
+    '<div class="flin"><span class="fl">🎉 Festivos</span>' + FEST.filter(f => f[3]).slice(0, 3).map(f => '<span class="fchip">' + f[1] + ' <b>' + f[0].slice(0, 5) + '</b> · ' + f[2] + '</span>').join('') + '</div>' +
+    (r.todos ? '<div class="flin"><span class="fl">👥 ' + (r.todos === 'area' ? 'De tu área' : 'De vacaciones') + '</span><span class="fchip">Toño · 23–28 dic</span><span class="fchip">' + (r.todos === 'area' ? 'Adrián' : 'Karla') + ' · 4–6 ene</span></div>' : '') +
+    '</div><button class="btn l chico" type="button">Ver todos ›</button></div>';
   h += '<div class="secc">Tu resumen</div><div class="cifras">' +
     '<button class="dato tenue" type="button"><span>Mi saldo</span><b>5 h</b><small>banco de horas</small></button>' +
     '<button class="dato tenue" type="button"><span>En proceso</span><b>1</b><small>mis solicitudes</small></button>' +
@@ -260,10 +267,18 @@ function pedir(r){
   h += '<div class="caja"><h2>Nueva solicitud · paso Resumen</h2><div class="sub">Omar · Falté · A cuenta de vacaciones · 23 al 28 dic 2026</div>' +
     '<div class="bloque">🌴 <b>Días de vacaciones:</b> 3 hábiles<br><span class="sub">mié 23, jue 24 y lun 28 · no cuentan vie 25 (festivo) ni sáb/dom</span><br>' +
     'Tus vacaciones: <b>10</b> <span class="flecha">→</span> <b class="pos">7</b> <span class="sub">cuando Laura apruebe</span></div>' +
-    '<div class="mini">No mueve el banco de horas (como hoy). En “Mis solicitudes” sale como “3 días en camino” hasta que Laura decida.</div></div>';
+    '<div class="mini">No mueve el banco de horas (como hoy). En “Mis solicitudes” sale como “3 días en camino” hasta que Laura decida. <b>A futuro:</b> cada día se descuenta del año laboral en que cae; si pides días después de tu aniversario, salen de tus días nuevos.</div></div>';
+  h += '<div class="caja"><h2>Nueva solicitud · no te alcanzan</h2><div class="sub">Karla · A cuenta de vacaciones · 2 al 4 dic 2026 · 3 días</div>' +
+    '<div class="rojo">Te queda <b>1 día</b> y pides <b>3</b>. Así no se puede enviar.</div>' +
+    '<label class="chk"><input type="checkbox" checked> Pedir como excepción</label>' +
+    '<label class="lbl">Ya lo hablé en persona con</label><select class="f"><option>Laura</option><option>Gaby</option><option>Mi jefe</option></select>' +
+    '<label class="lbl">Motivo (obligatorio)</label><textarea class="f">Viaje familiar ya pagado</textarea>' +
+    '<div class="btns"><button class="btn" type="button">Enviar</button></div>' +
+    '<div class="mini">La casilla solo aparece cuando no te alcanzan. Sin marcarla, “Enviar” queda apagado.</div></div>';
   h += '<div class="caja"><h2>Mi bandeja · detalle (Laura)</h2><div class="sub">F-KYGS-2026-0003 · Karla · A cuenta de vacaciones · 3 días</div>' +
+    '<div class="rojo"><b>Excepción</b> · lo habló en persona con Laura · “Viaje familiar ya pagado”</div>' +
     '<div class="bloque">🌴 Vacaciones de Karla: <b>1</b> <span class="flecha">→</span> <b class="neg">−2</b> si apruebas</div>' +
-    '<div class="aviso"><b>Ojo:</b> con esta solicitud Karla queda en <b>−2 días</b>. ' + q('Valen') + '</div>' +
+    '<div class="aviso"><b>Ojo:</b> Karla queda en <b>−2 días</b>. En su aniversario (01/04/2027) se le descuentan de sus días nuevos: empieza con 14 − 2 = 12.</div>' +
     '<div class="btns"><button class="btn apr" type="button">Aprobar</button><button class="btn camb" type="button">Pedir cambios</button><button class="btn rech" type="button">Rechazar</button></div>' +
     '<div class="mini">El jefe y Gaby ven el mismo bloque, solo informativo (no descuentan). Al aprobar Laura: se descuenta y se guarda el PDF como hoy. Si después cambia su decisión: reverso automático y aviso, igual que el banco.</div></div>';
   return h + '</div>';
