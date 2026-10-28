@@ -27,7 +27,7 @@ const sinScroll = page => page.evaluate(() => document.documentElement.scrollWid
   // Datos: fechas de ingreso, arranque de Karla = 1, festivo de Navidad
   F.admin("update empleados set fecha_ingreso = '2022-02-01' where iniciales = 'OPC'; update empleados set fecha_ingreso = '2025-04-01' where iniciales = 'KYGS'; update empleados set fecha_ingreso = '2025-01-06' where iniciales = 'GTB'");
   F.admin("insert into festivos (fecha, nombre, origen) values ('2026-12-25', 'Navidad', 'ley') on conflict do nothing");
-  como('GTB', "select public.vac_ajuste('" + idDe('KYGS') + "', 'inicial', 1, null)");
+  como('GTB', "select public.vac_ajuste('" + idDe('KYGS') + "', 'ajuste', -11, 'arranque: le queda 1')");
   const b = await chromium.launch();
 
   // 1) Omar: Inicio con la columna al costado y la cifra de vacaciones

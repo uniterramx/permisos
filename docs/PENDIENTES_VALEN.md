@@ -71,3 +71,8 @@
 - [ ] Administración → 📅 Festivos: cargar la lista de festivos (cuando la tengas).
 - [ ] Al terminar: 🧪 Pruebas → Borrar (también borra vacaciones de prueba).
 - [ ] Pendiente de Gaby: Excel de vacaciones cuadrado con el registro de Andrés → se captura como "Saldo de arranque" de cada quien (Vacaciones de todos → persona → Saldo de arranque).
+
+## 10. v0.10.0 · Historial y carga de vacaciones
+- [ ] Correr `sql/014_vacaciones_historial.sql` (SQL Editor → pegar completo → Run). Al final: "si", "si", 0. OJO: cancela (con reverso) los saldos de arranque y ajustes que Gaby ya cargó: empieza de 0.
+- [ ] Recargar con Ctrl+Shift+R → abajo **v0.10.0**.
+- [ ] Avisarle a Gaby: ahora por persona es **Tomadas antes** (del/al) y **Ajuste** (+/− con motivo); los días de ley salen solos.

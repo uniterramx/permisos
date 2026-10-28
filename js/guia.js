@@ -81,10 +81,11 @@ const GUIA = {
       'Cuando alguien junta 15 movimientos, su bitácora se cierra sola y te sale un aviso con el botón ' + GD('📄 Bitácora') + '.',
       'Imprímela y recoge la firma de la persona.',
       'Si la quieres cerrar antes: Banco de horas → la persona → Cerrar ahora.']],
-    ['🌴', 'Vacaciones', 'saldo de arranque y ajustes', [
-      'Inicio → ' + GD('🌴 Vacaciones') + ' → toca a la persona.',
-      '<b>Saldo de arranque</b> (una sola vez): los días que le quedan hoy, contando desde su último aniversario.',
-      '<b>Ajuste:</b> +/− días con el motivo, para corregir.',
+    ['🌴', 'Vacaciones', 'tomadas antes, ajustes e historial', [
+      'Inicio → ' + GD('🌴 Vacaciones') + ' → toca a la persona. Los días que le tocan por ley los pone la app sola con su fecha de ingreso.',
+      '<b>Tomadas antes:</b> las vacaciones que tomó antes de la app, con sus fechas (del / al). Los días se cuentan solos; si fue distinto (medio día), cámbialo.',
+      '<b>Ajuste:</b> +/− días con motivo, por ejemplo “2 días del año pasado (acuerdo)”.',
+      'En “Ver movimientos” está su historial; si algo quedó mal, “Quitar” (queda como reverso, no se borra).',
       'Te sale un aviso cuando a alguien ya le pasaron sus vacaciones y no ha hecho su formato.']],
     ['📅', 'Festivos', 'cargar los días festivos', [
       'Administración → ' + GD('📅 Festivos') + ' → fecha, nombre → Agregar.',

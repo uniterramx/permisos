@@ -9,8 +9,8 @@ const vacLey = k => k < 1 ? 0 : VAC_LEY.filter(([d]) => d <= k).pop()[1];
 const VAC_EST = { espera_laura: ['Espera a Laura', 'c-rev'], aprobada: ['Apartadas', 'c-ok'], rechazada: ['Rechazada', 'c-blk'],
   cancelada: ['Cancelada', 'c-no'], usada: ['Usadas', 'c-no'] };
 const HABLO = { laura: 'Laura', gaby: 'Gaby', jefe: 'su jefe' };
-const MOVV_TXT = { inicial: 'Saldo de arranque', tomadas: 'Tomadas', reverso: 'Reverso', ajuste: 'Ajuste' };
-const MOVV_CL = { inicial: 'm-ini', tomadas: 'm-ret', reverso: 'm-rev', ajuste: 'm-aj' };
+const MOVV_TXT = { inicial: 'Saldo de arranque', tomadas: 'Tomadas', reverso: 'Reverso', ajuste: 'Ajuste', previas: 'Tomadas antes' };
+const MOVV_CL = { inicial: 'm-ini', tomadas: 'm-ret', reverso: 'm-rev', ajuste: 'm-aj', previas: 'm-ret' };
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
 const faltaSQL012 = err => /vac_|festivo|fecha_ingreso|lleva_vacaciones|PGRST202|PGRST205|schema cache|does not exist/i.test((err?.message || '') + (err?.code || ''));
@@ -48,7 +48,8 @@ async function vacPreview(empId, ini, fin, excluir){
 }
 const anioHoy = r => (r.anios || []).find(a => a.k === r.k_hoy) || null;
 // Dias tomados en un año (tomadas y sus reversos)
-const tomadasAnio = (r, k) => -(r.movimientos || []).filter(m => m.k === k && ['tomadas', 'reverso'].includes(m.tipo)).reduce((x, m) => x + +m.dias, 0);
+const esToma = m => ['tomadas', 'previas'].includes(m.tipo) || (m.tipo === 'reverso' && ['tomadas', 'previas'].includes(m.tipo_original));
+const tomadasAnio = (r, k) => -(r.movimientos || []).filter(m => m.k === k && esToma(m)).reduce((x, m) => x + +m.dias, 0);
 
 // Texto de los dias que cuentan: "mié 23, jue 24 y lun 28 · no cuentan vie 25 (Navidad) ni sáb/dom"
 function diasQueCuentan(prev){
@@ -124,6 +125,7 @@ function pintarVacPersona(){
     '<span class="peq">El ' + fechaMX(sumaDias(a.hasta, 1)) + ' cumple ' + (a.k + 1) + (a.k + 1 === 1 ? ' año' : ' años') + ' y empieza con ' + (carry ? sig + ' − ' + (-carry) + ' = ' + (sig + carry) : sig) + ' días.</span></div></div>';
 
   // Movimientos (mas nuevo abajo). Aniversarios y vencidas se calculan de las reglas; lo demas es lo guardado.
+  h += historialVac(r);
   h += '<div class="secc">Movimientos</div><div class="tabla-w"><table class="angosta"><thead><tr><th>Fecha</th><th>Folio</th><th>Movimiento</th><th>Detalle</th><th class="num">Días</th><th class="num">Disponibles</th></tr></thead><tbody>' +
     filasMovVac(r) + '</tbody></table></div><div class="ayuda">Nada se borra: si Laura cambia algo, el renglón original sale tachado y abajo su reverso. Los de fondo crema son lo que va a pasar (aniversario y lo que se vence).</div>';
   h += '<div class="ver">' + VERSION + '</div>';
@@ -134,6 +136,13 @@ function pintarVacPersona(){
     const p = r.pedidos.find(x => x.id === b.dataset.vform);
     atajoVac = { id: p.id, ini: p.fecha_inicio, fin: p.fecha_fin }; location.hash = 'nueva';
   });
+  $('vista').querySelectorAll('[data-vquita]').forEach(b => b.onclick = async () => {
+    if (!confirm('¿Quitar este registro? Queda como reverso (no se borra).')) return;
+    b.disabled = true;
+    const { error } = await sb.rpc('vac_quitar', { p_mov: +b.dataset.vquita });
+    if (error){ b.disabled = false; return toast(errVac(error), true); }
+    toast('Quitado.'); VV.r = await vacResumen(VV.emp); pintarVacPersona();
+  });
   $('vista').querySelectorAll('[data-vcanc]').forEach(b => b.onclick = async () => {
     if (!confirm('¿Cancelar estas vacaciones? Los días dejan de estar apartados.')) return;
     b.disabled = true;
@@ -142,6 +151,25 @@ function pintarVacPersona(){
     toast('Vacaciones canceladas.');
     VV.r = await vacResumen(VV.emp); pintarVacPersona();
   });
+}
+// Historial: cada vez que tomo vacaciones (con formato o registradas por Gaby), lo mas nuevo arriba
+function historialVac(r){
+  const quita = !VV.mio && puedoAjustar() && !yo.simulado;
+  const tomas = (r.movimientos || []).filter(m => ['tomadas', 'previas'].includes(m.tipo) && !m.anulado).sort((a, b) => b.fecha.localeCompare(a.fecha) || b.id - a.id);
+  const filas = tomas.map(m => {
+    const s = m.sol, quien = id => esc(nombreCorto(empPorId(id)) || '—');
+    const fechas = m.tipo === 'tomadas' && s ? rangoCorto(s.fecha_inicio, s.fecha_fin) : rangoCorto(m.fecha, m.fecha_fin || m.fecha);
+    const como = m.tipo === 'tomadas'
+      ? 'Formato ' + esc(s?.folio || m.referencia || '') + ' · ' + (s?.pedido ? 'apartadas' : 'imprevisto') + (s?.excepcion ? ' <span class="chip c-blk">excepción</span>' : '')
+      : 'Registradas por Gaby' + (m.referencia && m.referencia !== 'Tomadas antes de la app' ? ' · ' + esc(m.referencia) : '');
+    const aprobo = m.tipo === 'tomadas' ? (s?.aprobo ? quien(s.aprobo) + ' · ' + fechaMX(String(s.aprobo_at).slice(0, 10)) : '—') : quien(m.por) + ' · ' + fechaMX(String(m.registrado_at).slice(0, 10));
+    return '<tr><td>' + fechas + (m.es_prueba ? ' <span class="chip c-rev">prueba</span>' : '') + '</td><td class="num">' + (Math.round(-m.dias * 10) / 10) + '</td><td>' + como + '</td><td>' + aprobo + '</td>' +
+      (quita ? '<td>' + (m.tipo === 'previas' ? '<button class="lnk" type="button" data-vquita="' + m.id + '">Quitar</button>' : '') + '</td>' : '') + '</tr>';
+  }).join('');
+  const ajustes = quita ? (r.movimientos || []).filter(m => m.tipo === 'ajuste' && !m.anulado) : [];
+  return '<div class="secc">Historial de vacaciones</div><div class="tabla-w"><table class="angosta"><thead><tr><th>Fechas</th><th class="num">Días</th><th>Cómo</th><th>Aprobó / registró</th>' + (quita ? '<th></th>' : '') + '</tr></thead><tbody>' +
+    (filas || '<tr><td colspan="5" class="vacio">Todavía no hay vacaciones tomadas.</td></tr>') + '</tbody></table></div>' +
+    (ajustes.length ? '<div class="ayuda">Ajustes: ' + ajustes.map(m => vSigno(m.dias) + ' “' + esc(m.referencia || '') + '” <button class="lnk" type="button" data-vquita="' + m.id + '">Quitar</button>').join(' · ') + '</div>' : '');
 }
 function volverVac(){ if ($('vVolver')) $('vVolver').onclick = () => { location.hash = 'vacaciones_todos'; vistaVacTodos(); }; }
 
@@ -162,7 +190,7 @@ function filasMovVac(r){
     deAnio.forEach(m => {
       acc += +m.dias;
       const folio = m.tipo === 'tomadas' || m.tipo === 'reverso' ? esc(String(m.referencia || '').replace(/^Reverso: .*/, '') || '—') : '—';
-      const det = m.tipo === 'tomadas' ? 'formato aprobado por Laura' : esc(m.referencia || '');
+      const det = m.tipo === 'tomadas' ? 'formato aprobado por Laura' : m.tipo === 'previas' ? rangoCorto(m.fecha, m.fecha_fin || m.fecha) + ' · ' + esc(m.referencia || '') : esc(m.referencia || '');
       h += fila(m.fecha, m.tipo === 'reverso' ? 'Reverso' : m.tipo === 'inicial' ? 'Inicial' : m.tipo === 'ajuste' ? 'Ajuste' : folio,
         MOVV_TXT[m.tipo] + (m.es_prueba ? ' · prueba' : ''), MOVV_CL[m.tipo], det, +m.dias, acc, m.anulado ? 'anul' : '');
     });
@@ -319,7 +347,7 @@ async function pintarVacDetalle(s){
 }
 
 /* ================= VACACIONES DE TODOS ================= */
-const VT = { filas: [], area: '', nom: '', buscar: '', sel: null, aj: 'ajuste' };
+const VT = { filas: [], area: '', nom: '', buscar: '', sel: null, aj: 'previas' };
 async function vistaVacTodos(){
   VT.sel = null;
   $('vista').innerHTML = '<div class="titulo"><h2>Vacaciones</h2></div><div class="carga">Cargando…</div>';
@@ -406,28 +434,53 @@ function abrirVacPanel(empId){
     fila('Quedan', vNum(x.quedan)) + fila('Apartados', nDias(x.apartados)) + fila('Quedarían', vNum(+x.quedan - +x.apartados)) + fila('Aniversario', fechaMX(x.aniversario)) + '</div>' +
     '<button class="btn l" type="button" id="vpMov" style="margin-top:12px">Ver movimientos</button>';
   if (x.fecha_ingreso && puedoAjustar() && !yo.simulado){
-    const puedeIni = !x.tiene_inicial;
-    if (!puedeIni) VT.aj = 'ajuste';
-    h += '<section class="fsec"><div class="fst">' + (VT.aj === 'inicial' ? 'Saldo de arranque' : 'Ajuste a mano') + (yoEmp().decide_solo_pruebas ? ' <span class="chip c-rev">el tuyo queda de prueba</span>' : '') + '</div>' +
-      (puedeIni ? '<div class="segm" style="margin-bottom:8px"><button type="button" data-vaj="ajuste" class="' + (VT.aj === 'ajuste' ? 'on' : '') + '">Ajuste</button><button type="button" data-vaj="inicial" class="' + (VT.aj === 'inicial' ? 'on' : '') + '">Saldo de arranque</button></div>' : '') +
-      '<label class="fl" for="vpDias">' + (VT.aj === 'inicial' ? 'Días que tiene HOY en su año laboral' : 'Días (+ suma, − resta)') + '</label><input class="f" id="vpDias" inputmode="decimal" placeholder="' + (VT.aj === 'inicial' ? 'Ej.: 10' : '+1 o -1') + '">' +
-      '<label class="fl" for="vpMot">' + (VT.aj === 'inicial' ? 'Nota (opcional)' : 'Motivo (obligatorio)') + '</label><input class="f" id="vpMot" placeholder="' + (VT.aj === 'inicial' ? 'Saldo de arranque' : 'Ej.: corrección de captura de julio') + '">' +
+    if (!['previas', 'ajuste'].includes(VT.aj)) VT.aj = 'previas';
+    const pr = VT.aj === 'previas';
+    h += '<section class="fsec"><div class="fst">' + (pr ? 'Vacaciones tomadas antes' : 'Ajuste a mano') + (yoEmp().decide_solo_pruebas ? ' <span class="chip c-rev">el tuyo queda de prueba</span>' : '') + '</div>' +
+      '<div class="segm" style="margin-bottom:8px"><button type="button" data-vaj="previas" class="' + (pr ? 'on' : '') + '">Tomadas antes</button><button type="button" data-vaj="ajuste" class="' + (pr ? '' : 'on') + '">Ajuste</button></div>' +
+      (pr ? '<div class="g2m"><div><label class="fl" for="vpIni">Del</label><input class="f" type="date" id="vpIni"></div><div><label class="fl" for="vpFin">Al</label><input class="f" type="date" id="vpFin"></div></div>' +
+            '<label class="fl" for="vpDias">Días</label><input class="f" id="vpDias" inputmode="decimal" placeholder="se cuentan solos (L–V sin festivos)"><div class="ayuda" id="vpCuenta"></div>' +
+            '<label class="fl" for="vpMot">Nota (opcional)</label><input class="f" id="vpMot" placeholder="Ej.: viaje familiar">'
+          : '<label class="fl" for="vpDias">Días (+ suma, − resta)</label><input class="f" id="vpDias" inputmode="decimal" placeholder="+2 o -1">' +
+            '<label class="fl" for="vpMot">Motivo (obligatorio)</label><input class="f" id="vpMot" placeholder="Ej.: 2 días del año pasado (acuerdo)">') +
       '<div class="fila"><button class="btn chico" type="button" id="vpOk">Guardar</button></div>' +
-      '<div class="ayuda">' + (VT.aj === 'inicial' ? 'Se captura una sola vez: lo que trae del Excel. Reemplaza los días de ley de este año.' : 'Queda como renglón “Ajuste” con quién y por qué. Nada se borra: para deshacerlo, otro ajuste al revés.') + '</div></section>';
-  } else h += '<div class="ayuda" style="margin-top:12px">Solo Gaby hace ajustes a mano.</div>';
+      '<div class="ayuda">' + (pr ? 'Se resta del año laboral en que cayeron y sale en su historial. Si te equivocas, en “Ver movimientos” lo quitas.' : 'Queda como renglón “Ajuste” con quién y por qué. Nada se borra: si te equivocas, lo quitas en “Ver movimientos”.') + '</div></section>';
+  } else h += '<div class="ayuda" style="margin-top:12px">Solo Gaby registra vacaciones tomadas antes y ajustes.</div>';
   $('panel').innerHTML = h;
   $('panel').classList.remove('oculto'); $('vista').classList.add('con-panel'); $('panel').scrollTop = 0;
   $('vpX').onclick = () => { VT.sel = null; cerrarPanel(); filasVacTodos(); };
   if ($('vpMov')) $('vpMov').onclick = () => abrirVacPersona(empId);
   $('panel').querySelectorAll('[data-vaj]').forEach(b => b.onclick = () => { VT.aj = b.dataset.vaj; abrirVacPanel(empId); });
+  let cuenta = null;
+  const contar = async () => {
+    const ini = $('vpIni').value, fin = $('vpFin').value || ini; cuenta = null; $('vpCuenta').textContent = '';
+    if (!ini || fin < ini) return;
+    try { const p = await vacPreview(empId, ini, fin, null); cuenta = +p.dias;
+      if (!$('vpDias').value || $('vpDias').dataset.auto === '1'){ $('vpDias').value = cuenta; $('vpDias').dataset.auto = '1'; }
+      $('vpCuenta').innerHTML = nDias(cuenta) + ' hábiles · ' + diasQueCuentan(p) + ' · si fue distinto (medio día, etc.), cámbialo.';
+    } catch (err){ $('vpCuenta').textContent = errVac(err); }
+  };
+  if ($('vpIni')){
+    $('vpIni').onchange = () => { if (!$('vpFin').value || $('vpFin').value < $('vpIni').value) $('vpFin').value = $('vpIni').value; contar(); };
+    $('vpFin').onchange = contar;
+    $('vpDias').oninput = () => { $('vpDias').dataset.auto = ''; };
+  }
   if ($('vpOk')) $('vpOk').onclick = async () => {
     const dias = parseFloat(String($('vpDias').value).replace(',', '.').replace('−', '-'));
-    if (isNaN(dias) || (VT.aj === 'ajuste' && !dias)) return toast('Escribe los días.', true);
-    if (VT.aj === 'ajuste' && !$('vpMot').value.trim()) return toast('Escribe el motivo del ajuste.', true);
-    $('vpOk').disabled = true;
-    const { error } = await sb.rpc('vac_ajuste', { p_empleado: empId, p_tipo: VT.aj, p_dias: dias, p_motivo: $('vpMot').value.trim() || null });
-    if (error){ $('vpOk').disabled = false; return toast(errVac(error), true); }
-    toast(VT.aj === 'inicial' ? 'Saldo de arranque guardado.' : 'Ajuste guardado.'); VT.aj = 'ajuste';
+    let r;
+    if (VT.aj === 'previas'){
+      if (!$('vpIni').value) return toast('Pon las fechas.', true);
+      if (isNaN(dias) || dias <= 0) return toast('Escribe cuántos días fueron.', true);
+      $('vpOk').disabled = true;
+      r = await sb.rpc('vac_previa', { p_empleado: empId, p_ini: $('vpIni').value, p_fin: $('vpFin').value || $('vpIni').value, p_dias: cuenta !== null && dias === cuenta ? null : dias, p_nota: $('vpMot').value.trim() || null });
+    } else {
+      if (isNaN(dias) || !dias) return toast('Escribe los días (+ suma, − resta).', true);
+      if (!$('vpMot').value.trim()) return toast('Escribe el motivo del ajuste.', true);
+      $('vpOk').disabled = true;
+      r = await sb.rpc('vac_ajuste', { p_empleado: empId, p_tipo: 'ajuste', p_dias: dias, p_motivo: $('vpMot').value.trim() });
+    }
+    if (r.error){ $('vpOk').disabled = false; return toast(errVac(r.error), true); }
+    toast(VT.aj === 'previas' ? 'Registradas: ' + nDias(r.data.dias) + '.' : 'Ajuste guardado.');
     await vistaVacTodos(); abrirVacPanel(empId);
   };
 }

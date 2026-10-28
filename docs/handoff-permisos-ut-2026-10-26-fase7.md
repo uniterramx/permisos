@@ -12,7 +12,8 @@ Lee COMPLETOS, en este orden, antes de responder:
 - Fin inmediato: arrancar de verdad (el día del cambio lo lleva Valen) y dejar la app completa.
 
 ## 2. Dónde nos quedamos
-- Versión **v0.9.0**. SQL corridos por Valen: **001–013**.
+- Versión **v0.10.0**. SQL corridos por Valen: **001–013** (014 pendiente de correr: ver PENDIENTES §10).
+- v0.9.1: filtro Nómina + botón PDF en Vacaciones de todos. v0.10.0: historial por persona; carga = ley automática + Ajuste + Tomadas antes (sin saldo de arranque).
 - **v0.8.0 Vacaciones** (SQL 012, `js/vacaciones.js`, wireframe `docs/wireframes/vacaciones.html`):
   - Paso 1 "Pedir vacaciones": directo a Laura, sin formato; aprobadas = días **apartados**.
   - Paso 2 el formato de siempre "Falté → A cuenta de vacaciones": liga las apartadas o "imprevisto"; **descuenta lo real al aprobar Laura** (trigger `decisiones_vacaciones`).
@@ -25,8 +26,7 @@ Lee COMPLETOS, en este orden, antes de responder:
 - AVANCE: ~95 %.
 
 ## 3. Pendiente (de otros)
-- **Gaby**: está corrigiendo su Excel de vacaciones y va a cargar ELLA en la app, por persona: fecha de ingreso (si cambió) y "Saldo de arranque" = días que le quedan HOY contando desde su último aniversario (no desde enero). Empieza con Doña Isa (ingreso 17/08/2009, 26 días; 21 o 26 según si sus 5 días fueron antes o después del 17/08/2026). Valen ya le mandó el instructivo.
-  - Si Gaby se equivoca en el arranque: se corrige con "Ajuste" (el arranque es una sola vez).
+- **Gaby**: carga ELLA en la app, por persona: fecha de ingreso (si cambió), **Tomadas antes** (del/al, días automáticos L–V sin festivos, editables) y **Ajuste** (+/− con motivo, p. ej. días guardados del año pasado). Los días de ley salen solos. Errores: "Quitar" (reverso).
   - Valen NO debe cargar saldos: su usuario (decide_solo_pruebas) los deja como prueba.
 - **Valen**: horarios "por revisar" (los carga cuando los tenga); día del cambio y quién entra (lo lleva ella, no preguntar).
 - Reportes para Laura (N4): NO, solo si Laura los pide.
