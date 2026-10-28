@@ -319,7 +319,7 @@ async function pintarVacDetalle(s){
 }
 
 /* ================= VACACIONES DE TODOS ================= */
-const VT = { filas: [], area: '', buscar: '', sel: null, aj: 'ajuste' };
+const VT = { filas: [], area: '', nom: '', buscar: '', sel: null, aj: 'ajuste' };
 async function vistaVacTodos(){
   VT.sel = null;
   $('vista').innerHTML = '<div class="titulo"><h2>Vacaciones</h2></div><div class="carga">Cargando…</div>';
@@ -336,19 +336,55 @@ function pintarVacTodos(){
   let h = '<div class="titulo"><h2>Vacaciones</h2><div class="sub">' + (todos ? 'Todas las áreas · por área y luego nombre' : 'Tu área') + ' · toca una persona para ver su detalle</div></div>';
   h += '<div class="barra"><input class="f buscar" id="vtBuscar" type="search" placeholder="Buscar persona…" value="' + esc(VT.buscar) + '">' +
     (todos ? '<select class="f" id="vtArea"><option value="">Todas las áreas</option>' + D.areas.map(a => '<option value="' + a.id + '"' + (VT.area === a.id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>' : '') +
-    '<span class="esp"></span><button class="btn chico l" type="button" id="vtFest">📅 Festivos</button>' + (rolesVista().some(r => ['final', 'admin'].includes(r)) ? '<button class="btn chico" type="button" id="vtPed">Por aprobar</button>' : '') + '</div>';
+    '<select class="f" id="vtNom">' + [['', 'Nómina: todos'], ['si', 'En nómina'], ['no', 'Fuera de nómina']].map(([k, t]) => '<option value="' + k + '"' + (VT.nom === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select>' +
+    '<span class="esp"></span><button class="btn chico l" type="button" id="vtPDF">📄 PDF</button><button class="btn chico l" type="button" id="vtFest">📅 Festivos</button>' + (rolesVista().some(r => ['final', 'admin'].includes(r)) ? '<button class="btn chico" type="button" id="vtPed">Por aprobar</button>' : '') + '</div>';
   h += '<div class="tabla-w"><table><thead><tr><th>Persona</th><th>Área</th><th>Ingreso</th><th class="num">Años</th><th class="num">Le tocan</th><th class="num">Tomados</th><th class="num">Quedan</th><th class="num">Apartados</th><th class="num">Quedarían</th><th>Aniversario</th></tr></thead><tbody id="vtFilas"></tbody></table></div>' +
     '<div class="ayuda">Quedan y Quedarían: + verde · 0 negro · − rojo. “Le tocan” en 0 = todavía no cumple su primer año.</div><div class="ver">' + VERSION + '</div>';
   $('vista').innerHTML = h;
   $('vtBuscar').oninput = e => { VT.buscar = e.target.value; filasVacTodos(); };
   if ($('vtArea')) $('vtArea').onchange = e => { VT.area = e.target.value; filasVacTodos(); };
+  $('vtNom').onchange = e => { VT.nom = e.target.value; filasVacTodos(); };
+  $('vtPDF').onclick = pdfVacTodos;
   $('vtFest').onclick = () => { location.hash = 'festivos'; };
   if ($('vtPed')) $('vtPed').onclick = () => { location.hash = 'vacpedidos'; };
   filasVacTodos();
 }
-function filasVacTodos(){
+// Lo que se ve con los filtros puestos (area, nomina y busqueda): lo usan la tabla y el PDF
+function filasVacFiltradas(){
   const t = sinAcentos(VT.buscar);
-  const filas = VT.filas.filter(x => { const e = empPorId(x.empleado_id); return (!VT.area || e.area_id === VT.area) && (!t || sinAcentos(e.nombre_oficial).includes(t)); });
+  return VT.filas.filter(x => { const e = empPorId(x.empleado_id);
+    return (!VT.area || e.area_id === VT.area) && (!VT.nom || !!e.en_nomina === (VT.nom === 'si')) && (!t || sinAcentos(e.nombre_oficial).includes(t)); });
+}
+// PDF: hoja limpia con la tabla en una ventana nueva; se guarda con "Guardar como PDF" del navegador
+function pdfVacTodos(){
+  const filas = filasVacFiltradas(), hoy = fechaMX(hoyISO());
+  const filtro = [VT.area ? areaPorId(VT.area)?.nombre : 'Todas las áreas', VT.nom === 'si' ? 'En nómina' : VT.nom === 'no' ? 'Fuera de nómina' : ''].filter(Boolean).join(' · ');
+  const n = v => { v = Math.round(+v * 10) / 10; return v < 0 ? '<span class="neg">−' + (-v) + '</span>' : v ? String(v) : '<span class="cero">0</span>'; };
+  const cuerpo = filas.map(x => { const e = empPorId(x.empleado_id), a = esc(areaPorId(e.area_id)?.nombre || '');
+    if (!x.lleva) return '<tr class="gris"><td>' + esc(e.nombre_oficial) + '</td><td>' + a + '</td><td colspan="8">no lleva conteo de vacaciones</td></tr>';
+    if (!x.fecha_ingreso) return '<tr class="gris"><td>' + esc(e.nombre_oficial) + '</td><td>' + a + '</td><td colspan="8">falta su fecha de ingreso</td></tr>';
+    return '<tr><td>' + esc(e.nombre_oficial) + '</td><td>' + a + '</td><td>' + fechaMX(x.fecha_ingreso) + '</td><td class="n">' + x.k + '</td><td class="n">' + n(x.le_tocan) + '</td>' +
+      '<td class="n">' + n(x.tomadas) + '</td><td class="n"><b>' + n(x.quedan) + '</b></td><td class="n">' + n(x.apartados) + '</td><td class="n">' + n(+x.quedan - +x.apartados) + '</td><td>' + fechaMX(x.aniversario) + '</td></tr>'; }).join('');
+  const html = '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Vacaciones ' + esc(filtro) + ' ' + hoy.replace(/\//g, '-') + '</title>' +
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap"><style>' +
+    '@page{size:letter landscape;margin:12mm}body{font-family:Outfit,system-ui,sans-serif;color:#5a4d3e;margin:0;padding:16px}' +
+    'h1{font-size:18px;margin:0;font-weight:700}.sub{font-size:11px;color:#9a8e7f;margin:2px 0 12px}' +
+    'table{border-collapse:collapse;width:100%;font-size:10px}th{background:#D9D7CE;text-align:left;font-weight:600;padding:6px 8px;border:1px solid #ECE4DF}' +
+    'td{padding:6px 8px;border:1px solid #ECE4DF}tbody tr:nth-child(even) td{background:#faf9f7}.n{text-align:right}.neg{color:#b04040}.cero{color:#c4bdb1}.gris td{color:#c4bdb1}' +
+    '.pie{font-size:9px;color:#9a8e7f;margin-top:8px}.bar{margin-bottom:12px}.bar button{font:inherit;font-size:13px;padding:8px 14px;border:0;border-radius:8px;background:#5a4d3e;color:#fff;cursor:pointer}' +
+    '@media print{.bar{display:none}body{padding:0}}</style></head><body>' +
+    '<div class="bar"><button onclick="print()">Guardar como PDF / imprimir</button></div>' +
+    '<h1>Vacaciones · ' + esc(filtro) + '</h1><div class="sub">Uniterra · corte al ' + hoy + ' · ' + filas.length + (filas.length === 1 ? ' persona' : ' personas') + '</div>' +
+    '<table><thead><tr><th>Persona</th><th>Área</th><th>Ingreso</th><th class="n">Años</th><th class="n">Le tocan</th><th class="n">Tomados</th><th class="n">Quedan</th><th class="n">Apartados</th><th class="n">Quedarían</th><th>Aniversario</th></tr></thead>' +
+    '<tbody>' + (cuerpo || '<tr><td colspan="10">Nadie coincide con los filtros.</td></tr>') + '</tbody></table>' +
+    '<div class="pie">Días del año laboral actual (de aniversario a aniversario). Quedan = días reales; Quedarían = quedan menos las vacaciones apartadas.</div>' +
+    '<script>document.fonts && document.fonts.ready.then(() => setTimeout(() => print(), 300));<\/script></body></html>';
+  const w = window.open('', '_blank');
+  if (!w) return toast('El navegador bloqueó la ventana. Permite ventanas emergentes para esta página.', true);
+  w.document.open(); w.document.write(html); w.document.close();
+}
+function filasVacTodos(){
+  const filas = filasVacFiltradas();
   const g = n => +n ? (Math.round(+n * 10) / 10) : '<span class="cero">0</span>';
   $('vtFilas').innerHTML = filas.length ? filas.map(x => {
     const e = empPorId(x.empleado_id), area = '<td class="' + areaClase(e.area_id) + '">' + esc(areaPorId(e.area_id)?.nombre || '') + '</td>';
