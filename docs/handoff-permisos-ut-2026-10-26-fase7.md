@@ -12,7 +12,8 @@ Lee COMPLETOS, en este orden, antes de responder:
 - Fin inmediato: arrancar de verdad (el día del cambio lo lleva Valen) y dejar la app completa.
 
 ## 2. Dónde nos quedamos
-- Versión **v0.10.0**. SQL corridos por Valen: **001–013** (014 pendiente de correr: ver PENDIENTES §10).
+- Versión **v0.11.0** (No. de trabajador, ordenar, Excel, periodo P#; SQL 015 pendiente de correr: PENDIENTES §11).
+- Antes v0.10.0. SQL corridos por Valen: **001–013** (014 pendiente de correr: ver PENDIENTES §10).
 - v0.9.1: filtro Nómina + botón PDF en Vacaciones de todos. v0.10.0: historial por persona; carga = ley automática + Ajuste + Tomadas antes (sin saldo de arranque).
 - **v0.8.0 Vacaciones** (SQL 012, `js/vacaciones.js`, wireframe `docs/wireframes/vacaciones.html`):
   - Paso 1 "Pedir vacaciones": directo a Laura, sin formato; aprobadas = días **apartados**.

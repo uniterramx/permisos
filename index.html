@@ -499,7 +499,7 @@ h1,h2,.q,.folio,.marca,.decidir .n,.dato b,.big b,.stat b,.listo h2{font-weight:
 <script src="config.js"></script>
 <script src="js/calculos.js"></script>
 <script>
-const VERSION = 'v0.10.0';
+const VERSION = 'v0.11.0';
 const sb = supabase.createClient(UT_CONFIG.SUPABASE_URL, UT_CONFIG.SUPABASE_ANON_KEY);
 // Modo "Ver como" persona = solo ver: se bloquea todo lo que escribe (funciones que guardan, insert/update/delete)
 const SOLO_VER = 'Modo solo ver: estás viendo la app como otra persona. Vuelve a ti para hacer cambios.';
@@ -658,6 +658,15 @@ const areaPorId = id => D.areas.find(a => a.id === id);
 const nombreCorto = e => e ? (e.nombre_corto || e.nombre_oficial.split(' ')[0]) : '';
 const areaClase = id => 'a' + Math.min(6, (areaPorId(id)?.orden || 6));
 const puedoEditar = () => (yo?.roles || []).some(r => r === 'admin' || r === 'altas');
+// Orden de listados de personas: por área, alfabético o por número de trabajador (texto libre: "2" antes que "10"; sin número al final)
+const ORDEN_GENTE = [['area', 'Por área'], ['nombre', 'Alfabético'], ['num', 'Por número']];
+function cmpGente(a, b, modo){
+  if (modo === 'num'){ const x = (a.num_trabajador || '').trim(), y = (b.num_trabajador || '').trim();
+    if (!x !== !y) return x ? -1 : 1; const c = x.localeCompare(y, 'es', { numeric: true, sensitivity: 'base' }); if (c) return c; }
+  if (modo === 'area'){ const c = (areaPorId(a.area_id)?.orden || 99) - (areaPorId(b.area_id)?.orden || 99); if (c) return c; }
+  return a.nombre_oficial.localeCompare(b.nombre_oficial, 'es');
+}
+const selOrden = (id, val) => '<select class="f" id="' + id + '" aria-label="Ordenar">' + ORDEN_GENTE.map(([k, t]) => '<option value="' + k + '"' + (val === k ? ' selected' : '') + '>Ordenar: ' + t.toLowerCase() + '</option>').join('') + '</select>';
 const soyAdmin = () => (yo?.roles || []).includes('admin');
 
 // Estado de PIN de cada persona (solo Valen y Gaby). Devuelve true si algo cambio desde la ultima vez.
@@ -848,7 +857,7 @@ document.addEventListener('click', () => $('menu').classList.add('oculto'));
 $('menu').addEventListener('click', e => e.stopPropagation());
 
 /* ================= Personas ================= */
-const filtro = { texto: '', area: '', estado: 'activos', aviso: '' };
+const filtro = { texto: '', area: '', estado: 'activos', aviso: '', orden: 'area' };
 
 function avisosPersonas(){
   const act = D.empleados.filter(e => e.activo);
@@ -870,14 +879,15 @@ function vistaPersonas(){
   h += '<div class="barra"><input class="f buscar" id="pBuscar" type="search" placeholder="Buscar nombre o iniciales…" value="' + esc(filtro.texto) + '">' +
     '<select class="f" id="pArea"><option value="">Todas las áreas</option>' + D.areas.map(a => '<option value="' + a.id + '"' + (filtro.area === a.id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>' +
     '<select class="f" id="pEstado">' + [['activos','Activos'],['inactivos','Inactivos'],['todos','Todos']].map(([k, t]) => '<option value="' + k + '"' + (filtro.estado === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select>' +
-    '<span class="esp"></span><button class="btn" id="pNueva" type="button">+ Nueva persona</button></div>';
+    selOrden('pOrden', filtro.orden) + '<span class="esp"></span><button class="btn" id="pNueva" type="button">+ Nueva persona</button></div>';
   refrescarAccesos().then(c => { if (c && $('pFilas')) filasPersonas(); });
-  h += '<div class="tabla-w"><table><thead><tr><th>Nombre</th><th>Ini.</th><th class="opt">Puesto</th><th>Área</th><th class="opt">Firma</th><th class="opt">Jornada</th><th class="opt">Nómina</th><th>PIN</th></tr></thead><tbody id="pFilas"></tbody></table></div>';
+  h += '<div class="tabla-w"><table><thead><tr><th>Nombre</th><th>No.</th><th>Ini.</th><th class="opt">Puesto</th><th>Área</th><th class="opt">Firma</th><th class="opt">Jornada</th><th class="opt">Nómina</th><th>PIN</th></tr></thead><tbody id="pFilas"></tbody></table></div>';
   h += '<div class="ver">' + VERSION + '</div>';
   $('vista').innerHTML = h;
   $('pBuscar').oninput = e => { filtro.texto = e.target.value; filasPersonas(); };
   $('pArea').onchange = e => { filtro.area = e.target.value; filasPersonas(); };
   $('pEstado').onchange = e => { filtro.estado = e.target.value; filasPersonas(); };
+  $('pOrden').onchange = e => { filtro.orden = e.target.value; filasPersonas(); };
   $('pNueva').onclick = () => abrirPersona(null);
   $('vista').querySelectorAll('[data-aviso]').forEach(b => b.onclick = () => { filtro.aviso = filtro.aviso === b.dataset.aviso ? '' : b.dataset.aviso; vistaPersonas(); });
   filasPersonas();
@@ -890,21 +900,21 @@ function filasPersonas(){
   let gente = D.empleados.filter(e =>
     (filtro.estado === 'todos' || (filtro.estado === 'activos') === e.activo) &&
     (!filtro.area || e.area_id === filtro.area) &&
-    (!t || sinAcentos(e.nombre_oficial).includes(t) || sinAcentos(e.iniciales).includes(t)));
+    (!t || sinAcentos(e.nombre_oficial).includes(t) || sinAcentos(e.iniciales).includes(t) || sinAcentos(e.num_trabajador || '').includes(t)));
   if (filtro.aviso){ const ids = new Set({ nombres: av.nombres, revisar: av.revisar, sinhor: av.sinHor }[filtro.aviso].map(e => e.id)); gente = gente.filter(e => ids.has(e.id)); }
-  gente.sort((a, b) => (areaPorId(a.area_id)?.orden - areaPorId(b.area_id)?.orden) || a.nombre_oficial.localeCompare(b.nombre_oficial, 'es'));
+  gente.sort((a, b) => cmpGente(a, b, filtro.orden));
   const marcaNom = new Set(av.nombres.map(e => e.id)), marcaHor = new Set([...av.revisar, ...av.sinHor].map(e => e.id));
   $('pFilas').innerHTML = gente.length ? gente.map(e => {
     const ep = ESTADO_PIN[D.accesos[e.id] || 'sin_pin'];
     return '<tr class="clic' + (panelId === e.id ? ' sel' : '') + '" data-id="' + e.id + '">' +
       '<td class="' + (e.activo ? '' : 'inact') + '">' + esc(e.nombre_oficial) + (marcaNom.has(e.id) ? ' <span class="warn">⚠️</span>' : '') + '</td>' +
-      '<td>' + esc(e.iniciales) + '</td><td class="opt">' + esc(e.puesto || '') + '</td>' +
+      '<td>' + esc(e.num_trabajador || '') + '</td><td>' + esc(e.iniciales) + '</td><td class="opt">' + esc(e.puesto || '') + '</td>' +
       '<td><span class="chip ' + areaClase(e.area_id) + '">' + esc(areaPorId(e.area_id)?.nombre || '') + '</span></td>' +
       '<td class="opt">' + esc(nombreCorto(empPorId(e.firma_id))) + '</td>' +
       '<td class="opt">' + e.jornada + (marcaHor.has(e.id) ? ' <span class="warn">•</span>' : '') + '</td>' +
       '<td class="opt">' + (e.en_nomina ? 'Sí' : 'No') + '</td>' +
       '<td><span class="chip ' + ep[0] + '">' + ep[1] + '</span></td></tr>';
-  }).join('') : '<tr><td colspan="8" class="vacio">Nadie coincide con el filtro.</td></tr>';
+  }).join('') : '<tr><td colspan="9" class="vacio">Nadie coincide con el filtro.</td></tr>';
   $('pFilas').querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => abrirPersona(tr.dataset.id));
 }
 
@@ -937,7 +947,8 @@ function abrirPersona(id){
     campo('Nombre completo (oficial)', '<input class="f" id="eNombre" value="' + esc(e.nombre_oficial) + '" autocapitalize="words">') +
     (warn.length ? '<div class="alerta" id="eWarn">⚠️ ' + warn.join(' · ') + ' <button type="button" id="eNomOk">Está bien así</button></div>' : '') +
     '<div class="g2">' + campo('Iniciales', '<input class="f" id="eIni" value="' + esc(e.iniciales) + '" autocapitalize="characters" maxlength="8">') +
-    campo('Cómo le dicen', '<input class="f" id="eCorto" value="' + esc(e.nombre_corto || '') + '" placeholder="' + esc((e.nombre_oficial || '').split(' ')[0]) + '">') + '</div>',
+    campo('Cómo le dicen', '<input class="f" id="eCorto" value="' + esc(e.nombre_corto || '') + '" placeholder="' + esc((e.nombre_oficial || '').split(' ')[0]) + '">') + '</div>' +
+    (D.empleados.some(x => 'num_trabajador' in x) ? '<div class="g2">' + campo('No. de trabajador', '<input class="f" id="eNum" value="' + esc(e.num_trabajador || '') + '" placeholder="Ej.: 10 o 01 UT">') + '<div></div></div>' : ''),
     tipAyuda('El nombre y las iniciales salen en el PDF y en el folio. Si los cambias, solo cambia de aquí en adelante; lo ya impreso se queda igual.'));
 
   h += sec('Puesto y área',
@@ -1098,6 +1109,7 @@ async function guardarPersona(id, nombreOk){
     jornada: $('eJornada').value, en_nomina: $('eNomina').value === '1', activo: $('eActivo').checked,
     nombre_revisado: nombreOk()
   };
+  if ($('eNum')) datos.num_trabajador = $('eNum').value.trim() || null;
   if ($('eIngreso')){ datos.fecha_ingreso = $('eIngreso').value || null; datos.lleva_vacaciones = $('eVac').value === '1'; }
   if (soyAdmin()) datos.roles = ['empleado', ...[...$('panel').querySelectorAll('[data-rol]')].filter(c => c.checked).map(c => c.dataset.rol)];
   if (!datos.nombre_oficial) return toast('Falta el nombre.', true);

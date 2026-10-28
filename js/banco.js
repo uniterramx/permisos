@@ -71,8 +71,8 @@ function pintarBancos(){
     '<div class="stat k-neg"><span>En negativo</span><b class="' + (neg ? '' : 'z') + '">' + neg + '</b></div><div class="stat k-rep"><span>Deben reponer</span><b class="' + (deben ? '' : 'z') + '">' + deben + '</b></div>' +
     '<div class="stat k-rep"><span>Horas por reponer</span><b class="' + (porReponer ? '' : 'z') + '">' + Calc.fmtH(porReponer).replace(' h', '') + '</b></div></div>';
   h += '<div class="barra"><input class="f buscar" id="kBuscar" type="search" placeholder="Buscar persona…" value="' + esc(BK.buscar) + '">' +
-    '<select class="f" id="kOrden">' + [['area', 'Por área y nombre'], ['nombre', 'Ordenar por nombre'], ['saldo', 'Saldo más bajo primero'], ['pend', 'Más pendiente de reponer']].map(([k, t]) => '<option value="' + k + '"' + (BK.orden === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div>';
-  h += '<div class="tabla-w"><table><thead><tr><th>Persona</th><th>Área</th><th>Depósitos</th><th>Retiros</th><th>Saldo</th><th class="rp">Debe</th><th class="rp">Repuesto</th><th class="rp">Pendiente</th><th>Último movimiento</th></tr></thead><tbody id="kFilas"></tbody></table></div>';
+    '<select class="f" id="kOrden">' + [['area', 'Ordenar: por área'], ['nombre', 'Ordenar: alfabético'], ['num', 'Ordenar: por número'], ['saldo', 'Saldo más bajo primero'], ['pend', 'Más pendiente de reponer']].map(([k, t]) => '<option value="' + k + '"' + (BK.orden === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select></div>';
+  h += '<div class="tabla-w"><table><thead><tr><th>Persona</th><th>No.</th><th>Área</th><th>Depósitos</th><th>Retiros</th><th>Saldo</th><th class="rp">Debe</th><th class="rp">Repuesto</th><th class="rp">Pendiente</th><th>Último movimiento</th></tr></thead><tbody id="kFilas"></tbody></table></div>';
   h += '<div class="ver">' + VERSION + '</div>';
   $('vista').innerHTML = h;
   $('kBuscar').oninput = e => { BK.buscar = e.target.value; filasBancos(gente); };
@@ -81,16 +81,16 @@ function pintarBancos(){
 }
 function filasBancos(gente){
   const t = sinAcentos(BK.buscar);
-  const filas = gente.filter(([e]) => !t || sinAcentos(e.nombre_oficial).includes(t))
+  const filas = gente.filter(([e]) => !t || sinAcentos(e.nombre_oficial + ' ' + (e.num_trabajador || '')).includes(t))
     .sort((a, b) => BK.orden === 'saldo' ? a[1].saldo - b[1].saldo : BK.orden === 'pend' ? b[1].pend - a[1].pend
-      : (BK.orden === 'area' ? (areaPorId(a[0].area_id)?.orden || 99) - (areaPorId(b[0].area_id)?.orden || 99) : 0) || a[0].nombre_oficial.localeCompare(b[0].nombre_oficial, 'es'));
-  $('kFilas').innerHTML = filas.length ? filas.map(([e, r]) => '<tr class="clic" data-id="' + e.id + '"><td><b>' + esc(e.nombre_oficial) + '</b></td>' +
+      : cmpGente(a[0], b[0], BK.orden));
+  $('kFilas').innerHTML = filas.length ? filas.map(([e, r]) => '<tr class="clic" data-id="' + e.id + '"><td><b>' + esc(e.nombre_oficial) + '</b></td><td>' + esc(e.num_trabajador || '') + '</td>' +
     '<td class="' + areaClase(e.area_id) + '">' + esc(areaPorId(e.area_id)?.nombre || '') + '</td>' +
     '<td class="num">' + hCelda(r.dep) + '</td><td class="num">' + hCelda(r.ret) + '</td>' +
     '<td class="num"><b>' + hCelda(r.saldo, r.saldo < 0 ? 'neg-t' : '') + '</b></td>' +
     '<td class="num">' + hCelda(r.debe, 'neg-t') + '</td><td class="num">' + hCelda(r.rep, 'pos-t') + '</td>' +
     '<td class="num"><b>' + hCelda(r.pend, r.pend > 0 ? 'neg-t' : 'pos-t') + '</b></td><td>' + fechaCorta(r.ult) + '</td></tr>').join('')
-    : '<tr><td colspan="9" class="vacio">Nadie coincide.</td></tr>';
+    : '<tr><td colspan="10" class="vacio">Nadie coincide.</td></tr>';
   $('kFilas').querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => { BK.persona = tr.dataset.id; BK.ver = 'banco'; BK.ajuste = false; pintarPersona(tr.dataset.id, false); window.scrollTo(0, 0); });
 }
 

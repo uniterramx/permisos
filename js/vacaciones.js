@@ -126,7 +126,7 @@ function pintarVacPersona(){
 
   // Movimientos (mas nuevo abajo). Aniversarios y vencidas se calculan de las reglas; lo demas es lo guardado.
   h += historialVac(r);
-  h += '<div class="secc">Movimientos</div><div class="tabla-w"><table class="angosta"><thead><tr><th>Fecha</th><th>Folio</th><th>Movimiento</th><th>Detalle</th><th class="num">Días</th><th class="num">Disponibles</th></tr></thead><tbody>' +
+  h += '<div class="secc">Movimientos</div><div class="tabla-w"><table class="angosta"><thead><tr><th>Fecha</th><th>Periodo</th><th>Folio</th><th>Movimiento</th><th>Detalle</th><th class="num">Días</th><th class="num">Disponibles</th></tr></thead><tbody>' +
     filasMovVac(r) + '</tbody></table></div><div class="ayuda">Nada se borra: si Laura cambia algo, el renglón original sale tachado y abajo su reverso. Los de fondo crema son lo que va a pasar (aniversario y lo que se vence).</div>';
   h += '<div class="ver">' + VERSION + '</div>';
   $('vista').innerHTML = h;
@@ -163,38 +163,39 @@ function historialVac(r){
       ? 'Formato ' + esc(s?.folio || m.referencia || '') + ' · ' + (s?.pedido ? 'apartadas' : 'imprevisto') + (s?.excepcion ? ' <span class="chip c-blk">excepción</span>' : '')
       : 'Registradas por Gaby' + (m.referencia && m.referencia !== 'Tomadas antes de la app' ? ' · ' + esc(m.referencia) : '');
     const aprobo = m.tipo === 'tomadas' ? (s?.aprobo ? quien(s.aprobo) + ' · ' + fechaMX(String(s.aprobo_at).slice(0, 10)) : '—') : quien(m.por) + ' · ' + fechaMX(String(m.registrado_at).slice(0, 10));
-    return '<tr><td>' + fechas + (m.es_prueba ? ' <span class="chip c-rev">prueba</span>' : '') + '</td><td class="num">' + (Math.round(-m.dias * 10) / 10) + '</td><td>' + como + '</td><td>' + aprobo + '</td>' +
+    return '<tr><td>' + fechas + (m.es_prueba ? ' <span class="chip c-rev">prueba</span>' : '') + '</td><td>P' + (m.periodo ?? m.k) + '</td><td class="num">' + (Math.round(-m.dias * 10) / 10) + '</td><td>' + como + '</td><td>' + aprobo + '</td>' +
       (quita ? '<td>' + (m.tipo === 'previas' ? '<button class="lnk" type="button" data-vquita="' + m.id + '">Quitar</button>' : '') + '</td>' : '') + '</tr>';
   }).join('');
   const ajustes = quita ? (r.movimientos || []).filter(m => m.tipo === 'ajuste' && !m.anulado) : [];
-  return '<div class="secc">Historial de vacaciones</div><div class="tabla-w"><table class="angosta"><thead><tr><th>Fechas</th><th class="num">Días</th><th>Cómo</th><th>Aprobó / registró</th>' + (quita ? '<th></th>' : '') + '</tr></thead><tbody>' +
-    (filas || '<tr><td colspan="5" class="vacio">Todavía no hay vacaciones tomadas.</td></tr>') + '</tbody></table></div>' +
+  return '<div class="secc">Historial de vacaciones</div><div class="tabla-w"><table class="angosta"><thead><tr><th>Fechas</th><th>Periodo</th><th class="num">Días</th><th>Cómo</th><th>Aprobó / registró</th>' + (quita ? '<th></th>' : '') + '</tr></thead><tbody>' +
+    (filas || '<tr><td colspan="6" class="vacio">Todavía no hay vacaciones tomadas.</td></tr>') + '</tbody></table></div>' +
     (ajustes.length ? '<div class="ayuda">Ajustes: ' + ajustes.map(m => vSigno(m.dias) + ' “' + esc(m.referencia || '') + '” <button class="lnk" type="button" data-vquita="' + m.id + '">Quitar</button>').join(' · ') + '</div>' : '');
 }
 function volverVac(){ if ($('vVolver')) $('vVolver').onclick = () => { location.hash = 'vacaciones_todos'; vistaVacTodos(); }; }
 
 function filasMovVac(r){
   const hoy = r.hoy || hoyISO(), anios = r.anios || [], movs = r.movimientos || [];
-  const fila = (fecha, folio, tag, cl, det, dias, disp, extra) => '<tr class="' + (extra || '') + '"><td>' + fechaMX(fecha) + '</td><td>' + folio + '</td><td><span class="tipo-mv ' + cl + '">' + tag + '</span></td>' +
+  let per = '';
+  const fila = (fecha, folio, tag, cl, det, dias, disp, extra) => '<tr class="' + (extra || '') + '"><td>' + fechaMX(fecha) + '</td><td>' + per + '</td><td>' + folio + '</td><td><span class="tipo-mv ' + cl + '">' + tag + '</span></td>' +
     '<td>' + det + '</td><td class="num">' + vSigno(dias) + '</td><td class="num"><b>' + (disp == null ? '' : Math.round(disp * 10) / 10) + '</b></td></tr>';
   let h = '', previo = null;
   anios.forEach(a => {
     const deAnio = movs.filter(m => m.k === a.k);
     if (a.k < r.k_hoy && !deAnio.length && !a.tiene_inicial){ previo = +a.final; return; }  // años pasados sin registro (antes del arranque): no se muestran
-    let acc = 0;
+    let acc = 0; per = 'P' + a.k;
     if (!a.tiene_inicial && a.k >= 1){
       const carry = Math.min(0, previo || 0);
       acc = +a.base;
       h += fila(a.desde, 'Aniversario', a.k + (a.k === 1 ? ' año' : ' años'), 'm-dep', 'le tocan ' + a.ley + ' días' + (carry ? ' menos ' + (-carry) + ' de préstamo' : ''), +a.base, acc, a.desde > hoy ? 'vfut' : '');
     }
     deAnio.forEach(m => {
-      acc += +m.dias;
+      acc += +m.dias; per = 'P' + (m.periodo ?? m.k);
       const folio = m.tipo === 'tomadas' || m.tipo === 'reverso' ? esc(String(m.referencia || '').replace(/^Reverso: .*/, '') || '—') : '—';
       const det = m.tipo === 'tomadas' ? 'formato aprobado por Laura' : m.tipo === 'previas' ? rangoCorto(m.fecha, m.fecha_fin || m.fecha) + ' · ' + esc(m.referencia || '') : esc(m.referencia || '');
       h += fila(m.fecha, m.tipo === 'reverso' ? 'Reverso' : m.tipo === 'inicial' ? 'Inicial' : m.tipo === 'ajuste' ? 'Ajuste' : folio,
         MOVV_TXT[m.tipo] + (m.es_prueba ? ' · prueba' : ''), MOVV_CL[m.tipo], det, +m.dias, acc, m.anulado ? 'anul' : '');
     });
-    const fin = +a.final;
+    const fin = +a.final; per = 'P' + a.k;
     if (fin > 0) h += fila(a.hasta, 'Vencidas', 'Fin de año laboral', 'm-ret', 'lo que no se tomó', -fin, 0, a.hasta >= hoy ? 'vfut' : '');
     else if (fin < 0) h += fila(a.hasta, 'Préstamo', 'Pasa al siguiente año', 'm-deu', 'se descuenta de los días nuevos', 0, fin, a.hasta >= hoy ? 'vfut' : '');
     previo = fin;
@@ -202,10 +203,10 @@ function filasMovVac(r){
   // el aniversario que viene
   const ult = anios[anios.length - 1];
   if (ult && ult.hasta >= hoy){
-    const k = ult.k + 1, carry = Math.min(0, +ult.final);
+    const k = ult.k + 1, carry = Math.min(0, +ult.final); per = 'P' + k;
     h += fila(sumaDias(ult.hasta, 1), 'Aniversario', k + (k === 1 ? ' año' : ' años'), 'm-dep', 'le tocan ' + vacLey(k) + ' días' + (carry ? ' menos ' + (-carry) + ' de préstamo' : ''), vacLey(k) + carry, vacLey(k) + carry, 'vfut');
   }
-  return h || '<tr><td colspan="6" class="vacio">Sin movimientos todavía.</td></tr>';
+  return h || '<tr><td colspan="7" class="vacio">Sin movimientos todavía.</td></tr>';
 }
 
 /* ================= PASO 1 · PEDIR VACACIONES ================= */
@@ -347,7 +348,7 @@ async function pintarVacDetalle(s){
 }
 
 /* ================= VACACIONES DE TODOS ================= */
-const VT = { filas: [], area: '', nom: '', buscar: '', sel: null, aj: 'previas' };
+const VT = { filas: [], area: '', nom: '', orden: 'area', buscar: '', sel: null, aj: 'previas' };
 async function vistaVacTodos(){
   VT.sel = null;
   $('vista').innerHTML = '<div class="titulo"><h2>Vacaciones</h2></div><div class="carga">Cargando…</div>';
@@ -355,8 +356,7 @@ async function vistaVacTodos(){
   if (error){ $('vista').querySelector('.carga').textContent = errVac(error); return; }
   const areas = misAreasJefe(), todos = veoTodasVac();
   VT.filas = (data || []).filter(x => { const e = empPorId(x.empleado_id); return e && veSim({}, e.id, e.area_id) && (todos || areas.includes(e.area_id) || e.id === yo.id); })
-    .sort((a, b) => { const ea = empPorId(a.empleado_id), eb = empPorId(b.empleado_id);
-      return (areaPorId(ea.area_id)?.orden || 99) - (areaPorId(eb.area_id)?.orden || 99) || ea.nombre_oficial.localeCompare(eb.nombre_oficial, 'es'); });
+;
   pintarVacTodos();
 }
 function pintarVacTodos(){
@@ -365,14 +365,16 @@ function pintarVacTodos(){
   h += '<div class="barra"><input class="f buscar" id="vtBuscar" type="search" placeholder="Buscar persona…" value="' + esc(VT.buscar) + '">' +
     (todos ? '<select class="f" id="vtArea"><option value="">Todas las áreas</option>' + D.areas.map(a => '<option value="' + a.id + '"' + (VT.area === a.id ? ' selected' : '') + '>' + esc(a.nombre) + '</option>').join('') + '</select>' : '') +
     '<select class="f" id="vtNom">' + [['', 'Nómina: todos'], ['si', 'En nómina'], ['no', 'Fuera de nómina']].map(([k, t]) => '<option value="' + k + '"' + (VT.nom === k ? ' selected' : '') + '>' + t + '</option>').join('') + '</select>' +
-    '<span class="esp"></span><button class="btn chico l" type="button" id="vtPDF">📄 PDF</button><button class="btn chico l" type="button" id="vtFest">📅 Festivos</button>' + (rolesVista().some(r => ['final', 'admin'].includes(r)) ? '<button class="btn chico" type="button" id="vtPed">Por aprobar</button>' : '') + '</div>';
-  h += '<div class="tabla-w"><table><thead><tr><th>Persona</th><th>Área</th><th>Ingreso</th><th class="num">Años</th><th class="num">Le tocan</th><th class="num">Tomados</th><th class="num">Quedan</th><th class="num">Apartados</th><th class="num">Quedarían</th><th>Aniversario</th></tr></thead><tbody id="vtFilas"></tbody></table></div>' +
+    selOrden('vtOrden', VT.orden) + '<span class="esp"></span><button class="btn chico l" type="button" id="vtXLS">📊 Excel</button><button class="btn chico l" type="button" id="vtPDF">📄 PDF</button><button class="btn chico l" type="button" id="vtFest">📅 Festivos</button>' + (rolesVista().some(r => ['final', 'admin'].includes(r)) ? '<button class="btn chico" type="button" id="vtPed">Por aprobar</button>' : '') + '</div>';
+  h += '<div class="tabla-w"><table><thead><tr><th>Persona</th><th>No.</th><th>Área</th><th>Ingreso</th><th class="num">Años</th><th class="num">Le tocan</th><th class="num">Tomados</th><th class="num">Quedan</th><th class="num">Apartados</th><th class="num">Quedarían</th><th>Aniversario</th></tr></thead><tbody id="vtFilas"></tbody></table></div>' +
     '<div class="ayuda">Quedan y Quedarían: + verde · 0 negro · − rojo. “Le tocan” en 0 = todavía no cumple su primer año.</div><div class="ver">' + VERSION + '</div>';
   $('vista').innerHTML = h;
   $('vtBuscar').oninput = e => { VT.buscar = e.target.value; filasVacTodos(); };
   if ($('vtArea')) $('vtArea').onchange = e => { VT.area = e.target.value; filasVacTodos(); };
   $('vtNom').onchange = e => { VT.nom = e.target.value; filasVacTodos(); };
   $('vtPDF').onclick = pdfVacTodos;
+  $('vtXLS').onclick = () => excelVacTodos().catch(err => toast('No se pudo hacer el Excel: ' + errVac(err), true));
+  $('vtOrden').onchange = e => { VT.orden = e.target.value; filasVacTodos(); };
   $('vtFest').onclick = () => { location.hash = 'festivos'; };
   if ($('vtPed')) $('vtPed').onclick = () => { location.hash = 'vacpedidos'; };
   filasVacTodos();
@@ -381,14 +383,15 @@ function pintarVacTodos(){
 function filasVacFiltradas(){
   const t = sinAcentos(VT.buscar);
   return VT.filas.filter(x => { const e = empPorId(x.empleado_id);
-    return (!VT.area || e.area_id === VT.area) && (!VT.nom || !!e.en_nomina === (VT.nom === 'si')) && (!t || sinAcentos(e.nombre_oficial).includes(t)); });
+    return (!VT.area || e.area_id === VT.area) && (!VT.nom || !!e.en_nomina === (VT.nom === 'si')) && (!t || sinAcentos(e.nombre_oficial + ' ' + (e.num_trabajador || '')).includes(t)); })
+    .sort((a, b) => cmpGente(empPorId(a.empleado_id), empPorId(b.empleado_id), VT.orden));
 }
 // PDF: hoja limpia con la tabla en una ventana nueva; se guarda con "Guardar como PDF" del navegador
 function pdfVacTodos(){
   const filas = filasVacFiltradas(), hoy = fechaMX(hoyISO());
   const filtro = [VT.area ? areaPorId(VT.area)?.nombre : 'Todas las áreas', VT.nom === 'si' ? 'En nómina' : VT.nom === 'no' ? 'Fuera de nómina' : ''].filter(Boolean).join(' · ');
   const n = v => { v = Math.round(+v * 10) / 10; return v < 0 ? '<span class="neg">−' + (-v) + '</span>' : v ? String(v) : '<span class="cero">0</span>'; };
-  const cuerpo = filas.map(x => { const e = empPorId(x.empleado_id), a = esc(areaPorId(e.area_id)?.nombre || '');
+  const cuerpo = filas.map(x => { const e = empPorId(x.empleado_id), a = esc(e.num_trabajador || '') + '</td><td>' + esc(areaPorId(e.area_id)?.nombre || '');
     if (!x.lleva) return '<tr class="gris"><td>' + esc(e.nombre_oficial) + '</td><td>' + a + '</td><td colspan="8">no lleva conteo de vacaciones</td></tr>';
     if (!x.fecha_ingreso) return '<tr class="gris"><td>' + esc(e.nombre_oficial) + '</td><td>' + a + '</td><td colspan="8">falta su fecha de ingreso</td></tr>';
     return '<tr><td>' + esc(e.nombre_oficial) + '</td><td>' + a + '</td><td>' + fechaMX(x.fecha_ingreso) + '</td><td class="n">' + x.k + '</td><td class="n">' + n(x.le_tocan) + '</td>' +
@@ -403,25 +406,56 @@ function pdfVacTodos(){
     '@media print{.bar{display:none}body{padding:0}}</style></head><body>' +
     '<div class="bar"><button onclick="print()">Guardar como PDF / imprimir</button></div>' +
     '<h1>Vacaciones · ' + esc(filtro) + '</h1><div class="sub">Uniterra · corte al ' + hoy + ' · ' + filas.length + (filas.length === 1 ? ' persona' : ' personas') + '</div>' +
-    '<table><thead><tr><th>Persona</th><th>Área</th><th>Ingreso</th><th class="n">Años</th><th class="n">Le tocan</th><th class="n">Tomados</th><th class="n">Quedan</th><th class="n">Apartados</th><th class="n">Quedarían</th><th>Aniversario</th></tr></thead>' +
-    '<tbody>' + (cuerpo || '<tr><td colspan="10">Nadie coincide con los filtros.</td></tr>') + '</tbody></table>' +
+    '<table><thead><tr><th>Persona</th><th>No.</th><th>Área</th><th>Ingreso</th><th class="n">Años</th><th class="n">Le tocan</th><th class="n">Tomados</th><th class="n">Quedan</th><th class="n">Apartados</th><th class="n">Quedarían</th><th>Aniversario</th></tr></thead>' +
+    '<tbody>' + (cuerpo || '<tr><td colspan="11">Nadie coincide con los filtros.</td></tr>') + '</tbody></table>' +
     '<div class="pie">Días del año laboral actual (de aniversario a aniversario). Quedan = días reales; Quedarían = quedan menos las vacaciones apartadas.</div>' +
     '<script>document.fonts && document.fonts.ready.then(() => setTimeout(() => print(), 300));<\/script></body></html>';
   const w = window.open('', '_blank');
   if (!w) return toast('El navegador bloqueó la ventana. Permite ventanas emergentes para esta página.', true);
   w.document.open(); w.document.write(html); w.document.close();
 }
+// Excel (.xlsx): hoja 1 = la tabla filtrada; hoja 2 = cada vacacion tomada de esas personas, con su periodo
+const XLSX_URL = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+let xlsxListo = null;
+const cargarXLSX = () => xlsxListo || (xlsxListo = new Promise((ok, mal) => { const sc = document.createElement('script'); sc.src = XLSX_URL; sc.onload = () => ok(window.XLSX); sc.onerror = () => { xlsxListo = null; mal(new Error('no cargó la librería de Excel')); }; document.head.appendChild(sc); }));
+async function excelVacTodos(){
+  $('vtXLS').disabled = true;
+  try {
+    const X = await cargarXLSX(), filas = filasVacFiltradas(), hoy = fechaMX(hoyISO());
+    const r1 = n => Math.round(+n * 10) / 10;
+    const h1 = [['No.', 'Persona', 'Área', 'En nómina', 'Ingreso', 'Años', 'Le tocan', 'Tomados', 'Quedan', 'Apartados', 'Quedarían', 'Aniversario']];
+    filas.forEach(x => { const e = empPorId(x.empleado_id), base = [e.num_trabajador || '', e.nombre_oficial, areaPorId(e.area_id)?.nombre || '', e.en_nomina ? 'Sí' : 'No'];
+      if (!x.lleva) h1.push(base.concat(['', '', 'no lleva conteo']));
+      else if (!x.fecha_ingreso) h1.push(base.concat(['', '', 'falta fecha de ingreso']));
+      else h1.push(base.concat([fechaMX(x.fecha_ingreso), x.k, r1(x.le_tocan), r1(x.tomadas), r1(x.quedan), r1(x.apartados), r1(+x.quedan - +x.apartados), fechaMX(x.aniversario)])); });
+    const ids = new Set(filas.map(x => x.empleado_id));
+    const { data, error } = await sb.from('vac_movimientos').select('*').order('fecha');
+    if (error) throw error;
+    const anul = new Set((data || []).filter(m => m.revierte_a).map(m => m.revierte_a));
+    const h2 = [['No.', 'Persona', 'Periodo', 'Del', 'Al', 'Días', 'Cómo']];
+    (data || []).filter(m => ids.has(m.empleado_id) && ['tomadas', 'previas'].includes(m.tipo) && !anul.has(m.id) && (!m.es_prueba || !sinPruebas()))
+      .forEach(m => { const e = empPorId(m.empleado_id);
+        h2.push([e.num_trabajador || '', e.nombre_oficial, m.periodo != null ? 'P' + m.periodo : '', fechaMX(m.fecha), fechaMX(m.fecha_fin || m.fecha), r1(-m.dias),
+          (m.tipo === 'tomadas' ? 'Formato ' + (m.referencia || '') : 'Tomadas antes' + (m.referencia && m.referencia !== 'Tomadas antes de la app' ? ' · ' + m.referencia : '')) + (m.es_prueba ? ' (prueba)' : '')]); });
+    const libro = X.utils.book_new();
+    const hoja = (aoa, anchos) => { const w = X.utils.aoa_to_sheet(aoa); w['!cols'] = anchos.map(n => ({ wch: n })); return w; };
+    X.utils.book_append_sheet(libro, hoja(h1, [8, 36, 22, 10, 12, 6, 9, 9, 9, 10, 10, 12]), 'Vacaciones');
+    X.utils.book_append_sheet(libro, hoja(h2, [8, 36, 9, 12, 12, 6, 40]), 'Vacaciones tomadas');
+    const filtro = [VT.area ? areaPorId(VT.area)?.nombre : '', VT.nom === 'si' ? 'nomina' : VT.nom === 'no' ? 'fuera de nomina' : ''].filter(Boolean).join(' ');
+    X.writeFile(libro, 'Vacaciones' + (filtro ? ' ' + filtro : '') + ' ' + hoy.replace(/\//g, '-') + '.xlsx');
+  } finally { $('vtXLS').disabled = false; }
+}
 function filasVacTodos(){
   const filas = filasVacFiltradas();
   const g = n => +n ? (Math.round(+n * 10) / 10) : '<span class="cero">0</span>';
   $('vtFilas').innerHTML = filas.length ? filas.map(x => {
-    const e = empPorId(x.empleado_id), area = '<td class="' + areaClase(e.area_id) + '">' + esc(areaPorId(e.area_id)?.nombre || '') + '</td>';
+    const e = empPorId(x.empleado_id), area = '<td>' + esc(e.num_trabajador || '') + '</td><td class="' + areaClase(e.area_id) + '">' + esc(areaPorId(e.area_id)?.nombre || '') + '</td>';
     if (!x.lleva) return '<tr class="vnocuenta"><td>' + esc(e.nombre_oficial) + '</td>' + area + '<td colspan="8">no lleva conteo de vacaciones</td></tr>';
     if (!x.fecha_ingreso) return '<tr class="clic' + (VT.sel === e.id ? ' sel' : '') + '" data-id="' + e.id + '"><td><b>' + esc(e.nombre_oficial) + '</b></td>' + area + '<td colspan="8" class="inact">falta su fecha de ingreso</td></tr>';
     return '<tr class="clic' + (VT.sel === e.id ? ' sel' : '') + '" data-id="' + e.id + '"><td><b>' + esc(e.nombre_oficial) + '</b></td>' + area + '<td>' + fechaMX(x.fecha_ingreso) + '</td>' +
       '<td class="num">' + x.k + '</td><td class="num">' + g(x.le_tocan) + '</td><td class="num">' + g(x.tomadas) + '</td><td class="num"><b>' + vNum(x.quedan) + '</b></td>' +
       '<td class="num">' + g(x.apartados) + '</td><td class="num">' + vNum(+x.quedan - +x.apartados) + '</td><td>' + fechaMX(x.aniversario) + '</td></tr>';
-  }).join('') : '<tr><td colspan="10" class="vacio">Nadie coincide.</td></tr>';
+  }).join('') : '<tr><td colspan="11" class="vacio">Nadie coincide.</td></tr>';
   $('vtFilas').querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => abrirVacPanel(tr.dataset.id));
 }
 function abrirVacPanel(empId){

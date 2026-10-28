@@ -76,3 +76,8 @@
 - [ ] Correr `sql/014_vacaciones_historial.sql` (SQL Editor → pegar completo → Run). Al final: "si", "si", 0. OJO: cancela (con reverso) los saldos de arranque y ajustes que Gaby ya cargó: empieza de 0.
 - [ ] Recargar con Ctrl+Shift+R → abajo **v0.10.0**.
 - [ ] Avisarle a Gaby: ahora por persona es **Tomadas antes** (del/al) y **Ajuste** (+/− con motivo); los días de ley salen solos.
+
+## 11. v0.11.0 · No. de trabajador, ordenar, Excel y periodo
+- [ ] Correr `sql/015_num_trabajador_periodo.sql` (SQL Editor → pegar completo → Run). Al final: "si", 0.
+- [ ] Recargar con Ctrl+Shift+R → abajo **v0.11.0**.
+- [ ] Gaby: llenar el No. de trabajador en la ficha de cada persona (Personas → persona → Identidad).

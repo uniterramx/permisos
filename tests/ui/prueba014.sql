@@ -31,11 +31,15 @@ do $$ begin assert public._t_fin('OPC') = 9.5, 'medio dia'; end $$;
 -- quitar el medio dia: reverso
 select public.vac_quitar((select id from public.vac_movimientos where dias = -0.5));
 do $$ begin assert public._t_fin('OPC') = 10, 'quitado'; end $$;
+do $$ begin assert (select count(*) from public.vac_movimientos where periodo = 4 and fecha < '2027-01-30' and empleado_id = public._t_emp('OPC')) = (select count(*) from public.vac_movimientos where fecha < '2027-01-30' and empleado_id = public._t_emp('OPC')), 'periodo P4 (si existe la columna, SQL 015)';
+exception when undefined_column then null; end $$;
 do $$ begin perform public.vac_quitar((select id from public.vac_movimientos where dias = -0.5)); assert false, 'dos veces';
 exception when others then if sqlerrm not like '%ya se habia quitado%' then raise; end if; end $$;
 -- cruza aniversario (1 feb 2027): se parte en dos años
 select public.vac_previa(public._t_emp('OPC'), '2027-01-28', '2027-02-02', null, null);
 do $$ begin assert (select count(*) from public.vac_movimientos where tipo = 'previas' and fecha >= '2027-01-01') = 2, 'partida en dos'; end $$;
+do $$ begin assert (select array_agg(periodo order by fecha) from public.vac_movimientos where tipo = 'previas' and fecha >= '2027-01-01')::text = '{4,5}', 'periodos P4 y P5';
+exception when undefined_column then null; end $$;
 -- ya no hay saldo de arranque
 do $$ begin perform public.vac_ajuste(public._t_emp('OPC'), 'inicial', 5, null); assert false, 'inicial';
 exception when others then if sqlerrm not like '%ya no se usa%' then raise; end if; end $$;
